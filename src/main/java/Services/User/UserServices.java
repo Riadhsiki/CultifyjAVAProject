@@ -1,7 +1,8 @@
-package Services;
+package Services.User;
 
 import Models.User;
 import Utils.DataSource;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +29,11 @@ public class UserServices implements Service<User> {
             pst.setDate(7, user.getDatedenaissance());
             pst.setString(8, user.getRoles());
             pst.setString(9, user.getProfilePicture());
-            pst.setString(10, user.getPassword());
+            pst.setString(10, user.getPassword()); // Store plain-text password
 
             int affectedRows = pst.executeUpdate();
 
-            // Get the auto-generated ID if needed
+            // Get the auto-generated ID
             if (affectedRows > 0) {
                 try (ResultSet rs = pst.getGeneratedKeys()) {
                     if (rs.next()) {
@@ -46,7 +47,7 @@ public class UserServices implements Service<User> {
     @Override
     public void update(User user) throws SQLException {
         String query = "UPDATE user SET nom=?, prenom=?, username=?, numTel=?, email=?, " +
-                "gender=?, datedenaissance=?, roles=?, profilePicture=?, password=? WHERE id=?";
+                "gender=?, datedenaissance=?, roles=?, profilePicture=?, password=?, montantAPayer=? WHERE id=?";
 
         try (PreparedStatement pst = con.prepareStatement(query)) {
             pst.setString(1, user.getNom());
@@ -58,8 +59,14 @@ public class UserServices implements Service<User> {
             pst.setDate(7, user.getDatedenaissance());
             pst.setString(8, user.getRoles());
             pst.setString(9, user.getProfilePicture());
-            pst.setString(10, user.getPassword());
-            pst.setInt(11, user.getId());
+            pst.setString(10, user.getPassword()); // Store plain-text password
+            // Handle nullable montantAPayer
+            if (user.getMontantAPayer() != null) {
+                pst.setFloat(11, user.getMontantAPayer());
+            } else {
+                pst.setNull(11, Types.FLOAT);
+            }
+            pst.setInt(12, user.getId());
 
             pst.executeUpdate();
         }
@@ -83,6 +90,10 @@ public class UserServices implements Service<User> {
              ResultSet rs = st.executeQuery(query)) {
 
             while (rs.next()) {
+                Float montantAPayer = rs.getFloat("montantAPayer");
+                if (rs.wasNull()) {
+                    montantAPayer = null;
+                }
                 User user = new User(
                         rs.getString("nom"),
                         rs.getString("prenom"),
@@ -92,9 +103,11 @@ public class UserServices implements Service<User> {
                         rs.getString("gender"),
                         rs.getDate("datedenaissance"),
                         rs.getString("profilePicture"),
-                        rs.getString("password"),
-                        rs.getString("roles")
+                        rs.getString("password"), // Plain-text password
+                        rs.getString("roles"),
+                        montantAPayer
                 );
+                user.setId(rs.getInt("id"));
                 users.add(user);
             }
         }
@@ -107,7 +120,11 @@ public class UserServices implements Service<User> {
             pst.setString(1, username);
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
-                    return new User(
+                    Float montantAPayer = rs.getFloat("montantAPayer");
+                    if (rs.wasNull()) {
+                        montantAPayer = null;
+                    }
+                    User user = new User(
                             rs.getString("nom"),
                             rs.getString("prenom"),
                             rs.getString("username"),
@@ -116,23 +133,29 @@ public class UserServices implements Service<User> {
                             rs.getString("gender"),
                             rs.getDate("datedenaissance"),
                             rs.getString("profilePicture"),
-                            rs.getString("password"),
-                            rs.getString("roles")
+                            rs.getString("password"), // Plain-text password
+                            rs.getString("roles"),
+                            montantAPayer
                     );
+                    user.setId(rs.getInt("id"));
+                    return user;
                 }
             }
         }
         return null;
     }
 
-    // Additional useful method
     public User getById(int id) throws SQLException {
         String query = "SELECT * FROM user WHERE id=?";
         try (PreparedStatement pst = con.prepareStatement(query)) {
             pst.setInt(1, id);
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
-                    return new User(
+                    Float montantAPayer = rs.getFloat("montantAPayer");
+                    if (rs.wasNull()) {
+                        montantAPayer = null;
+                    }
+                    User user = new User(
                             rs.getString("nom"),
                             rs.getString("prenom"),
                             rs.getString("username"),
@@ -141,22 +164,15 @@ public class UserServices implements Service<User> {
                             rs.getString("gender"),
                             rs.getDate("datedenaissance"),
                             rs.getString("profilePicture"),
-                            rs.getString("password"),
-                            rs.getString("roles")
+                            rs.getString("password"), // Plain-text password
+                            rs.getString("roles"),
+                            montantAPayer
                     );
+                    user.setId(rs.getInt("id"));
+                    return user;
                 }
             }
         }
         return null;
-    }
-
-    public void close() {
-        try {
-            if (con != null && !con.isClosed()) {
-                con.close();
-            }
-        } catch (SQLException e) {
-            System.err.println(e.getMessage());
-        }
     }
 }

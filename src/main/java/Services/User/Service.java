@@ -1,4 +1,4 @@
-package Services;
+package Services.User;
 
 import java.sql.SQLException;
 import java.util.List;

@@ -12,39 +12,55 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <javafx.version>17.0.2</javafx.version>
     </properties>
 
     <dependencies>
-
+        <!-- MySQL Connector -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
             <version>8.0.33</version>
         </dependency>
 
-        <!-- JavaFX dependencies -->
+        <!-- JavaFX Dependencies -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>17.0.2</version>
+            <version>${javafx.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>17.0.2</version>
+            <version>${javafx.version}</version>
+        </dependency>
+
+        <!-- BCrypt for password hashing -->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <!-- Use a WORKING version of javafx-maven-plugin -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>Controllers.Home</mainClass>
+                    <mainClass>Controllers.User.Home</mainClass>
+                    <options>
+                        <!-- Required for JavaFX on JDK 17+ -->
+                        <option>--add-opens</option>
+                        <option>javafx.graphics/javafx.scene=ALL-UNNAMED</option>
+                    </options>
                 </configuration>
             </plugin>
+
+            <!-- Maven Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

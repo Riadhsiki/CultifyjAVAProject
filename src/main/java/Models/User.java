@@ -14,13 +14,13 @@ public class User {
     private Date datedenaissance;
     private String profilePicture;
     private String password;
-    private String roles ;
+    private String roles;
+    private Float montantAPayer;
 
-    public User(String nom, String prenom, String username, String numTel, String email, String gender, Date datedenaissance, String profilePicture, String password, String roles) {
-        this.id = id;
+    public User(String nom, String prenom, String username, String numTel, String email, String gender, Date datedenaissance, String profilePicture, String password, String roles, Float montantAPayer) {
         this.nom = nom;
         this.prenom = prenom;
-        this.username = username;
+        this.username = username; // Fixed typo: removed "awaits"
         this.numTel = numTel;
         this.email = email;
         this.gender = gender;
@@ -28,13 +28,24 @@ public class User {
         this.profilePicture = profilePicture;
         this.password = password;
         this.roles = roles;
+        this.montantAPayer = montantAPayer;
     }
 
     public User() {}
 
-    public User(String nom, String prenom, String username, int num, String email, String gender, String roles, String profilePic, String password, Date sqlDate) {
+    public User(String nom, String prenom, String username, int num, String email, String gender, String roles, String profilePic, String password, Date sqlDate, Float montantAPayer) {
+        this.nom = nom;
+        this.prenom = prenom;
+        this.username = username;
+        this.numTel = String.valueOf(num);
+        this.email = email;
+        this.gender = gender;
+        this.datedenaissance = sqlDate;
+        this.profilePicture = profilePic;
+        this.password = password;
+        this.roles = roles;
+        this.montantAPayer = montantAPayer;
     }
-
 
     public Integer getId() {
         return id;
@@ -78,6 +89,10 @@ public class User {
 
     public String getRoles() {
         return roles;
+    }
+
+    public Float getMontantAPayer() {
+        return montantAPayer;
     }
 
     public void setId(Integer id) {
@@ -124,6 +139,10 @@ public class User {
         this.roles = roles;
     }
 
+    public void setMontantAPayer(Float montantAPayer) {
+        this.montantAPayer = montantAPayer;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -138,7 +157,7 @@ public class User {
                 ", profilePicture='" + profilePicture + '\'' +
                 ", password='[PROTECTED]'" +
                 ", roles=" + roles +
+                ", montantAPayer=" + montantAPayer +
                 '}';
     }
-
 }
