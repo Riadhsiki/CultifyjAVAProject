@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="Controllers.ReponseController.ReponseUpdate"
+            prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #f5f5f5;">
+
+    <VBox spacing="10" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="20.0"
+          AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0">
+
+        <Label text="Modifier une réponse" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+        <Label fx:id="messageLabel" style="-fx-font-weight: bold;" wrapText="true"/>
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Réclamation:" minWidth="100"/>
+            <Label fx:id="reclamationLabel" style="-fx-font-weight: bold;"/>
+        </HBox>
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Titre:" minWidth="100"/>
+            <TextField fx:id="titreField" prefWidth="400" promptText="Entrez le titre"/>
+        </HBox>
+
+        <VBox spacing="5">
+            <Label text="Contenu:"/>
+            <TextArea fx:id="contenuArea" prefRowCount="5" wrapText="true" promptText="Entrez le contenu de la réponse"/>
+        </VBox>
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Offre:" minWidth="100"/>
+            <TextField fx:id="offreField" prefWidth="400" promptText="Entrez l'offre (optionnel)"/>
+        </HBox>
+
+        <HBox spacing="10" alignment="CENTER">
+            <Button fx:id="modifierBtn" text="Modifier" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" prefWidth="100"/>
+            <Button fx:id="annulerBtn" text="Annuler" style="-fx-background-color: #757575; -fx-text-fill: white;" prefWidth="100"/>
+        </HBox>
+    </VBox>
+</AnchorPane>
