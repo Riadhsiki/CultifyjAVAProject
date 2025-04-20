@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.user.HomeController">
+
+   <center>
+      <AnchorPane prefHeight="400.0" prefWidth="600.0">
+         <children>
+            <Button fx:id="eventButton" layoutX="218.0" layoutY="212.0" mnemonicParsing="false" text="Event" />
+            <Button layoutX="467.0" layoutY="212.0" mnemonicParsing="false" text="Ensyclopedie" />
+            <Button layoutX="312.0" layoutY="212.0" mnemonicParsing="false" text="Gestion Reclamation" />
+            <Button fx:id="userManagementButton" layoutX="40.0" layoutY="212.0" mnemonicParsing="false" onAction="#handleUserManagementButtonAction" text="UserManagement" />
+            <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="225.0" layoutY="27.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../../Users/Manel/Desktop/img/LogoCultify.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
+   </center>
+</BorderPane>

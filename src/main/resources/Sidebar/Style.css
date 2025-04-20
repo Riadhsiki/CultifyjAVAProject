@@ -1,0 +1,113 @@
+/* Conteneur principal de la sidebar */
+.sidebar-main {
+    -fx-background-color: linear-gradient(to bottom, #F4EFE4, #EFD093 120%);
+}
+
+/* Définition de la couleur de texte personnalisée */
+.root {
+    -text-color: #333; /* Couleur de texte sombre par défaut */
+    -hover-color: #CD6155; /* Exemple de couleur pour le hover */
+    -delete-color: #C0392B; /* Exemple de couleur pour le bouton de déconnexion au survol */
+}
+
+.sidebar-container {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 10 0;
+}
+
+/* Conteneur du logo */
+.logo-container {
+    -fx-background-color: rgba(255, 255, 255, 0.3);
+    -fx-background-radius: 0 0 20 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 3);
+    -fx-padding: 15;
+}
+
+/* Boutons de la sidebar */
+.sidebar-button {
+    -fx-background-color: rgba(239, 208, 147, 0.7);
+    -fx-background-radius: 15;
+    -fx-text-fill: -text-color;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 3, 0, 0, 1);
+    -fx-cursor: hand;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: -hover-color;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
+}
+
+.sidebar-button:pressed {
+    -fx-background-color: derive(-primary-color, -15%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 0);
+}
+
+/* Style pour le bouton actif/sélectionné */
+.sidebar-button.active {
+    -fx-background-color: -hover-color;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+}
+
+/* Conteneur des sous-menus */
+.submenu-container {
+    -fx-background-color: rgba(255, 255, 255, 0.3);
+    -fx-background-radius: 10;
+    -fx-padding: 5;
+    -fx-spacing: 5;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 3, 0, 0, 1);
+}
+
+/* Boutons des sous-menus */
+.submenu-button {
+    -fx-background-color: rgba(186, 198, 192, 0.7);
+    -fx-background-radius: 10;
+    -fx-text-fill: -text-color;
+    -fx-font-size: 12px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 5 10 5 20;
+    -fx-cursor: hand;
+}
+
+.submenu-button:hover {
+    -fx-background-color: rgba(186, 198, 192, 0.9);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);
+}
+
+/* Bouton de déconnexion */
+.logout-button {
+    -fx-background-color: rgba(255, 255, 255, 0.8);
+    -fx-background-radius: 20;
+    -fx-text-fill: -text-color;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+    -fx-cursor: hand;
+}
+
+.logout-button:hover {
+    -fx-background-color: -delete-color;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+}
+/* Style pour les en-têtes triables */
+.sortable-header {
+    -fx-cursor: hand;
+    -fx-underline: false;
+    -fx-font-weight: bold;
+}
+
+.sortable-header:hover {
+    -fx-underline: true;
+    -fx-text-fill: #EFD093;
+}
+
+/* Style pour mettre en évidence l'en-tête de tri actuel */
+.header-label {
+    -fx-padding: 5 10 5 10;
+}

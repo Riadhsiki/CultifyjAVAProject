@@ -2,7 +2,7 @@ package Main;
 
 import java.sql.Connection;
 
-import Utils.DataSource;
+import utils.DataSource;
 
 public class Main {
 

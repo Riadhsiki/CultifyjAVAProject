@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import java.net.URL?>
+
+
+<BorderPane xmlns="http://javafx.com/javafx/21.0.2"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.Sidebar.SidebarController"
+            prefHeight="400.0" prefWidth="250.0">
+
+    <stylesheets>
+
+        <URL value="@/Sidebar/Style.css" />
+    </stylesheets>
+
+    <center>
+        <VBox alignment="TOP_CENTER" prefHeight="800.0" prefWidth="250.0" spacing="10.0"
+              styleClass="sidebar-container">
+
+            <!-- Logo section -->
+            <VBox alignment="CENTER" prefHeight="150.0" prefWidth="250.0"
+                  styleClass="logo-container">
+                <children>
+                    <ImageView fx:id="logoImageView"
+                               fitHeight="100.0"
+                               fitWidth="200.0"
+                               onMouseClicked="#navigateToHome"
+                               pickOnBounds="true"
+                               preserveRatio="true">
+                        <image>
+
+                            <Image url="@/images/LogoCultify.png" />
+                        </image>
+                    </ImageView>
+                </children>
+            </VBox>
+
+            <!-- User Management Section -->
+            <Button fx:id="btnUserManagement"
+                    mnemonicParsing="false"
+                    onAction="#toggleUserManagementSubmenu"
+                    prefHeight="50.0"
+                    prefWidth="220.0"
+                    styleClass="sidebar-button"
+                    text="User Management" />
+
+
+            <VBox fx:id="userManagementSubmenu"
+                  managed="false"
+                  prefHeight="0.0"
+                  prefWidth="220.0"
+                  styleClass="submenu-container"
+                  visible="false">
+                <children>
+                    <Button mnemonicParsing="false"
+                            onAction="#navigateToAddUser"
+                            prefHeight="40.0"
+                            prefWidth="200.0"
+                            styleClass="submenu-button"
+                            text="Add User" />
+                    <Button mnemonicParsing="false"
+                            onAction="#navigateToUserList"
+                            prefHeight="40.0"
+                            prefWidth="200.0"
+                            styleClass="submenu-button"
+                            text="User List" />
+                </children>
+            </VBox>
+
+            <!-- Spacer -->
+            <VBox VBox.vgrow="ALWAYS" />
+
+            <!-- Logout Button -->
+            <Button fx:id="btnLogout"
+                    mnemonicParsing="false"
+                    onAction="#logOut"
+                    prefHeight="50.0"
+                    prefWidth="220.0"
+                    styleClass="logout-button"
+                    text="DÉCONNEXION">
+                <VBox.margin>
+                    <Insets bottom="20.0" />
+                </VBox.margin>
+            </Button>
+        </VBox>
+    </center>
+</BorderPane>
