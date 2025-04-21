@@ -3,11 +3,12 @@
     -fx-background-color: linear-gradient(to bottom, #F4EFE4, #EFD093 120%);
 }
 
-/* Définition de la couleur de texte personnalisée */
+/* Définition des couleurs personnalisées */
 .root {
     -text-color: #333; /* Couleur de texte sombre par défaut */
     -hover-color: #CD6155; /* Exemple de couleur pour le hover */
     -delete-color: #C0392B; /* Exemple de couleur pour le bouton de déconnexion au survol */
+    -primary-color: #EFD093; /* Couleur primaire pour derive() */
 }
 
 .sidebar-container {
