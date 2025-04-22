@@ -1,4 +1,4 @@
-package services;
+package services.Auth;
 
 import models.User;
 import services.user.UserService;

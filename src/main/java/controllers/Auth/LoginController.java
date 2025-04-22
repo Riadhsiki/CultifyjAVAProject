@@ -11,6 +11,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import services.Auth.AuthenticationService;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -67,7 +68,7 @@ public class LoginController {
      */
     @FXML
     private void navigateToRegister(ActionEvent event) throws IOException {
-        Parent registerParent = FXMLLoader.load(getClass().getResource("/register.fxml"));
+        Parent registerParent = FXMLLoader.load(getClass().getResource("/Auth/register.fxml"));
         Scene registerScene = new Scene(registerParent);
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();

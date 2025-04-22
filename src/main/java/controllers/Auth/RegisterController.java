@@ -1,5 +1,6 @@
 package controllers.Auth;
 
+import controllers.Auth.SessionManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,7 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import models.User;
-import services.user.UserRegistrationService;
+import services.Auth.UserRegistrationService;
 
 import java.io.IOException;
 import java.sql.Date;

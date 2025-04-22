@@ -6,7 +6,7 @@ import java.util.List;
 public interface Service<T> {
     public void add(T t) throws SQLException;
 
-    public void update(T t) throws SQLException;
+    public boolean update(T t) throws SQLException;
 
     public void delete(T t) throws SQLException;
 
