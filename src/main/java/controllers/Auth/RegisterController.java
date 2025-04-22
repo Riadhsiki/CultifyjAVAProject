@@ -117,7 +117,7 @@ public class RegisterController {
      */
     @FXML
     private void navigateToLogin(ActionEvent event) throws IOException {
-        Parent loginParent = FXMLLoader.load(getClass().getResource("/login.fxml"));
+        Parent loginParent = FXMLLoader.load(getClass().getResource("/Auth/login.fxml"));
         Scene loginScene = new Scene(loginParent);
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();

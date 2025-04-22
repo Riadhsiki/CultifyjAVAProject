@@ -88,7 +88,7 @@ public class LoginController {
      * Navigate to dashboard
      */
     private void navigateToDashboard(ActionEvent event) throws IOException {
-        Parent dashboardParent = FXMLLoader.load(getClass().getResource("/dashboard.fxml"));
+        Parent dashboardParent = FXMLLoader.load(getClass().getResource("/userinterfaces/AfficherUsers.fxml"));
         Scene dashboardScene = new Scene(dashboardParent);
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
