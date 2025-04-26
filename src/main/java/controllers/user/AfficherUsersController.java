@@ -1,5 +1,8 @@
 package controllers.user;
 
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import models.User;
 import services.user.UserService;
 import javafx.collections.FXCollections;
@@ -14,6 +17,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Pos;
+import utils.SessionManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -178,5 +182,46 @@ public class AfficherUsersController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    @FXML
+    private void navigateToProfile(ActionEvent event) {
+        if (!SessionManager.getInstance().isLoggedIn()) {
+            // Optional: redirect to login or show alert
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Non connecté");
+            alert.setHeaderText("Vous devez être connecté pour accéder à votre profil.");
+            alert.setContentText("Veuillez vous connecter d'abord.");
+            alert.showAndWait();
+
+            // Optionally redirect to login
+            try {
+                Parent loginParent = FXMLLoader.load(getClass().getResource("/Auth/Login.fxml"));
+                Scene loginScene = new Scene(loginParent);
+                Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                currentStage.setScene(loginScene);
+                currentStage.centerOnScreen();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return;
+        }
+
+        // If user is logged in, proceed to profile
+        try {
+            Parent profileParent = FXMLLoader.load(getClass().getResource("/Auth/Profile.fxml"));
+            Scene profileScene = new Scene(profileParent);
+            Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            currentStage.setScene(profileScene);
+            currentStage.centerOnScreen();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Navigation Error");
+            alert.setHeaderText("Failed to load profile view");
+            alert.setContentText("An error occurred: " + e.getMessage());
+            alert.showAndWait();
+        }
     }
 }

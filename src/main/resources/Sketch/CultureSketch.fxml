@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.effect.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controllers.sketch.CultureSketchController"
+            minWidth="600.0" minHeight="400.0"
+            style="-fx-background-color: linear-gradient(to bottom right, #f0f8ff, #e6f2ff);">
+    <top>
+        <VBox spacing="10" style="-fx-background-color: #4a86e8; -fx-background-radius: 0 0 10 10;">
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
+            <Label text="CultureSketch Studio" style="-fx-text-fill: white;">
+                <font>
+                    <Font name="System Bold" size="24"/>
+                </font>
+                <effect>
+                    <DropShadow color="#00000066" radius="3" spread="0.1"/>
+                </effect>
+            </Label>
+            <Label text="Express your cultural creativity through digital art" style="-fx-text-fill: #f0f8ff;">
+                <font>
+                    <Font size="14"/>
+                </font>
+            </Label>
+        </VBox>
+    </top>
+
+    <center>
+        <SplitPane dividerPositions="0.65" style="-fx-background-color: transparent;" BorderPane.alignment="CENTER">
+            <!-- Left side - Drawing area and controls -->
+            <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background: transparent;">
+                <content>
+                    <VBox spacing="15" style="-fx-background-color: white; -fx-background-radius: 10;"
+                          minWidth="300.0" prefWidth="600.0" maxWidth="800.0"
+                          alignment="TOP_CENTER">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+
+                        <HBox spacing="10" alignment="CENTER_LEFT"
+                              style="-fx-background-color: #f5f5f5; -fx-background-radius: 5; -fx-padding: 8;">
+                            <Label text="Drawing Tools:" style="-fx-font-weight: bold"/>
+                            <ComboBox fx:id="shapeTypeComboBox" prefWidth="110" promptText="Shape"/>
+                            <Separator orientation="VERTICAL"/>
+                            <Label text="Color:"/>
+                            <ColorPicker fx:id="colorPicker"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button fx:id="clearButton" text="New Sketch"
+                                    style="-fx-background-color: #e74c3c; -fx-text-fill: white;">
+                                <effect>
+                                    <InnerShadow choke="0.1" radius="3" width="2" height="2" color="#00000066"/>
+                                </effect>
+                            </Button>
+                        </HBox>
+
+                        <Label text="Canvas" style="-fx-font-weight: bold; -fx-text-fill: #4a86e8;"/>
+
+                        <StackPane VBox.vgrow="ALWAYS">
+                            <Canvas fx:id="drawingCanvas"/>
+                            <effect>
+                                <DropShadow color="#00000040" radius="5" spread="0.05"/>
+                            </effect>
+                            <style>
+                                -fx-background-color: white;
+                                -fx-border-color: #cccccc;
+                                -fx-border-width: 1px;
+                                -fx-border-radius: 5px;
+                            </style>
+                        </StackPane>
+
+                        <TitledPane text="Sketch Details" expanded="true" style="-fx-font-weight: bold;">
+                            <content>
+                                <GridPane hgap="10" vgap="10">
+                                    <padding>
+                                        <Insets top="10" right="10" bottom="10" left="10"/>
+                                    </padding>
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="NEVER" minWidth="100"/>
+                                        <ColumnConstraints hgrow="ALWAYS"/>
+                                    </columnConstraints>
+
+                                    <Label text="Title:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                    <TextField fx:id="titleField" promptText="Enter a title for your sketch"
+                                               GridPane.rowIndex="0" GridPane.columnIndex="1"
+                                               GridPane.hgrow="ALWAYS"/>
+
+                                    <Label text="Description:" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                                           GridPane.valignment="TOP"/>
+                                    <TextArea fx:id="descriptionArea" prefHeight="80"
+                                              promptText="Describe your sketch..."
+                                              GridPane.rowIndex="1" GridPane.columnIndex="1"
+                                              GridPane.hgrow="ALWAYS"/>
+
+                                    <Label text="Associated:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                                    <HBox spacing="10" alignment="CENTER_LEFT"
+                                          GridPane.rowIndex="2" GridPane.columnIndex="1">
+                                        <ComboBox fx:id="entityTypeComboBox" prefWidth="150" promptText="Entity Type"/>
+                                        <Label text="ID:"/>
+                                        <TextField fx:id="entityIdField" prefWidth="100" promptText="Entity ID"/>
+                                    </HBox>
+
+                                    <CheckBox fx:id="isPublicCheckBox" text="Make this sketch public"
+                                              GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                                    <Button fx:id="saveButton" text="Save Sketch"
+                                            style="-fx-background-color: #27ae60; -fx-text-fill: white;"
+                                            GridPane.rowIndex="4" GridPane.columnIndex="1">
+                                        <font>
+                                            <Font name="System Bold" size="12"/>
+                                        </font>
+                                        <effect>
+                                            <InnerShadow choke="0.1" radius="3" width="2" height="2" color="#00000066"/>
+                                        </effect>
+                                    </Button>
+                                </GridPane>
+                            </content>
+                        </TitledPane>
+                    </VBox>
+                </content>
+            </ScrollPane>
+
+            <!-- Right side - Sketch list -->
+            <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background: transparent;">
+                <content>
+                    <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 10;"
+                          minWidth="200.0" prefWidth="300.0" maxWidth="400.0"
+                          alignment="TOP_CENTER">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+                        <Label text="My Sketches" style="-fx-font-weight: bold; -fx-text-fill: #4a86e8;">
+                            <font>
+                                <Font size="16"/>
+                            </font>
+                        </Label>
+                        <ListView fx:id="sketchListView" VBox.vgrow="ALWAYS" minHeight="100.0"/>
+                        <HBox spacing="10" alignment="CENTER_RIGHT">
+                            <Button fx:id="exportButton" text="Export"
+                                    style="-fx-background-color: #3498db; -fx-text-fill: white;">
+                                <effect>
+                                    <InnerShadow choke="0.1" radius="3" width="2" height="2" color="#00000066"/>
+                                </effect>
+                            </Button>
+                            <Button fx:id="shareButton" text="Share"
+                                    style="-fx-background-color: #9b59b6; -fx-text-fill: white;">
+                                <effect>
+                                    <InnerShadow choke="0.1" radius="3" width="2" height="2" color="#00000066"/>
+                                </effect>
+                            </Button>
+                            <Button fx:id="viewAllSketchesButton" text="View All Sketches"
+                                    style="-fx-background-color: #f39c12; -fx-text-fill: white;"
+                                    onAction="#handleViewAllSketches">
+                                <font>
+                                    <Font name="System Bold" size="12"/>
+                                </font>
+                                <effect>
+                                    <InnerShadow choke="0.1" radius="3" width="2" height="2" color="#00000066"/>
+                                </effect>
+                                <padding>
+                                    <Insets top="6" right="10" bottom="6" left="10"/>
+                                </padding>
+                            </Button>
+                        </HBox>
+                    </VBox>
+                </content>
+            </ScrollPane>
+        </SplitPane>
+    </center>
+
+    <bottom>
+        <HBox style="-fx-background-color: #f5f5f5; -fx-padding: 5;" alignment="CENTER_RIGHT">
+            <Label text="© 2025 CultureSketch Studio" style="-fx-text-fill: #888888;"/>
+        </HBox>
+    </bottom>
+</BorderPane>

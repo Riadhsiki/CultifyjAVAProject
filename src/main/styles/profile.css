@@ -1,0 +1,101 @@
+/* Main container styling */
+.main-pane {
+    -fx-background-color: #f5f5f5;
+}
+
+/* Header styling */
+.header-pane {
+    -fx-background-color: #2c3e50;
+    -fx-padding: 15px;
+}
+
+.header-pane Label {
+    -fx-text-fill: white;
+}
+
+/* Field containers */
+.field-container {
+    -fx-background-color: white;
+    -fx-background-radius: 5px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 5px;
+    -fx-padding: 5px 10px;
+}
+
+/* Password section */
+.password-section {
+    -fx-background-color: #f9f9f9;
+    -fx-background-radius: 5px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 5px;
+    -fx-padding: 10px;
+    -fx-margin-top: 10px;
+}
+
+.section-title {
+    -fx-text-fill: #2c3e50;
+}
+
+/* Form fields */
+TextField, PasswordField {
+    -fx-background-color: white;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 3px;
+    -fx-padding: 5px;
+}
+
+.disabled-field {
+    -fx-background-color: #f0f0f0;
+    -fx-text-fill: #555555;
+}
+
+/* Error and success messages */
+.error-message {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.success-message {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+/* Buttons */
+Button {
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+}
+
+.primary-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+}
+
+.primary-button:hover {
+    -fx-background-color: #2980b9;
+}
+
+.secondary-button {
+    -fx-background-color: #95a5a6;
+    -fx-text-fill: white;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #7f8c8d;
+}
+
+.warning-button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+}
+
+.warning-button:hover {
+    -fx-background-color: #c0392b;
+}
+
+/* Button container */
+.button-container {
+    -fx-background-color: #ecf0f1;
+    -fx-padding: 15px;
+}

@@ -1,17 +1,21 @@
-package services.Auth;
+package services.auth;
 
 import models.User;
 import services.user.UserService;
 import utils.PasswordHasher;
+import utils.EmailSender;
 
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class UserRegistrationService {
 
     private final UserService userService;
+    private final EmailSender emailSender;
 
     public UserRegistrationService() {
         this.userService = new UserService();
+        this.emailSender = new EmailSender();
     }
 
     /**
@@ -29,12 +33,41 @@ public class UserRegistrationService {
             return false;
         }
 
+        // Generate verification token
+        String verificationToken = UUID.randomUUID().toString();
+        user.setVerificationToken(verificationToken);
+        user.setVerified(false);
+
         // Hash the password before storing
         String hashedPassword = PasswordHasher.hash(user.getPassword());
         user.setPassword(hashedPassword);
 
         // Create the user in the database
-        return userService.create(user);
+        boolean created = userService.create(user);
+        
+        if (created) {
+            // Send verification email
+            String verificationLink = "http://yourdomain.com/verify?token=" + verificationToken;
+            String emailBody = "Please click the following link to verify your email: " + verificationLink;
+            emailSender.sendEmail(user.getEmail(), "Email Verification", emailBody);
+        }
+        
+        return created;
+    }
+
+    /**
+     * Verify user's email using the verification token
+     * @param token The verification token
+     * @return true if verification successful, false otherwise
+     */
+    public boolean verifyEmail(String token) throws SQLException {
+        User user = userService.getByVerificationToken(token);
+        if (user != null) {
+            user.setVerified(true);
+            user.setVerificationToken(null);
+            return userService.update(user);
+        }
+        return false;
     }
 
     /**

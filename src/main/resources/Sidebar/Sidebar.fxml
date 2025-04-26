@@ -8,14 +8,12 @@
 <?import javafx.scene.layout.VBox?>
 <?import java.net.URL?>
 
-
 <BorderPane xmlns="http://javafx.com/javafx/21.0.2"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controllers.Sidebar.SidebarController"
+            fx:controller="controllers.sidebar.SidebarController"
             prefHeight="400.0" prefWidth="250.0">
 
     <stylesheets>
-
         <URL value="@/Sidebar/Style.css" />
     </stylesheets>
 
@@ -34,7 +32,6 @@
                                pickOnBounds="true"
                                preserveRatio="true">
                         <image>
-
                             <Image url="@/images/LogoCultify.png" />
                         </image>
                     </ImageView>
@@ -49,7 +46,6 @@
                     prefWidth="220.0"
                     styleClass="sidebar-button"
                     text="User Management" />
-
 
             <VBox fx:id="userManagementSubmenu"
                   managed="false"
@@ -72,6 +68,19 @@
                             text="User List" />
                 </children>
             </VBox>
+
+            <!-- Profile Button -->
+            <Button fx:id="btnProfile"
+                    mnemonicParsing="false"
+                    onAction="#navigateToProfile"
+                    prefHeight="50.0"
+                    prefWidth="220.0"
+                    styleClass="sidebar-button"
+                    text="My Profile">
+                <VBox.margin>
+                    <Insets top="20.0" bottom="20.0" />
+                </VBox.margin>
+            </Button>
 
             <!-- Spacer -->
             <VBox VBox.vgrow="ALWAYS" />

@@ -17,7 +17,7 @@ public class Home extends Application {
     public void start(Stage primaryStage) {
         try {
             // Load the FXML file from resources root
-            Parent root = FXMLLoader.load(getClass().getResource("/Auth/Login.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/sketch/CultureSketch.fxml"));
 
             // Create scene with default size
             Scene scene = new Scene(root, 600, 400);

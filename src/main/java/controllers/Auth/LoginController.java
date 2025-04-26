@@ -11,7 +11,11 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import services.Auth.AuthenticationService;
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
+import services.auth.AuthenticationService;
+import utils.DataSource;
+import utils.SessionManager;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -24,43 +28,91 @@ public class LoginController {
     @FXML private Text errorMessage;
     @FXML private Text successMessage;
 
-    private final AuthenticationService authService = new AuthenticationService();
+    private final AuthenticationService authService;
+    private static final int SESSION_TIMEOUT_MINUTES = 30;
+
+    public LoginController() {
+        // Initialize AuthenticationService with database connection
+        this.authService = new AuthenticationService(DataSource.getInstance().getConnection());
+    }
 
     /**
      * Handle login button click
      */
     @FXML
     private void handleLogin(ActionEvent event) {
-        // Clear previous messages
         hideMessages();
 
-        String username = usernameField.getText().trim();
+        String loginInput = usernameField.getText().trim();
         String password = passwordField.getText();
         boolean rememberMe = rememberMeCheckbox.isSelected();
 
-        // Basic validation
-        if (username.isEmpty() || password.isEmpty()) {
-            showError("Username and password are required");
+        // Enhanced validation
+        if (loginInput.isEmpty()) {
+            showError("Username/Email is required");
+            return;
+        }
+
+        if (password.isEmpty()) {
+            showError("Password is required");
+            return;
+        }
+
+        // Validate email format if input contains @
+        if (loginInput.contains("@")) {
+            if (!isValidEmail(loginInput)) {
+                showError("Please enter a valid email address");
+                return;
+            }
+        }
+
+        // Validate password length
+        if (password.length() < 8) {
+            showError("Password must be at least 8 characters long");
             return;
         }
 
         try {
-            // Attempt to login
-            String sessionToken = authService.login(username, password);
+            // Get client IP address
+            String ipAddress = "127.0.0.1"; // Default to localhost for now
+            // In a real application, you would get this from the request
+            
+            // Attempt to login with either username or email
+            String sessionToken = authService.loginWithUsernameOrEmail(loginInput, password, ipAddress);
 
             if (sessionToken != null) {
-                // Save the session token (could use preferences or local storage)
+                // Save session with timeout
                 SessionManager.getInstance().setSessionToken(sessionToken, rememberMe);
-                SessionManager.getInstance().setCurrentUsername(username);
+                SessionManager.getInstance().setCurrentUsername(loginInput);
+                SessionManager.getInstance().setSessionTimeout(SESSION_TIMEOUT_MINUTES);
 
-                // Navigate to dashboard
-                navigateToDashboard(event);
+                showSuccess("Login successful! Redirecting...");
+
+                // Add a small delay before redirecting
+                PauseTransition pause = new PauseTransition(Duration.seconds(1));
+                pause.setOnFinished(e -> {
+                    try {
+                        navigateToDashboard(event);
+                    } catch (IOException ex) {
+                        showError("Error navigating to dashboard: " + ex.getMessage());
+                    }
+                });
+                pause.play();
             } else {
-                showError("Invalid username or password");
+                showError("Invalid username/email or password");
             }
-        } catch (SQLException | IOException e) {
-            showError("An error occurred: " + e.getMessage());
+        } catch (SecurityException e) {
+            showError(e.getMessage());
+        } catch (SQLException e) {
+            showError("Database error: " + e.getMessage());
+        } catch (Exception e) {
+            showError("An unexpected error occurred: " + e.getMessage());
         }
+    }
+
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        return email.matches(emailRegex);
     }
 
     /**
@@ -81,20 +133,30 @@ public class LoginController {
      */
     @FXML
     private void navigateToForgotPassword(ActionEvent event) throws IOException {
-        // Implement forgot password navigation if needed
+        // TODO: Implement forgot password functionality
+        showError("Forgot password functionality coming soon!");
     }
 
     /**
      * Navigate to dashboard
      */
     private void navigateToDashboard(ActionEvent event) throws IOException {
-        Parent dashboardParent = FXMLLoader.load(getClass().getResource("/userinterfaces/AfficherUsers.fxml"));
-        Scene dashboardScene = new Scene(dashboardParent);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/userinterfaces/AfficherUsers.fxml"));
+            Parent dashboardParent = loader.load();
 
-        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        window.setScene(dashboardScene);
-        window.setTitle("Dashboard");
-        window.show();
+            // Here you can pass the session to the next controller if needed
+            // UserDashboardController controller = loader.getController();
+            // controller.initData(SessionManager.getInstance().getSessionToken());
+
+            Scene dashboardScene = new Scene(dashboardParent);
+            Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            window.setScene(dashboardScene);
+            window.setTitle("Dashboard");
+            window.show();
+        } catch (IOException e) {
+            throw new IOException("Failed to load dashboard: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -104,6 +166,8 @@ public class LoginController {
         errorMessage.setText(message);
         errorMessage.setVisible(true);
         errorMessage.setManaged(true);
+        successMessage.setVisible(false);
+        successMessage.setManaged(false);
     }
 
     /**
@@ -113,6 +177,8 @@ public class LoginController {
         successMessage.setText(message);
         successMessage.setVisible(true);
         successMessage.setManaged(true);
+        errorMessage.setVisible(false);
+        errorMessage.setManaged(false);
     }
 
     /**
@@ -131,25 +197,38 @@ public class LoginController {
      */
     @FXML
     private void initialize() {
-        // Check if there's a success message from registration
+        // Check for saved session
+        if (SessionManager.getInstance().isLoggedIn()) {
+            try {
+                String sessionToken = SessionManager.getInstance().getSessionToken();
+                String ipAddress = "127.0.0.1"; // Same default as above
+                if (sessionToken != null && authService.isAuthenticated(sessionToken, ipAddress)) {
+                    showSuccess("Welcome back! Redirecting to dashboard...");
+
+                    PauseTransition pause = new PauseTransition(Duration.seconds(1));
+                    pause.setOnFinished(e -> {
+                        try {
+                            navigateToDashboard(new ActionEvent(usernameField, null));
+                        } catch (IOException ex) {
+                            showError("Error redirecting to dashboard: " + ex.getMessage());
+                        }
+                    });
+                    pause.play();
+                } else {
+                    // Clear invalid session
+                    SessionManager.getInstance().clearSession();
+                }
+            } catch (Exception e) {
+                showError("Session validation error: " + e.getMessage());
+                SessionManager.getInstance().clearSession();
+            }
+        }
+
+        // Check for registration success message
         String message = SessionManager.getInstance().getTemporaryMessage();
         if (message != null && !message.isEmpty()) {
             showSuccess(message);
             SessionManager.getInstance().clearTemporaryMessage();
-        }
-
-        // Check if there's a saved session and auto-login
-        String sessionToken = SessionManager.getInstance().getSessionToken();
-        if (sessionToken != null && !sessionToken.isEmpty()) {
-            try {
-                if (authService.isAuthenticated(sessionToken)) {
-                    // Auto-login
-                    // Note: In a real app, you might want to show a loading screen
-                    // or ask for confirmation instead of auto-login
-                }
-            } catch (Exception e) {
-                // If auto-login fails, just show the login screen
-            }
         }
     }
 }

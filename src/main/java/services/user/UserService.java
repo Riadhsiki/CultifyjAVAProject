@@ -196,4 +196,34 @@ public class UserService implements Service<User> {
             return rowsAffected > 0;
         }
     }
+
+    public User getUserByUsername(String username) {
+        String query = "SELECT * FROM user WHERE username = ?";
+        try (PreparedStatement pst = con.prepareStatement(query)) {
+            pst.setString(1, username);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToUser(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        return null;
+    }
+
+    public User getByVerificationToken(String token) throws SQLException {
+        String query = "SELECT * FROM user WHERE verification_token = ?";
+        try (PreparedStatement pst = con.prepareStatement(query)) {
+            pst.setString(1, token);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToUser(rs);
+                }
+            }
+        }
+        return null;
+    }
+
 }

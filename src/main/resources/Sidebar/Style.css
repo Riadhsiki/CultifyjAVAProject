@@ -5,12 +5,13 @@
 
 /* Définition des couleurs personnalisées */
 .root {
-    -text-color: #333; /* Couleur de texte sombre par défaut */
-    -hover-color: #CD6155; /* Exemple de couleur pour le hover */
-    -delete-color: #C0392B; /* Exemple de couleur pour le bouton de déconnexion au survol */
-    -primary-color: #EFD093; /* Couleur primaire pour derive() */
+    -text-color: #333333; /* Explicit hex for text color */
+    -hover-color: #CD6155; /* Kept for reference */
+    -delete-color: #C0392B; /* Kept for reference */
+    -primary-color: #EFD093; /* Kept for reference */
 }
 
+/* Conteneur de la sidebar */
 .sidebar-container {
     -fx-background-color: transparent;
     -fx-padding: 0 0 10 0;
@@ -38,19 +39,19 @@
 }
 
 .sidebar-button:hover {
-    -fx-background-color: -hover-color;
+    -fx-background-color: #CD6155;
     -fx-text-fill: white;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
 }
 
 .sidebar-button:pressed {
-    -fx-background-color: derive(-primary-color, -15%);
+    -fx-background-color: derive(#EFD093, -15%);
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 0);
 }
 
 /* Style pour le bouton actif/sélectionné */
 .sidebar-button.active {
-    -fx-background-color: -hover-color;
+    -fx-background-color: #CD6155;
     -fx-text-fill: white;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
 }
@@ -92,10 +93,11 @@
 }
 
 .logout-button:hover {
-    -fx-background-color: -delete-color;
+    -fx-background-color: #C0392B;
     -fx-text-fill: white;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
 }
+
 /* Style pour les en-têtes triables */
 .sortable-header {
     -fx-cursor: hand;

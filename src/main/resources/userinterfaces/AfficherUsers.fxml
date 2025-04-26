@@ -6,6 +6,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
@@ -22,7 +23,15 @@
                         <Font name="System Bold" size="14.0"/>
                     </font>
                 </Text>
-                <Button fx:id="addUserButton" layoutX="25.0" layoutY="50.0" mnemonicParsing="false" onAction="#openAddUserPage" text="Ajouter Utilisateur" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="50.0"/>
+
+                <!-- Button Container -->
+                <HBox layoutX="25.0" layoutY="50.0" spacing="10.0" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="50.0">
+                    <children>
+                        <Button fx:id="addUserButton" mnemonicParsing="false" onAction="#openAddUserPage" text="Ajouter Utilisateur"/>
+                        <Button fx:id="profileButton" mnemonicParsing="false" onAction="#navigateToProfile" text="Mon Profil"/>
+                    </children>
+                </HBox>
+
                 <ScrollPane layoutX="25.0" layoutY="90.0" prefHeight="385.0" prefWidth="750.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="90.0">
                     <content>
                         <ListView fx:id="userListView" prefHeight="385.0" prefWidth="750.0"/>
