@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.EncyclopediaReaderController"
+            style="-fx-padding: 20;">
+
+    <top>
+        <HBox style="-fx-padding: 10; -fx-background-color: #2e86c1;">
+            <Button text="Retour" onAction="#handleBack" style="-fx-text-fill: white;"/>
+            <Label fx:id="titleLabel" style="-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold; -fx-padding: 0 0 0 20;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true">
+            <VBox style="-fx-padding: 20;" spacing="20">
+                <ImageView fx:id="contentImage" fitWidth="400" fitHeight="300" preserveRatio="true"
+                           style="-fx-border-color: #ccc; -fx-border-radius: 5;"/>
+                <Label fx:id="categoryLabel" style="-fx-font-style: italic; -fx-text-fill: #7f8c8d;"/>
+                <TextArea fx:id="contentText" wrapText="true" editable="false"
+                          style="-fx-background-color: transparent; -fx-border-color: transparent;"/>
+            </VBox>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" style="-fx-padding: 10; -fx-background-color: #f4f4f4;">
+            <Button text="Précédent" onAction="#handlePrevious" style="-fx-min-width: 100;"/>
+            <Button text="Suivant" onAction="#handleNext" style="-fx-min-width: 100; -fx-margin: 0 0 0 10;"/>
+        </HBox>
+    </bottom>
+</BorderPane>

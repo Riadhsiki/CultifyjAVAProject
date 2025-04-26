@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.QuestionController"
+            prefHeight="650.0" prefWidth="900.0"
+            style="-fx-padding: 20;">
+
+    <HBox spacing="20" AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20">
+        <!-- Liste des questions -->
+        <VBox spacing="10" prefWidth="300">
+            <Label text="Liste des questions" style="-fx-font-weight: bold; -fx-font-size: 14;"/>
+            <ListView fx:id="listView" prefHeight="550"/>
+            <Button text="Actualiser" onAction="#loadData" style="-fx-base: #4CAF50; -fx-text-fill: white;"/>
+        </VBox>
+
+        <!-- Formulaire d'édition -->
+        <VBox spacing="15" prefWidth="500">
+            <Label text="Gestion des questions" style="-fx-font-weight: bold; -fx-font-size: 16;"/>
+
+            <GridPane hgap="10" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="120" halignment="RIGHT"/>
+                    <ColumnConstraints prefWidth="380" halignment="LEFT"/>
+                </columnConstraints>
+
+                <!-- Quiz -->
+                <Label text="Quiz associé:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <ComboBox fx:id="cbQuiz" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                <Label fx:id="quizError" style="-fx-text-fill: red;" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <!-- Question -->
+                <Label text="Question:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextArea fx:id="txtQuestion" wrapText="true" prefRowCount="2"
+                          GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                <Label fx:id="questionError" style="-fx-text-fill: red;" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <!-- Réponses -->
+                <Label text="Réponse 1:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtReponse1" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                <Label fx:id="reponse1Error" style="-fx-text-fill: red;" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Label text="Réponse 2:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtReponse2" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                <Label fx:id="reponse2Error" style="-fx-text-fill: red;" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                <Label text="Réponse 3:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtReponse3" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                <Label fx:id="reponse3Error" style="-fx-text-fill: red;" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                <!-- Réponse correcte -->
+                <Label text="Réponse correcte:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtReponseCorrecte" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                <Label fx:id="correctError" style="-fx-text-fill: red;" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+            </GridPane>
+
+            <HBox spacing="10" style="-fx-padding: 10 0 0 0;">
+                <Button text="Ajouter" onAction="#handleAdd"
+                        style="-fx-base: #4CAF50; -fx-text-fill: white; -fx-min-width: 80;"/>
+                <Button text="Modifier" onAction="#handleUpdate"
+                        style="-fx-base: #FFC107; -fx-text-fill: black; -fx-min-width: 80;"/>
+                <Button text="Supprimer" onAction="#handleDelete"
+                        style="-fx-base: #F44336; -fx-text-fill: white; -fx-min-width: 80;"/>
+                <Button text="Vider" onAction="#handleClear"
+                        style="-fx-base: #9E9E9E; -fx-text-fill: white; -fx-min-width: 80;"/>
+            </HBox>
+        </VBox>
+    </HBox>
+
+    <style>
+        .button {
+        -fx-font-weight: bold;
+        -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);
+        }
+        .button:hover {
+        -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 0, 2);
+        }
+        .error-field {
+        -fx-border-color: #ff0000;
+        -fx-border-width: 1px;
+        }
+    </style>
+</AnchorPane>

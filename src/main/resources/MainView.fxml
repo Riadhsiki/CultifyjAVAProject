@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.MainController"
+      spacing="20"
+      alignment="CENTER"
+      style="-fx-padding: 30; -fx-background-color: #f4f4f4;">
+
+    <Label text="Application Cultify"
+           style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2e86c1;"/>
+
+    <VBox spacing="10" alignment="CENTER">
+        <Button text="Contenus Multimédia"
+                onAction="#openContenuView"
+                style="-fx-min-width: 200px; -fx-font-size: 14px;"/>
+
+        <Button text="Gestion des Quiz"
+                onAction="#openQuizView"
+                style="-fx-min-width: 200px; -fx-font-size: 14px;"/>
+
+        <Button text="Gestion des Questions"
+                onAction="#openQuestionView"
+                style="-fx-min-width: 200px; -fx-font-size: 14px;"/>
+        <Button text="Encyclopédie (Liste)"
+                onAction="#openEncyclopediaListView"
+                style="-fx-min-width: 200px; -fx-font-size: 14px; -fx-base: #9b59b6;"/>
+
+        <Button text="Encyclopédie (Lecture)"
+                onAction="#openEncyclopediaReaderView"
+                style="-fx-min-width: 200px; -fx-font-size: 14px; -fx-base: #9b59b6;"/>
+    </VBox>
+</VBox>

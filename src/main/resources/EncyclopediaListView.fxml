@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.EncyclopediaListController"
+            style="-fx-padding: 20;">
+
+    <top>
+        <HBox style="-fx-padding: 10; -fx-background-color: #2e86c1;">
+            <Label text="Encyclopédie Cultify" style="-fx-text-fill: white; -fx-font-size: 20; -fx-font-weight: bold;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true">
+            <FlowPane fx:id="contentPane" hgap="20" vgap="20" style="-fx-padding: 20;"/>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" style="-fx-padding: 10; -fx-background-color: #f4f4f4;">
+            <Button text="Retour" onAction="#handleBack" style="-fx-min-width: 100;"/>
+        </HBox>
+    </bottom>
+
+    <style>
+        .content-card {
+        -fx-background-color: white;
+        -fx-background-radius: 5;
+        -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+        -fx-pref-width: 250;
+        -fx-pref-height: 300;
+        }
+        .content-card:hover {
+        -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 15, 0, 0, 0);
+        }
+    </style>
+</BorderPane>
