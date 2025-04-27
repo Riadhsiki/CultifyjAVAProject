@@ -1,133 +1,116 @@
-/* src/main/resources/styles/register.css */
-
-/* Root pane with gradient background */
+/* Root pane with background image */
 .root-pane {
-    -fx-background-color: linear-gradient(to bottom right, #f0f8ff, #e6f2ff);
+    -fx-background-image: url("../images/LogoCultify.png");
+    -fx-background-size: cover;
+    -fx-background-position: center;
 }
 
-/* Main register container */
-.register-container {
-    -fx-alignment: center;
-    -fx-padding: 30;
-}
-
-/* Welcome label */
-.welcome-label {
-    -fx-text-fill: #4a86e8;
-    -fx-font-size: 32px;
-    -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
-}
-
-/* Register card with shadow and rounded corners */
-.register-card {
-    -fx-background-color: white;
-    -fx-background-radius: 15;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0, 0, 5);
-    -fx-padding: 25;
-    -fx-max-width: 450;
-}
-
-/* Input labels */
-.input-label {
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #333333;
-}
-
-/* Input fields (TextField, PasswordField, DatePicker, ComboBox) */
-.input-field {
-    -fx-background-color: #f9f9f9;
-    -fx-background-radius: 8;
-    -fx-border-color: #cccccc;
-    -fx-border-radius: 8;
-    -fx-border-width: 1;
-    -fx-padding: 10;
-    -fx-font-size: 14px;
-    -fx-text-fill: #333333;
-}
-
-.input-field:focused {
-    -fx-border-color: #4a86e8;
-    -fx-border-width: 2;
-}
-
-/* Radio buttons */
-.radio-button {
-    -fx-font-size: 13px;
-    -fx-text-fill: #333333;
-}
-
-/* Secondary button (Browse) */
-.secondary-button {
-    -fx-background-color: #666666;
-    -fx-background-radius: 8;
-    -fx-text-fill: white;
-    -fx-font-size: 13px;
-    -fx-padding: 8;
-    -fx-cursor: hand;
-}
-
-.secondary-button:hover {
-    -fx-background-color: #555555;
-}
-
-.secondary-button:pressed {
-    -fx-background-color: #444444;
-}
-
-/* Primary button (Register) */
-.primary-button {
-    -fx-background-color: #4a86e8;
+/* Form container */
+.form-vbox {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
     -fx-background-radius: 10;
-    -fx-text-fill: white;
-    -fx-font-size: 16px;
+    -fx-padding: 20;
+    -fx-alignment: CENTER;
+}
+
+/* Form title */
+.form-title {
+    -fx-font-size: 24px;
     -fx-font-weight: bold;
-    -fx-padding: 12;
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
+    -fx-text-fill: #333333;
+    -fx-padding: 0 0 20 0;
 }
 
-.primary-button:hover {
-    -fx-background-color: #357abd;
-    -fx-scale-y: 1.05;
-    -fx-scale-x: 1.05;
-    -fx-transition: all 0.2s ease;
+/* Form fields container */
+.form-fields-container {
+    -fx-alignment: CENTER;
 }
 
-.primary-button:pressed {
-    -fx-background-color: #2c6099;
-    -fx-scale-y: 0.95;
-    -fx-scale-x: 0.95;
+/* Profile picture styling */
+.profile-pic {
+    -fx-background-radius: 50%;
+    -fx-clip: new Circle(50, 50, 50); /* Makes the image circular */
 }
 
-/* Error message */
-.error-message {
-    -fx-fill: #e74c3c;
+/* Form labels */
+.form-label {
     -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-opacity: 0;
-    -fx-transition: opacity 0.3s ease;
+    -fx-text-fill: #333333;
+    -fx-pref-width: 120px;
 }
 
-.error-message:visible {
-    -fx-opacity: 1;
+/* Text fields */
+.form-textfield {
+    -fx-background-color: #F5F5F5;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: #E0E0E0;
+    -fx-border-width: 1;
+    -fx-padding: 8;
+    -fx-font-size: 14px;
+    -fx-pref-width: 250px;
 }
 
-/* Hyperlinks */
-.hyperlink {
-    -fx-text-fill: #4a86e8;
-    -fx-font-size: 13px;
+/* Error labels */
+.error-label {
+    -fx-text-fill: #FF0000;
+    -fx-font-size: 12px;
+    -fx-padding: 0 0 0 10;
+}
+
+/* Image preview label */
+.image-preview-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #666666;
+    -fx-padding: 5 0 0 130;
+    -fx-alignment: CENTER;
+}
+
+/* Browse button */
+.browse-button {
+    -fx-background-color: #6C757D;
+    -fx-background-radius: 5;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 12px;
+    -fx-padding: 5 10;
     -fx-cursor: hand;
 }
 
-.hyperlink:hover {
-    -fx-text-fill: #357abd;
-    -fx-underline: true;
+.browse-button:hover {
+    -fx-background-color: #5A6268;
 }
 
-/* Link label */
-.link-label {
-    -fx-font-size: 13px;
-    -fx-text-fill: #666666;
+/* Buttons container */
+.form-buttons-container {
+    -fx-padding: 20 0 0 0;
+}
+
+/* Submit button */
+.form-submit-button {
+    -fx-background-color: #28A745;
+    -fx-background-radius: 5;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.form-submit-button:hover {
+    -fx-background-color: #218838;
+}
+
+/* Cancel button (used for Change Password, Back, Logout) */
+.form-cancel-button {
+    -fx-background-color: #6C757D;
+    -fx-background-radius: 5;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.form-cancel-button:hover {
+    -fx-background-color: #5A6268;
 }

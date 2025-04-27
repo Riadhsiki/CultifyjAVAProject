@@ -5,6 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -17,7 +19,6 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Arrays;
 
 public class RegisterController {
 
@@ -35,17 +36,24 @@ public class RegisterController {
     @FXML private Button browseButton;
     @FXML private ComboBox<String> roleComboBox;
     @FXML private PasswordField passwordField;
+    @FXML private TextField passwordTextField;
     @FXML private PasswordField confirmPasswordField;
+    @FXML private TextField confirmPasswordTextField;
+    @FXML private Button togglePasswordButton;
     @FXML private Text errorMessage;
     @FXML private Text successMessage;
 
     private final UserRegistrationService registrationService = new UserRegistrationService();
+    private boolean isPasswordVisible = false;
 
     @FXML
     private void initialize() {
         // Populate roleComboBox
         roleComboBox.getItems().addAll("User", "Artist", "Organizer");
         roleComboBox.setValue("User");
+
+        // Initialize toggle button with eye icon
+        updateToggleButtonIcon();
     }
 
     @FXML
@@ -77,15 +85,14 @@ public class RegisterController {
         LocalDate dateOfBirth = dateOfBirthPicker.getValue();
         String profilePic = profilePicField.getText().trim();
         String role = roleComboBox.getValue();
-        String password = passwordField.getText();
-        String confirmPassword = confirmPasswordField.getText();
+        String password = isPasswordVisible ? passwordTextField.getText() : passwordField.getText();
+        String confirmPassword = isPasswordVisible ? confirmPasswordTextField.getText() : confirmPasswordField.getText();
 
         // Validate inputs
         if (!validateInputs(prenom, nom, username, email, numTel, gender, dateOfBirth, role, password, confirmPassword)) {
             return;
         }
 
-        // Create User object
         User user = new User();
         user.setPrenom(prenom);
         user.setNom(nom);
@@ -106,7 +113,7 @@ public class RegisterController {
                 successMessage.setVisible(true);
 
                 // Navigate to login
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Auth/login.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/auth/login.fxml"));
                 Parent root = loader.load();
                 Scene scene = new Scene(root);
                 Stage stage = (Stage) usernameField.getScene().getWindow();
@@ -128,7 +135,7 @@ public class RegisterController {
     @FXML
     private void navigateToLogin() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Auth/login.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/auth/login.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             Stage stage = (Stage) usernameField.getScene().getWindow();
@@ -138,6 +145,47 @@ public class RegisterController {
         } catch (IOException e) {
             errorMessage.setText("Navigation error: " + e.getMessage());
             errorMessage.setVisible(true);
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void toggleConfirmPasswordVisibility() {
+        isPasswordVisible = !isPasswordVisible;
+
+        if (isPasswordVisible) {
+            // Show plain text
+            passwordTextField.setText(passwordField.getText());
+            confirmPasswordTextField.setText(confirmPasswordField.getText());
+            passwordTextField.setVisible(true);
+            passwordField.setVisible(false);
+            confirmPasswordTextField.setVisible(true);
+            confirmPasswordField.setVisible(false);
+        } else {
+            // Show password fields
+            passwordField.setText(passwordTextField.getText());
+            confirmPasswordField.setText(confirmPasswordTextField.getText());
+            passwordTextField.setVisible(false);
+            passwordField.setVisible(true);
+            confirmPasswordTextField.setVisible(false);
+            confirmPasswordField.setVisible(true);
+        }
+
+        updateToggleButtonIcon();
+    }
+
+    private void updateToggleButtonIcon() {
+        try {
+            String iconPath = isPasswordVisible ? "/images/eye-off.png" : "/images/eye.png";
+            Image icon = new Image(getClass().getResourceAsStream(iconPath));
+            ImageView imageView = new ImageView(icon);
+            imageView.setFitWidth(20);
+            imageView.setFitHeight(20);
+            togglePasswordButton.setGraphic(imageView);
+        } catch (NullPointerException e) {
+            errorMessage.setText("Error loading toggle icon: Image not found at /images/");
+            errorMessage.setVisible(true);
+            e.printStackTrace();
         }
     }
 

@@ -18,7 +18,10 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import models.CultureSketch;
+import models.User;
+import services.auth.AuthenticationService;
 import services.sketch.CultureSketchService;
+import utils.SessionManager;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -69,25 +72,40 @@ public class CultureSketchController implements Initializable {
     private Button shareButton;
 
     private final CultureSketchService sketchService;
+    private final AuthenticationService authService;
     private GraphicsContext gc;
-    private List<Map<String, Object>> currentShapes; // Fixed generics warning
+    private List<Map<String, Object>> currentShapes;
     private List<String> currentColors;
     private boolean isDrawing = false;
     private double startX, startY;
     private String currentShapeType = "line";
     private CultureSketch currentSketch;
-
-    // Mock user ID (used only for loading sketches, not saving)
-    private final int currentUserId = 1;
+    private User currentUser;
 
     public CultureSketchController() {
         sketchService = new CultureSketchService();
+        authService = AuthenticationService.getInstance();
         currentShapes = new ArrayList<>();
         currentColors = new ArrayList<>();
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Get the current user
+        try {
+            String sessionToken = SessionManager.getInstance().getSessionToken();
+            currentUser = authService.getCurrentUser(sessionToken);
+            if (currentUser == null) {
+                showAlert(Alert.AlertType.ERROR, "Authentication Error", "You must be logged in to create sketches.");
+                navigateToLogin();
+                return;
+            }
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to retrieve current user: " + e.getMessage());
+            navigateToLogin();
+            return;
+        }
+
         // Initialize canvas and graphics context
         gc = drawingCanvas.getGraphicsContext2D();
         setupCanvas();
@@ -166,7 +184,7 @@ public class CultureSketchController implements Initializable {
 
     private void loadSketches() {
         try {
-            List<CultureSketch> userSketches = sketchService.getByUserId(currentUserId);
+            List<CultureSketch> userSketches = sketchService.getByUserId(currentUser.getId());
             sketchListView.setItems(FXCollections.observableArrayList(userSketches));
         } catch (Exception e) {
             e.printStackTrace();
@@ -174,7 +192,7 @@ public class CultureSketchController implements Initializable {
         }
     }
 
-    void loadSketch(CultureSketch sketch) {
+    public void loadSketch(CultureSketch sketch) {
         currentSketch = sketch;
         titleField.setText(sketch.getTitle());
         descriptionArea.setText(sketch.getDescription());
@@ -395,7 +413,7 @@ public class CultureSketchController implements Initializable {
             if (currentSketch == null) {
                 // Create new sketch
                 currentSketch = new CultureSketch();
-                // user_id is set to DEFAULT_USER_ID (1) in CultureSketchService
+                currentSketch.setUserId(currentUser.getId());
                 currentSketch.setTitle(title);
                 currentSketch.setDescription(description);
                 currentSketch.setColors(new ArrayList<>(currentColors));
@@ -628,5 +646,19 @@ public class CultureSketchController implements Initializable {
         }
         WritableImage writableImage = new WritableImage(50, 50);
         thumbnailCanvas.snapshot(null, writableImage);
-        return writableImage ;
-}}
+        return writableImage;
+    }
+
+    private void navigateToLogin() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Auth/Login.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) drawingCanvas.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Login");
+            stage.show();
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Failed to navigate to login: " + e.getMessage());
+        }
+    }
+}

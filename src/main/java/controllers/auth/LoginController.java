@@ -32,21 +32,24 @@ public class LoginController {
     private static final int SESSION_TIMEOUT_MINUTES = 30;
 
     public LoginController() {
-        this.authService = new AuthenticationService(DataSource.getInstance().getConnection());
+        this.authService = AuthenticationService.getInstance();
     }
 
     @FXML
-    private void initialize() {
+    private void initialize() throws SQLException {
+        // Debug session state
+        SessionManager.getInstance().dumpPreferences();
         // Check for saved session
         if (SessionManager.getInstance().isLoggedIn()) {
             String sessionToken = SessionManager.getInstance().getSessionToken();
-            String ipAddress = "127.0.0.1"; // Replace with actual IP retrieval logic
+            String ipAddress = "127.0.0.1";
             if (sessionToken != null && authService.isAuthenticated(sessionToken, ipAddress)) {
                 showSuccess("Welcome back! Redirecting to dashboard...");
                 redirectToDashboardWithDelay(null);
-            } else {
-                SessionManager.getInstance().clearSession();
+                return;
             }
+            // Only clear session if explicitly invalid
+            SessionManager.getInstance().clearSession();
         }
 
         // Check for registration success message
@@ -87,14 +90,14 @@ public class LoginController {
         }
 
         try {
-            String ipAddress = "127.0.0.1"; // Replace with actual IP retrieval
+            String ipAddress = "127.0.0.1";
             String sessionToken = authService.loginWithUsernameOrEmail(loginInput, password, ipAddress);
 
             if (sessionToken != null) {
                 SessionManager.getInstance().setSessionToken(sessionToken, rememberMe);
                 SessionManager.getInstance().setCurrentUsername(loginInput);
                 SessionManager.getInstance().setSessionTimeout(SESSION_TIMEOUT_MINUTES);
-
+                SessionManager.getInstance().dumpPreferences();
                 showSuccess("Login successful! Redirecting...");
                 redirectToDashboardWithDelay(event);
             } else {
@@ -104,8 +107,10 @@ public class LoginController {
             showError(e.getMessage());
         } catch (SQLException e) {
             showError("Database error: " + e.getMessage());
+            e.printStackTrace();
         } catch (Exception e) {
             showError("Unexpected error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -117,7 +122,7 @@ public class LoginController {
     @FXML
     private void navigateToRegister(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Auth/register.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/auth/Register.fxml"));
             if (loader.getLocation() == null) {
                 showError("Registration page not found");
                 return;
@@ -131,53 +136,37 @@ public class LoginController {
             stage.show();
         } catch (IOException e) {
             showError("Failed to load registration page: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     @FXML
     private void navigateToForgotPassword(ActionEvent event) {
         showError("Forgot password functionality coming soon!");
-        // Uncomment when implemented:
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Auth/forgotPassword.fxml"));
-            if (loader.getLocation() == null) {
-                showError("Forgot password page not found");
-                return;
-            }
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-            scene.getStylesheets().add(getClass().getResource("/styles/register.css").toExternalForm());
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-            stage.setTitle("Forgot Password - CultureSketch");
-            stage.show();
-        } catch (IOException e) {
-            showError("Failed to load forgot password page: " + e.getMessage());
-        }
-
     }
 
     private void redirectToDashboardWithDelay(ActionEvent event) {
         PauseTransition pause = new PauseTransition(Duration.seconds(1));
         pause.setOnFinished(e -> {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/userinterfaces/AfficherUsers.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/sidebar/Sidebar.fxml"));
                 if (loader.getLocation() == null) {
                     showError("Dashboard page not found");
                     return;
                 }
                 Parent root = loader.load();
                 Scene scene = new Scene(root);
-                // Add CSS if needed for dashboard
-                // scene.getStylesheets().add(getClass().getResource("/css/dashboard.css").toExternalForm());
                 Stage stage = event != null ?
                         (Stage) ((Node) event.getSource()).getScene().getWindow() :
                         (Stage) usernameField.getScene().getWindow();
                 stage.setScene(scene);
                 stage.setTitle("CultureSketch Dashboard");
                 stage.show();
+                // Debug session state after navigation
+                SessionManager.getInstance().dumpPreferences();
             } catch (IOException ex) {
                 showError("Error navigating to dashboard: " + ex.getMessage());
+                ex.printStackTrace();
             }
         });
         pause.play();

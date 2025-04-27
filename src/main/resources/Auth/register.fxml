@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
+<?import    javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.String?>
@@ -138,8 +138,14 @@
                             <HBox alignment="CENTER_LEFT" spacing="10.0">
                                 <children>
                                     <Label text="Password:*" styleClass="input-label" prefWidth="130.0" />
-                                    <PasswordField fx:id="passwordField" prefWidth="250.0" promptText="At least 8 characters"
-                                                   styleClass="input-field" />
+                                    <VBox>
+                                        <PasswordField fx:id="passwordField" prefWidth="250.0" promptText="At least 8 characters"
+                                                       styleClass="input-field" />
+                                        <TextField fx:id="passwordTextField" prefWidth="250.0" promptText="At least 8 characters"
+                                                   styleClass="input-field" visible="false" />
+                                    </VBox>
+                                    <Button fx:id="togglePasswordButton" onAction="#toggleConfirmPasswordVisibility"
+                                            styleClass="toggle-button" prefWidth="40.0" />
                                 </children>
                             </HBox>
 
@@ -147,8 +153,12 @@
                             <HBox alignment="CENTER_LEFT" spacing="10.0">
                                 <children>
                                     <Label text="Confirm Password:*" styleClass="input-label" prefWidth="130.0" />
-                                    <PasswordField fx:id="confirmPasswordField" prefWidth="250.0" promptText="Re-enter your password"
-                                                   styleClass="input-field" />
+                                    <VBox>
+                                        <PasswordField fx:id="confirmPasswordField" prefWidth="250.0" promptText="Re-enter your password"
+                                                       styleClass="input-field" />
+                                        <TextField fx:id="confirmPasswordTextField" prefWidth="250.0" promptText="Re-enter your password"
+                                                   styleClass="input-field" visible="false" />
+                                    </VBox>
                                 </children>
                             </HBox>
 

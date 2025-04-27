@@ -13,9 +13,7 @@ import java.util.Map;
 public class CultureSketchService {
     private final Gson gson = new Gson();
     private final DataSource dataSource;
-    private static final int DEFAULT_USER_ID = 1; // Hardcoded user_id for testing
 
-    // Constructor to initialize with DataSource
     public CultureSketchService() {
         this.dataSource = DataSource.getInstance();
         initDatabase();
@@ -27,7 +25,6 @@ public class CultureSketchService {
             Connection conn = dataSource.getConnection();
             stmt = conn.createStatement();
 
-            // Create the user table if it doesn't exist
             String createUserTableSQL =
                     "CREATE TABLE IF NOT EXISTS user (" +
                             "id INT PRIMARY KEY AUTO_INCREMENT, " +
@@ -37,14 +34,12 @@ public class CultureSketchService {
                             ") ENGINE=InnoDB";
             stmt.execute(createUserTableSQL);
 
-            // Ensure a test user with DEFAULT_USER_ID exists
             String insertTestUserSQL =
                     "INSERT INTO user (id, username, email, password) " +
                             "SELECT * FROM (SELECT 1, 'testuser', 'test@example.com', 'password') AS tmp " +
                             "WHERE NOT EXISTS (SELECT id FROM user WHERE id = 1) LIMIT 1";
             stmt.execute(insertTestUserSQL);
 
-            // Create the culture_sketches table if it doesn't exist
             String createTableSQL =
                     "CREATE TABLE IF NOT EXISTS culture_sketches (" +
                             "id INT PRIMARY KEY AUTO_INCREMENT, " +
@@ -66,7 +61,6 @@ public class CultureSketchService {
         }
     }
 
-    // Add a new sketch, returns the new ID
     public Integer add(CultureSketch sketch) {
         String sql = "INSERT INTO culture_sketches " +
                 "(user_id, title, description, colors, shape_data, is_public) " +
@@ -79,8 +73,7 @@ public class CultureSketchService {
             Connection conn = dataSource.getConnection();
             pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            // Use hardcoded user_id for testing
-            pstmt.setInt(1, DEFAULT_USER_ID);
+            pstmt.setInt(1, sketch.getUserId());
             pstmt.setString(2, sketch.getTitle());
             pstmt.setString(3, sketch.getDescription());
             pstmt.setString(4, gson.toJson(sketch.getColors()));
@@ -100,10 +93,9 @@ public class CultureSketchService {
         } finally {
             closeResourcesExceptConnection(generatedKeys, pstmt);
         }
-        return null; // Indicate failure
+        return null;
     }
 
-    // Update an existing sketch
     public boolean update(CultureSketch sketch) {
         String sql = "UPDATE culture_sketches SET " +
                 "title = ?, description = ?, colors = ?, shape_data = ?, is_public = ? " +
@@ -121,7 +113,7 @@ public class CultureSketchService {
             pstmt.setString(4, gson.toJson(sketch.getShapeData()));
             pstmt.setBoolean(5, sketch.isPublic());
             pstmt.setInt(6, sketch.getId());
-            pstmt.setInt(7, DEFAULT_USER_ID); // Use hardcoded user_id
+            pstmt.setInt(7, sketch.getUserId());
 
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -133,9 +125,13 @@ public class CultureSketchService {
         }
     }
 
-    // Delete a sketch
     public boolean delete(int id) {
-        String sql = "DELETE FROM culture_sketches WHERE id = ?";
+        CultureSketch sketch = getById(id);
+        if (sketch == null) {
+            return false;
+        }
+
+        String sql = "DELETE FROM culture_sketches WHERE id = ? AND user_id = ?";
 
         PreparedStatement pstmt = null;
 
@@ -144,6 +140,7 @@ public class CultureSketchService {
             pstmt = conn.prepareStatement(sql);
 
             pstmt.setInt(1, id);
+            pstmt.setInt(2, sketch.getUserId());
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error deleting sketch: " + e.getMessage());
@@ -154,7 +151,6 @@ public class CultureSketchService {
         }
     }
 
-    // Get sketch by ID
     public CultureSketch getById(int id) {
         String sql = "SELECT * FROM culture_sketches WHERE id = ?";
 
@@ -180,7 +176,6 @@ public class CultureSketchService {
         return null;
     }
 
-    // Get sketches by user ID
     public List<CultureSketch> getByUserId(int userId) {
         List<CultureSketch> sketches = new ArrayList<>();
         String sql = "SELECT * FROM culture_sketches WHERE user_id = ? ORDER BY created_at DESC";
@@ -192,7 +187,7 @@ public class CultureSketchService {
             Connection conn = dataSource.getConnection();
             pstmt = conn.prepareStatement(sql);
 
-            pstmt.setInt(1, DEFAULT_USER_ID); // Use hardcoded user_id
+            pstmt.setInt(1, userId);
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
@@ -207,7 +202,6 @@ public class CultureSketchService {
         return sketches;
     }
 
-    // Get public sketches
     public List<CultureSketch> getPublicSketches() {
         List<CultureSketch> sketches = new ArrayList<>();
         String sql = "SELECT * FROM culture_sketches WHERE is_public = TRUE ORDER BY created_at DESC";
@@ -232,7 +226,32 @@ public class CultureSketchService {
         return sketches;
     }
 
-    // Helper method to extract sketch from result set
+    public List<Object[]> getPublicSketchesWithUsernames() throws SQLException {
+        List<Object[]> sketches = new ArrayList<>();
+        String sql = "SELECT cs.*, u.username FROM culture_sketches cs " +
+                "JOIN user u ON cs.user_id = u.id " +
+                "WHERE cs.is_public = TRUE " +
+                "ORDER BY cs.created_at DESC";
+
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            Connection conn = dataSource.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                CultureSketch sketch = extractSketchFromResultSet(rs);
+                String username = rs.getString("username");
+                sketches.add(new Object[]{sketch, username});
+            }
+        } finally {
+            closeResourcesExceptConnection(rs, pstmt);
+        }
+        return sketches;
+    }
+
     private CultureSketch extractSketchFromResultSet(ResultSet rs) throws SQLException {
         CultureSketch sketch = new CultureSketch();
         sketch.setId(rs.getInt("id"));
@@ -258,7 +277,6 @@ public class CultureSketchService {
         return sketch;
     }
 
-    // Helper method to close database resources except Connection
     private void closeResourcesExceptConnection(AutoCloseable... resources) {
         for (AutoCloseable resource : resources) {
             if (resource != null && !(resource instanceof Connection)) {

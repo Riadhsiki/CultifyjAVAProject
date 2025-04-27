@@ -1,98 +1,182 @@
 package controllers.sidebar;
 
-import utils.SessionManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
+import services.auth.AuthenticationService;
+import utils.SessionManager;
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class SidebarController {
-    public void navigateToHome(MouseEvent mouseEvent) {
+
+    @FXML private ImageView logoImageView;
+    @FXML private Button btnUserManagement;
+    @FXML private VBox userManagementSubmenu;
+    @FXML private Button btnProfile;
+    @FXML private Button btnBrowseArt;
+    @FXML private Button btnCreateArt;
+    @FXML private Button btnMyPortfolio;
+    @FXML private Button btnLogout;
+
+    private AuthenticationService authService;
+    private static final String LOGIN_FXML = "/auth/Login.fxml";
+
+    @FXML
+    public void initialize() {
+        authService = AuthenticationService.getInstance();
+        userManagementSubmenu.setVisible(false);
+        userManagementSubmenu.setManaged(false);
+        userManagementSubmenu.setPrefHeight(0);
+        SessionManager.getInstance().dumpPreferences();
+        System.out.println("SidebarController initialized");
     }
 
-    public void toggleAssociationAdd(ActionEvent actionEvent) {
+    @FXML
+    private void navigateToHome(ActionEvent event) {
+        navigateTo("/home/Home.fxml", "Home");
     }
 
-    public void navigateToUsersList(ActionEvent actionEvent) {
-    }
-
-    public void toggleUserManagementSubmenu(ActionEvent actionEvent) {
-    }
-
-    public void navigateToAddUser(ActionEvent actionEvent) {
-    }
-
-    public void navigateToUserList(ActionEvent actionEvent) {
-    }
-
-    public void logOut(ActionEvent actionEvent) {
-        try {
-            // Clear session data
-            SessionManager sessionManager = SessionManager.getInstance();
-            sessionManager.clearSession();
-
-            // Show logout confirmation
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Logout Successful");
-            alert.setHeaderText(null);
-            alert.setContentText("You have been successfully logged out.");
-            alert.showAndWait();
-
-            // Load the login view
-            Parent loginParent = FXMLLoader.load(getClass().getResource("/Auth/login.fxml"));
-            Scene loginScene = new Scene(loginParent);
-
-            // Get the current stage (window)
-            Stage currentStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-
-            // Set the new scene (login view)
-            currentStage.setScene(loginScene);
-            currentStage.centerOnScreen();
-
-            // Set a temporary message for the login screen
-            sessionManager.setTemporaryMessage("You have been successfully logged out.");
-
-        } catch (IOException e) {
-            // Handle any errors that occur during view loading
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Logout Failed");
-            alert.setContentText("An error occurred while trying to log out: " + e.getMessage());
-            alert.showAndWait();
+    @FXML
+    private void toggleUserManagementSubmenu(ActionEvent event) {
+        String sessionToken = SessionManager.getInstance().getSessionToken();
+        System.out.println("Toggling User Management - Session Token: " + (sessionToken != null ? sessionToken : "null"));
+        if (!SessionManager.getInstance().isLoggedIn()) {
+            System.out.println("User not authenticated, redirecting to login.");
+            showLoginAlertAndRedirect();
+            return;
         }
+
+        // Temporarily bypass role check for testing
+        // if (!authService.hasRole(sessionToken, "Organisateur")) {
+        //     System.out.println("User does not have 'Organisateur' role.");
+        //     showAlert("Access Denied", "You do not have permission to access User Management.");
+        //     return;
+        // }
+
+        boolean isVisible = userManagementSubmenu.isVisible();
+        userManagementSubmenu.setVisible(!isVisible);
+        userManagementSubmenu.setManaged(!isVisible);
+        userManagementSubmenu.setPrefHeight(isVisible ? 0 : 80);
+        System.out.println("User Management submenu visibility toggled to: " + !isVisible);
+    }
+
+    @FXML
+    private void navigateToAddUser(ActionEvent event) {
+        checkAuthAndNavigate("/userinterfaces/AjouterUser.fxml", "Add User");
+    }
+
+    @FXML
+    private void navigateToUserList(ActionEvent event) {
+        checkAuthAndNavigate("/userinterfaces/AfficherUsers.fxml", "User List");
     }
 
     @FXML
     private void navigateToProfile(ActionEvent event) {
-        try {
-            // Load the profile view
-            Parent profileParent = FXMLLoader.load(getClass().getResource("/Auth/Profile.fxml"));
-            Scene profileScene = new Scene(profileParent);
+        checkAuthAndNavigate("/auth/Profile.fxml", "My Profile");
+    }
 
-            // Get the current stage
-            Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+    @FXML
+    private void navigateToBrowseArt(ActionEvent event) {
+        checkAuthAndNavigate("/sketch/AfficherSketch.fxml", "Browse Art");
+    }
 
-            // Set the new scene
-            currentStage.setScene(profileScene);
+    @FXML
+    private void navigateToCreateArt(ActionEvent event) {
+        checkAuthAndNavigate("/sketch/CultureSketch.fxml", "Create Art");
+    }
 
-            // Optional: Pass the current user data to the profile controller
-            // You would need to implement this based on your session management
+    @FXML
+    private void navigateToMyPortfolio(ActionEvent event) {
+        checkAuthAndNavigate("/sketch/ArtView.fxml", "My Portfolio");
+    }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Handle error appropriately
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Navigation Error");
-            alert.setHeaderText("Failed to load profile view");
-            alert.setContentText("An error occurred: " + e.getMessage());
-            alert.showAndWait();
+    @FXML
+    private void logOut(ActionEvent event) {
+        String sessionToken = SessionManager.getInstance().getSessionToken();
+        System.out.println("Logging out - Session Token: " + (sessionToken != null ? sessionToken : "null"));
+        if (sessionToken != null) {
+            authService.logout(sessionToken);
+            SessionManager.getInstance().clearSession();
+            System.out.println("Session cleared and logged out.");
         }
+        navigateTo(LOGIN_FXML, "Login");
+    }
+
+    private void checkAuthAndNavigate(String fxmlPath, String title) {
+        String sessionToken = SessionManager.getInstance().getSessionToken();
+        String username = SessionManager.getInstance().getCurrentUsername();
+        boolean isLoggedIn = SessionManager.getInstance().isLoggedIn();
+        System.out.println("Checking authentication for navigation to " + title +
+                " - Session Token: " + (sessionToken != null ? sessionToken : "null") +
+                ", Username: " + (username != null ? username : "null") +
+                ", isLoggedIn: " + isLoggedIn);
+        if (sessionToken == null || username == null || !isLoggedIn) {
+            System.out.println("Authentication failed, redirecting to login.");
+            showLoginAlertAndRedirect();
+            return;
+        }
+        try {
+            // Test authentication service
+            System.out.println("Validating user with authService");
+            if (authService.getCurrentUser(sessionToken) == null) {
+                System.out.println("authService.getCurrentUser returned null");
+                showLoginAlertAndRedirect();
+                return;
+            }
+        } catch (SQLException e) {
+            System.out.println("SQLException in authService: " + e.getMessage());
+            showAlert("Error", "Database error during authentication: " + e.getMessage());
+            return;
+        }
+        System.out.println("Authentication successful, navigating to " + title);
+        navigateTo(fxmlPath, title);
+    }
+
+    private void navigateTo(String fxmlPath, String title) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            if (loader.getLocation() == null) {
+                System.out.println("FXML resource not found: " + fxmlPath);
+                showAlert("Navigation Error", "Failed to load view: " + fxmlPath);
+                return;
+            }
+            Parent root = loader.load();
+            Stage stage = (Stage) btnLogout.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle(title);
+            stage.centerOnScreen();
+            stage.show();
+            System.out.println("Navigated to " + title);
+            SessionManager.getInstance().dumpPreferences();
+        } catch (IOException e) {
+            System.out.println("IOException during navigation to " + fxmlPath + ": " + e.getMessage());
+            showAlert("Navigation Error", "Failed to load view: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void showLoginAlertAndRedirect() {
+        showAlert("Not Logged In", "You must be logged in to access this page.");
+        navigateTo(LOGIN_FXML, "Login");
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private String getClientIp() {
+        return "127.0.0.1";
     }
 }

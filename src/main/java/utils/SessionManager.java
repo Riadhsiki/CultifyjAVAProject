@@ -84,7 +84,7 @@ public class SessionManager {
         if (minutes > 0) {
             long expirationTime = Instant.now().plusSeconds(minutes * 60L).toEpochMilli();
             prefs.putLong(PREF_TIMEOUT, expirationTime);
-            System.out.println("Session timeout set to: " + minutes + " minutes");
+            System.out.println("Session timeout set to: " + minutes + " minutes (expires at: " + expirationTime + ")");
         } else {
             prefs.remove(PREF_TIMEOUT);
             System.out.println("Session timeout cleared");
@@ -95,25 +95,19 @@ public class SessionManager {
     public boolean isLoggedIn() {
         String token = getSessionToken();
         String username = getCurrentUsername();
+        long expirationTime = prefs.getLong(PREF_TIMEOUT, 0);
         boolean hasSession = token != null && !token.isEmpty();
         boolean hasUsername = username != null && !username.isEmpty();
-
-        // Check session timeout
-        long expirationTime = prefs.getLong(PREF_TIMEOUT, 0);
         boolean isValidSession = hasSession && hasUsername && (expirationTime == 0 || Instant.now().toEpochMilli() < expirationTime);
 
         System.out.println("Session check - Has token: " + hasSession + ", Has username: " + hasUsername +
-                ", Valid session: " + isValidSession);
-
-        if (!isValidSession && hasSession) {
-            clearSession();
-        }
+                ", Valid session: " + isValidSession + ", Expiration: " + expirationTime);
 
         return isValidSession;
     }
 
     public void clearSession() {
-        System.out.println("Clearing session");
+        System.out.println("Clearing session at: " + new java.util.Date());
         prefs.remove(PREF_SESSION_TOKEN);
         prefs.remove(PREF_REMEMBER_ME);
         prefs.remove(PREF_USERNAME);
@@ -135,6 +129,7 @@ public class SessionManager {
         try {
             prefs.flush();
         } catch (Exception e) {
+            System.err.println("Error flushing preferences: " + e.getMessage());
             e.printStackTrace();
         }
     }

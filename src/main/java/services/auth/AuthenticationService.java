@@ -6,40 +6,51 @@ import utils.DataSource;
 import utils.PasswordHasher;
 
 import java.security.SecureRandom;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AuthenticationService {
-    private final Map<String, SessionInfo> activeSessions;
-    private static final int SESSION_TIMEOUT_MINUTES = 30;
+    private static final AuthenticationService instance = new AuthenticationService(DataSource.getInstance().getConnection());
     private final Connection con;
     private final UserService userService;
     private final Map<String, LoginAttempt> loginAttempts;
+    private static final int SESSION_TIMEOUT_MINUTES = 60; // Match LoginController
     private static final int MAX_LOGIN_ATTEMPTS = 5;
     private static final int LOCKOUT_DURATION_MINUTES = 15;
     private static final int RATE_LIMIT_WINDOW_MINUTES = 1;
     private static final int MAX_REQUESTS_PER_WINDOW = 3;
 
-    // Constructor with connection
-    public AuthenticationService(Connection con) {
-        this.con = con;
-        this.activeSessions = new HashMap<>();
+    public AuthenticationService(Connection connection) {
+        this.con = connection;
         this.userService = new UserService();
         this.loginAttempts = new HashMap<>();
+        initializeDatabase();
     }
 
-    // Default constructor using DataSource
-    public AuthenticationService() {
-        this(DataSource.getInstance().getConnection());
+    public static AuthenticationService getInstance() {
+        return instance;
+    }
+
+    private void initializeDatabase() {
+        try (Statement stmt = con.createStatement()) {
+            String createSessionTableSQL = "CREATE TABLE IF NOT EXISTS sessions (" +
+                    "session_token VARCHAR(255) PRIMARY KEY, " +
+                    "user_id INT NOT NULL, " +
+                    "ip_address VARCHAR(45), " +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                    "expires_at TIMESTAMP, " +
+                    "FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE" +
+                    ") ENGINE=InnoDB";
+            stmt.execute(createSessionTableSQL);
+        } catch (SQLException e) {
+            System.err.println("Error initializing sessions table: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public String loginWithUsernameOrEmail(String loginInput, String password, String ipAddress) throws SQLException {
-        // Check for login attempts
         LoginAttempt attempt = loginAttempts.get(loginInput);
         if (attempt != null) {
             if (attempt.isLocked()) {
@@ -50,169 +61,144 @@ public class AuthenticationService {
             }
         }
 
-        // Get user from database
-        User user = null;
-        String query = "SELECT * FROM user WHERE username = ? OR email = ?";
-
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setString(1, loginInput);
-            stmt.setString(2, loginInput);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                user = new User();
-                user.setId(rs.getInt("id"));
-                user.setUsername(rs.getString("username"));
-                user.setEmail(rs.getString("email"));
-                user.setPassword(rs.getString("password"));
-                // Set other fields as needed
-            }
+        User user = userService.getByUsername(loginInput);
+        if (user == null) {
+            user = userService.getByEmail(loginInput);
         }
 
         if (user == null) {
             recordFailedAttempt(loginInput);
+            System.out.println("Login failed: User not found for " + loginInput);
             return null;
         }
 
-        // Verify password
         if (!verifyPassword(password, user.getPassword())) {
             recordFailedAttempt(loginInput);
+            System.out.println("Login failed: Incorrect password for " + loginInput);
             return null;
         }
 
-        // Clear login attempts on successful login
         loginAttempts.remove(loginInput);
-
-        // Generate session token
         String sessionToken = generateSessionToken();
-
-        // Store session info
-        SessionInfo sessionInfo = new SessionInfo(user.getId(), System.currentTimeMillis(), ipAddress);
-        activeSessions.put(sessionToken, sessionInfo);
-
+        createSession(sessionToken, user.getId(), ipAddress);
         System.out.println("Login successful for user: " + user.getUsername());
         System.out.println("Generated session token: " + sessionToken);
-
         return sessionToken;
     }
 
-    /**
-     * Log out the user by invalidating their session token
-     * @param sessionToken The session token to invalidate
-     * @return true if logout was successful, false otherwise
-     */
     public boolean logout(String sessionToken) {
-        if (sessionToken != null && activeSessions.containsKey(sessionToken)) {
-            activeSessions.remove(sessionToken);
-            return true;
+        String sql = "DELETE FROM sessions WHERE session_token = ?";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setString(1, sessionToken);
+            int rowsAffected = pstmt.executeUpdate();
+            System.out.println("Logged out session: " + sessionToken + ", Rows affected: " + rowsAffected);
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Error logging out session " + sessionToken + ": " + e.getMessage());
+            return false;
         }
-        return false;
     }
 
-    /**
-     * Get the currently authenticated user based on session token
-     * @param sessionToken The session token
-     * @return The authenticated User object or null if session is invalid
-     */
     public User getCurrentUser(String sessionToken) throws SQLException {
-        if (sessionToken == null || !activeSessions.containsKey(sessionToken)) {
-            return null; // Invalid or expired session
-        }
-
-        SessionInfo sessionInfo = activeSessions.get(sessionToken);
-
-        // Check if session has expired
-        long currentTime = System.currentTimeMillis();
-        long sessionDuration = currentTime - sessionInfo.getCreationTime();
-        if (sessionDuration > SESSION_TIMEOUT_MINUTES * 60 * 1000) {
-            activeSessions.remove(sessionToken); // Remove expired session
+        if (sessionToken == null) {
+            System.out.println("No session token provided");
             return null;
         }
 
-        // Refresh session time (optional)
-        sessionInfo.setCreationTime(currentTime);
-
-        // Get user by ID
-        String query = "SELECT * FROM user WHERE id = ?";
-        try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setInt(1, sessionInfo.getUserId());
-            ResultSet rs = stmt.executeQuery();
-
+        String sql = "SELECT u.id, u.username, u.email, u.roles " +
+                "FROM user u JOIN sessions s ON u.id = s.user_id " +
+                "WHERE s.session_token = ? AND (s.expires_at IS NULL OR s.expires_at > CURRENT_TIMESTAMP)";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setString(1, sessionToken);
+            ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 User user = new User();
                 user.setId(rs.getInt("id"));
                 user.setUsername(rs.getString("username"));
                 user.setEmail(rs.getString("email"));
-                // Set other fields as needed
+                user.setRoles(rs.getString("roles"));
+                System.out.println("Retrieved user: " + user.getUsername() + " for session token: " + sessionToken);
                 return user;
             }
         }
-
+        System.out.println("No valid session found for token: " + sessionToken);
         return null;
     }
 
-    /**
-     * Check if a user is authenticated
-     * @param sessionToken The session token
-     * @return true if authenticated, false otherwise
-     */
-    public boolean isAuthenticated(String sessionToken, String currentIpAddress) {
-        try {
-            SessionInfo sessionInfo = activeSessions.get(sessionToken);
-            if (sessionInfo == null) {
-                return false;
-            }
-            
-            // Check if IP address matches
-            if (!sessionInfo.getIpAddress().equals(currentIpAddress)) {
-                activeSessions.remove(sessionToken);
-                return false;
-            }
-            
-            return getCurrentUser(sessionToken) != null;
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public boolean isAuthenticated(String sessionToken, String currentIpAddress) throws SQLException {
+        if (sessionToken == null) {
+            System.out.println("No session token provided");
             return false;
         }
+
+        String sql = "SELECT user_id, ip_address, expires_at FROM sessions WHERE session_token = ?";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setString(1, sessionToken);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                Timestamp expiresAt = rs.getTimestamp("expires_at");
+                boolean isValid = expiresAt == null || expiresAt.after(new Timestamp(System.currentTimeMillis()));
+                if (!isValid) {
+                    System.out.println("Session expired for token: " + sessionToken);
+                    return false;
+                }
+                // Optionally re-enable IP check with proper handling
+                /*
+                String storedIp = rs.getString("ip_address");
+                if (!currentIpAddress.equals(storedIp)) {
+                    System.out.println("IP mismatch for session token: " + sessionToken + ", stored: " + storedIp + ", current: " + currentIpAddress);
+                    return false;
+                }
+                */
+                System.out.println("Session validated for token: " + sessionToken);
+                return true;
+            }
+        }
+        System.out.println("Session token not found: " + sessionToken);
+        return false;
     }
 
-    /**
-     * Check if a user has a specific role
-     * @param sessionToken The session token
-     * @param role The role to check
-     * @return true if the user has the role, false otherwise
-     */
     public boolean hasRole(String sessionToken, String role) throws SQLException {
         User user = getCurrentUser(sessionToken);
-        return user != null && user.getRoles() != null && user.getRoles().contains(role);
+        if (user == null || user.getRoles() == null) {
+            System.out.println("No user or roles found for session token: " + sessionToken);
+            return false;
+        }
+        boolean hasRole = user.getRoles().contains(role);
+        System.out.println("Role check for " + role + " on token " + sessionToken + ": " + hasRole);
+        return hasRole;
     }
 
-    /**
-     * Generate a random session token
-     * @return A secure random token
-     */
     private String generateSessionToken() {
         SecureRandom random = new SecureRandom();
         byte[] bytes = new byte[32];
         random.nextBytes(bytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+        String token = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+        System.out.println("Generated session token: " + token);
+        return token;
     }
 
-    /**
-     * Verify a password against stored password
-     * In a real application, you would use a proper password hashing algorithm
-     * @param inputPassword The password provided during login
-     * @param storedPassword The password stored in the database
-     * @return true if password matches, false otherwise
-     */
     private boolean verifyPassword(String inputPassword, String storedPassword) {
-        // This is just a placeholder - replace with your actual implementation
-        // Ideally use PasswordHasher.verify if implemented
         try {
-            return PasswordHasher.verify(inputPassword, storedPassword);
+            boolean verified = PasswordHasher.verify(inputPassword, storedPassword);
+            System.out.println("Password verification: " + (verified ? "success" : "failure"));
+            return verified;
         } catch (Exception e) {
-            // As a fallback, do direct comparison (not secure, just for development)
-            return inputPassword.equals(storedPassword);
+            System.err.println("Error verifying password: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private void createSession(String sessionToken, int userId, String ipAddress) throws SQLException {
+        String sql = "INSERT INTO sessions (session_token, user_id, ip_address, expires_at) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setString(1, sessionToken);
+            pstmt.setInt(2, userId);
+            pstmt.setString(3, ipAddress);
+            Timestamp expiresAt = new Timestamp(System.currentTimeMillis() + SESSION_TIMEOUT_MINUTES * 60 * 1000);
+            pstmt.setTimestamp(4, expiresAt);
+            pstmt.executeUpdate();
+            System.out.println("Created session for user ID: " + userId + " with token: " + sessionToken);
         }
     }
 
@@ -226,23 +212,21 @@ public class AuthenticationService {
         }
 
         loginAttempts.put(loginInput, attempt);
+        System.out.println("Recorded failed login attempt for: " + loginInput + ", Attempts: " + attempt.getAttempts());
     }
 
     public boolean initiatePasswordReset(String email) {
+        // Placeholder for future implementation
+        System.out.println("Password reset requested for email: " + email);
         return false;
     }
 
-    /**
-     * Inner class to store session information
-     */
     private static class SessionInfo {
         private final int userId;
-        private long creationTime;
         private final String ipAddress;
 
-        public SessionInfo(int userId, long creationTime, String ipAddress) {
+        public SessionInfo(int userId, String ipAddress) {
             this.userId = userId;
-            this.creationTime = creationTime;
             this.ipAddress = ipAddress;
         }
 
@@ -250,16 +234,8 @@ public class AuthenticationService {
             return userId;
         }
 
-        public long getCreationTime() {
-            return creationTime;
-        }
-
         public String getIpAddress() {
             return ipAddress;
-        }
-
-        public void setCreationTime(long creationTime) {
-            this.creationTime = creationTime;
         }
     }
 
@@ -280,12 +256,9 @@ public class AuthenticationService {
 
         public void incrementAttempts() {
             long currentTime = System.currentTimeMillis();
-            
-            // Check if we're in a new rate limit window
             if (currentTime - lastAttemptTime > RATE_LIMIT_WINDOW_MINUTES * 60 * 1000) {
                 requestsInWindow = 0;
             }
-            
             requestsInWindow++;
             lastAttemptTime = currentTime;
             attempts++;

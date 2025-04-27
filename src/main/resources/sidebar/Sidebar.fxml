@@ -11,7 +11,8 @@
 <BorderPane xmlns="http://javafx.com/javafx/21.0.2"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controllers.sidebar.SidebarController"
-            prefHeight="400.0" prefWidth="250.0">
+            prefHeight="800.0" prefWidth="250.0"
+            styleClass="sidebar-main">
 
     <stylesheets>
         <URL value="@/sidebar/Style.css" />
@@ -79,6 +80,43 @@
                     text="My Profile">
                 <VBox.margin>
                     <Insets top="20.0" bottom="20.0" />
+                </VBox.margin>
+            </Button>
+
+            <!-- New Art-Related Buttons -->
+            <Button fx:id="btnBrowseArt"
+                    mnemonicParsing="false"
+                    onAction="#navigateToBrowseArt"
+                    prefHeight="50.0"
+                    prefWidth="220.0"
+                    styleClass="sidebar-button"
+                    text="Browse Art">
+                <VBox.margin>
+                    <Insets bottom="10.0" />
+                </VBox.margin>
+            </Button>
+
+            <Button fx:id="btnCreateArt"
+                    mnemonicParsing="false"
+                    onAction="#navigateToCreateArt"
+                    prefHeight="50.0"
+                    prefWidth="220.0"
+                    styleClass="sidebar-button"
+                    text="Create Art">
+                <VBox.margin>
+                    <Insets bottom="10.0" />
+                </VBox.margin>
+            </Button>
+
+            <Button fx:id="btnMyPortfolio"
+                    mnemonicParsing="false"
+                    onAction="#navigateToMyPortfolio"
+                    prefHeight="50.0"
+                    prefWidth="220.0"
+                    styleClass="sidebar-button"
+                    text="My Portfolio">
+                <VBox.margin>
+                    <Insets bottom="20.0" />
                 </VBox.margin>
             </Button>
 

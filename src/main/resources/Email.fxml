@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="controllers.TestEmailController"
+      spacing="20"
+      alignment="CENTER"
+      style="-fx-padding: 50;">
+
+    <Button text="Send Test Email" onAction="#handleSendEmail" prefWidth="200"/>
+
+</VBox>

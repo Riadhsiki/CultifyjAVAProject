@@ -18,6 +18,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Pos;
 import utils.SessionManager;
+import javafx.collections.transformation.FilteredList;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,10 +27,18 @@ import java.text.SimpleDateFormat;
 
 public class AfficherUsersController {
 
-    @FXML
-    private ListView<User> userListView;
+    @FXML private ListView<User> userListView;
+    @FXML private TextField searchField;
+    @FXML private Button addUserButton;
+    @FXML private Button profileButton;
+    @FXML private Button viewDetailsButton;
 
     private ObservableList<User> userList;
+    private FilteredList<User> filteredUserList;
+    private static final String ADD_USER_FXML = "/userinterfaces/AjouterUser.fxml";
+    private static final String PROFILE_FXML = "/Auth/Profile.fxml";
+    private static final String LOGIN_FXML = "/Auth/Login.fxml";
+    private static final String DETAIL_USER_FXML = "/userinterfaces/DetailUser.fxml";
 
     @FXML
     public void initialize() {
@@ -37,8 +46,32 @@ public class AfficherUsersController {
         userList = FXCollections.observableArrayList();
         loadUsers();
 
+        // Set up filtered list for search functionality
+        filteredUserList = new FilteredList<>(userList, p -> true);
+        userListView.setItems(filteredUserList);
+
+        // Add listener to search field to filter users by username
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredUserList.setPredicate(user -> {
+                if (newValue == null || newValue.trim().isEmpty()) {
+                    return true; // Show all users if search is empty
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+                return user.getUsername().toLowerCase().contains(lowerCaseFilter);
+            });
+        });
+
+        // Add tooltips to buttons
+        addUserButton.setTooltip(new Tooltip("Add a new user to the system"));
+        profileButton.setTooltip(new Tooltip("View your profile"));
+        viewDetailsButton.setTooltip(new Tooltip("View details of the selected user"));
+
+        // Enable viewDetailsButton only when a user is selected
+        userListView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            viewDetailsButton.setDisable(newSelection == null);
+        });
+
         // Set the custom cell factory for the ListView
-        userListView.setItems(userList);
         userListView.setCellFactory(param -> new ListCell<User>() {
             @Override
             protected void updateItem(User user, boolean empty) {
@@ -61,9 +94,19 @@ public class AfficherUsersController {
                     profileImageView.setFitWidth(50);
                     profileImageView.setFitHeight(50);
                     profileImageView.setPreserveRatio(true);
-                    File imgFile = new File(user.getProfilePicture());
-                    if (imgFile.exists()) {
-                        profileImageView.setImage(new Image(imgFile.toURI().toString()));
+                    String profilePicPath = user.getProfilePicture();
+                    if (profilePicPath != null && !profilePicPath.isEmpty()) {
+                        File imgFile = new File(profilePicPath);
+                        if (imgFile.exists()) {
+                            profileImageView.setImage(new Image(imgFile.toURI().toString()));
+                        } else {
+                            // Load a default image
+                            try {
+                                profileImageView.setImage(new Image("file:src/main/resources/images/default.jpg"));
+                            } catch (Exception e) {
+                                System.err.println("Default image not found: " + e.getMessage());
+                            }
+                        }
                     }
 
                     // User info labels
@@ -85,7 +128,7 @@ public class AfficherUsersController {
                     selectButton.setOnAction(e -> navigateToDetailsSafe(user));
 
                     Button modifyButton = new Button("Modifier");
-                    modifyButton.setOnAction(e -> navigateToDetailsSafe(user));
+                    modifyButton.setOnAction(e -> navigateToDetailsSafe(user)); // Same navigation as "Voir Détails"
 
                     Button deleteButton = new Button("Supprimer");
                     deleteButton.setOnAction(e -> confirmAndDelete(user));
@@ -124,10 +167,29 @@ public class AfficherUsersController {
     }
 
     @FXML
-    private void openAddUserPage(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/userinterfaces/AjouterUser.fxml"));
-        Parent root = loader.load();
-        userListView.getScene().setRoot(root);
+    private void openAddUserPage(ActionEvent event) {
+        navigateTo(ADD_USER_FXML, "CultureSketch - Add User", event);
+    }
+
+    @FXML
+    private void navigateToProfile(ActionEvent event) {
+        if (!SessionManager.getInstance().isLoggedIn()) {
+            showErrorAlert("Non connecté", "Vous devez être connecté pour accéder à votre profil. Veuillez vous connecter d'abord.");
+            navigateTo(LOGIN_FXML, "CultureSketch - Login", event);
+            return;
+        }
+
+        navigateTo(PROFILE_FXML, "CultureSketch - Profile", event);
+    }
+
+    @FXML
+    private void viewSelectedUserDetails(ActionEvent event) {
+        User selectedUser = userListView.getSelectionModel().getSelectedItem();
+        if (selectedUser != null) {
+            navigateToDetailsSafe(selectedUser);
+        } else {
+            showErrorAlert("Aucune sélection", "Veuillez sélectionner un utilisateur pour voir les détails.");
+        }
     }
 
     private void navigateToDetailsSafe(User user) {
@@ -161,11 +223,34 @@ public class AfficherUsersController {
     }
 
     private void navigateToDetails(User user) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/userinterfaces/DetailUser.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(DETAIL_USER_FXML));
         Parent root = loader.load();
         DetailsUserController detailController = loader.getController();
-        detailController.setUserDetails(user);
-        userListView.getScene().setRoot(root);
+        detailController.setUserDetails(user); // Pass the user to the details controller
+        Stage stage = (Stage) userListView.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.setTitle("CultureSketch - User Details");
+        stage.centerOnScreen();
+        stage.show();
+    }
+
+    private void navigateTo(String fxmlPath, String title, ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            if (loader.getLocation() == null) {
+                showErrorAlert("Navigation Error", "Failed to load view: " + fxmlPath);
+                return;
+            }
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.setTitle(title);
+            stage.centerOnScreen();
+            stage.show();
+        } catch (IOException e) {
+            showErrorAlert("Navigation Error", "Failed to load view: " + e.getMessage());
+        }
     }
 
     private void showErrorAlert(String title, String message) {
@@ -182,46 +267,5 @@ public class AfficherUsersController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
-    }
-
-    @FXML
-    private void navigateToProfile(ActionEvent event) {
-        if (!SessionManager.getInstance().isLoggedIn()) {
-            // Optional: redirect to login or show alert
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Non connecté");
-            alert.setHeaderText("Vous devez être connecté pour accéder à votre profil.");
-            alert.setContentText("Veuillez vous connecter d'abord.");
-            alert.showAndWait();
-
-            // Optionally redirect to login
-            try {
-                Parent loginParent = FXMLLoader.load(getClass().getResource("/Auth/Login.fxml"));
-                Scene loginScene = new Scene(loginParent);
-                Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                currentStage.setScene(loginScene);
-                currentStage.centerOnScreen();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return;
-        }
-
-        // If user is logged in, proceed to profile
-        try {
-            Parent profileParent = FXMLLoader.load(getClass().getResource("/Auth/Profile.fxml"));
-            Scene profileScene = new Scene(profileParent);
-            Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            currentStage.setScene(profileScene);
-            currentStage.centerOnScreen();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Navigation Error");
-            alert.setHeaderText("Failed to load profile view");
-            alert.setContentText("An error occurred: " + e.getMessage());
-            alert.showAndWait();
-        }
     }
 }

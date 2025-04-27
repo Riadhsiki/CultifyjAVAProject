@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.regex.Pattern;
 
 public class ForgotPasswordController {
-
+/**
     @FXML private TextField emailField;
     @FXML private Button submitButton;
     @FXML private Text errorMessage;
@@ -105,5 +105,5 @@ public class ForgotPasswordController {
         errorMessage.setManaged(false);
         successMessage.setVisible(false);
         successMessage.setManaged(false);
-    }
+    }**/
 }

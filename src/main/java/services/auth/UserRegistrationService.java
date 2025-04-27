@@ -3,29 +3,19 @@ package services.auth;
 import models.User;
 import services.user.UserService;
 import utils.PasswordHasher;
-import utils.EmailSender;
-import utils.VerificationService;
-import utils.SessionManager;
 
 import java.sql.SQLException;
-import java.util.UUID;
 
 public class UserRegistrationService {
 
     private final UserService userService;
-    private final EmailSender emailSender;
-    private final VerificationService verificationService;
-    private final SessionManager sessionManager;
 
     public UserRegistrationService() {
         this.userService = new UserService();
-        this.emailSender = new EmailSender();
-        this.verificationService = new VerificationService();
-        this.sessionManager = SessionManager.getInstance();
     }
 
     /**
-     * Register a new user and send welcome email
+     * Register a new user
      * @param user The User object with registration details
      * @return true if registration successful, false otherwise
      */
@@ -44,57 +34,7 @@ public class UserRegistrationService {
         user.setPassword(hashedPassword);
 
         // Create the user in the database
-        boolean created = userService.create(user);
-
-        if (created) {
-            // Send welcome email
-            String emailSubject = "Welcome to Cultify!";
-            String emailBody = "Dear " + user.getUsername() + ",\n\n" +
-                    "Welcome to joining us at Cultify! We're excited to have you on board.\n" +
-                    "Explore our platform and start your journey with us today.\n\n" +
-                    "Best regards,\nThe Cultify Team";
-            emailSender.sendEmail(user.getEmail(), emailSubject, emailBody);
-        }
-
-        return created;
-    }
-
-    /**
-     * Log in a user and create session
-     * @param username The username
-     * @param password The password
-     * @return true if login successful, false otherwise
-     */
-    public boolean login(String username, String password) throws SQLException {
-        // Verify credentials
-        if (!userService.verifyPassword(username, password)) {
-            return false;
-        }
-
-        // Get user
-        User user = userService.getByUsername(username);
-        if (user == null) {
-            return false;
-        }
-
-        // Generate session token
-        String sessionToken = UUID.randomUUID().toString();
-
-        // Store session
-        sessionManager.setSessionToken(sessionToken, true); // Remember me enabled
-        sessionManager.setCurrentUsername(username);
-
-        return true;
-    }
-
-    /**
-     * Verify a temporary token (e.g., for future verification needs)
-     * @param token The temporary token
-     * @return true if verification successful, false otherwise
-     */
-    public boolean verifyToken(String token) {
-        String email = verificationService.verifyToken(token);
-        return email != null;
+        return userService.create(user);
     }
 
     /**

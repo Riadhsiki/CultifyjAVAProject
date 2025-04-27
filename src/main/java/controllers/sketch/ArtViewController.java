@@ -1,5 +1,5 @@
 package controllers.sketch;
-import services.user.UserService;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -27,9 +27,13 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import models.Comment;
 import models.CultureSketch;
+import models.Reaction;
 import models.User;
 import services.auth.AuthenticationService;
+import services.comment.CommentService;
+import services.reaction.ReactionService;
 import services.sketch.CultureSketchService;
 import utils.SessionManager;
 
@@ -41,13 +45,12 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class AfficherSketchController implements Initializable {
+public class ArtViewController implements Initializable {
 
     @FXML private Button backButton;
-    @FXML private ComboBox<String> filterComboBox;
-    @FXML private TextField searchField;
     @FXML private TabPane viewTabPane;
     @FXML private TilePane sketchTilePane;
+    @FXML private TilePane publicSketchTilePane;
     @FXML private TableView<CultureSketch> sketchTableView;
     @FXML private TableColumn<CultureSketch, ImageView> thumbnailColumn;
     @FXML private TableColumn<CultureSketch, String> titleColumn;
@@ -58,6 +61,7 @@ public class AfficherSketchController implements Initializable {
     @FXML private Button refreshButton;
     @FXML private VBox detailPane;
     @FXML private Label detailTitle;
+    @FXML private Label detailUsername;
     @FXML private ImageView detailImageView;
     @FXML private TextArea detailDescription;
     @FXML private Label detailCreatedAt;
@@ -66,29 +70,41 @@ public class AfficherSketchController implements Initializable {
     @FXML private Button deleteButton;
     @FXML private Button shareButton;
     @FXML private Button closeDetailButton;
+    @FXML private HBox reactionBox;
+    @FXML private Button likeButton;
+    @FXML private Button loveButton;
+    @FXML private Button ideaButton;
+    @FXML private ScrollPane commentScrollPane;
+    @FXML private VBox commentBox;
+    @FXML private TextArea newCommentArea;
+    @FXML private Button addCommentButton;
 
     private final CultureSketchService sketchService;
-
     private final AuthenticationService authService;
+    private final CommentService commentService;
+    private final ReactionService reactionService;
     private ObservableList<CultureSketch> sketches;
+    private ObservableList<Object[]> publicSketches;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm");
     private CultureSketch selectedSketch;
     private User currentUser;
 
-    public AfficherSketchController() {
+    public ArtViewController() {
         sketchService = new CultureSketchService();
         authService = AuthenticationService.getInstance();
+        commentService = new CommentService();
+        reactionService = new ReactionService();
         sketches = FXCollections.observableArrayList();
+        publicSketches = FXCollections.observableArrayList();
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Get the current user
         try {
             String sessionToken = SessionManager.getInstance().getSessionToken();
             currentUser = authService.getCurrentUser(sessionToken);
             if (currentUser == null) {
-                showAlert(Alert.AlertType.ERROR, "Authentication Error", "You must be logged in to view sketches.");
+                showAlert(Alert.AlertType.ERROR, "Authentication Error", "You must be logged in to view your portfolio.");
                 navigateToLogin();
                 return;
             }
@@ -98,39 +114,23 @@ public class AfficherSketchController implements Initializable {
             return;
         }
 
-        // Initialize filter ComboBox
-        filterComboBox.setItems(FXCollections.observableArrayList(
-                "All Sketches", "My Sketches", "Public Only", "Most Recent", "Oldest First"
-        ));
-        filterComboBox.setValue("All Sketches");
-        filterComboBox.setOnAction(this::handleFilterChange);
-
-        // Initialize search functionality
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> filterSketches());
-
-        // Setup table view
         setupTableView();
-
-        // Set up buttons
         refreshButton.setOnAction(this::handleRefresh);
-        backButton.setOnAction(this::handleBackToCanvas);
+        backButton.setOnAction(this::handleBackButton);
         editButton.setOnAction(this::handleEdit);
         deleteButton.setOnAction(this::handleDelete);
         shareButton.setOnAction(this::handleShare);
-        closeDetailButton.setOnAction(event -> {
-            detailPane.setVisible(false);
-            detailPane.setManaged(false);
-        });
-
-        // Initialize the detail pane
+        closeDetailButton.setOnAction(this::handleCloseDetail);
+        likeButton.setOnAction(this::handleLike);
+        loveButton.setOnAction(this::handleLove);
+        ideaButton.setOnAction(this::handleIdea);
+        addCommentButton.setOnAction(this::handleAddComment);
         setupDetailPane();
-
-        // Load sketches initially
         loadSketches();
+        loadPublicSketches();
     }
 
     private void setupTableView() {
-        // Set up thumbnail column
         thumbnailColumn.setCellValueFactory(param -> {
             ImageView imageView = new ImageView(generateThumbnail(param.getValue()));
             imageView.setFitWidth(80);
@@ -139,13 +139,11 @@ public class AfficherSketchController implements Initializable {
             return new javafx.beans.property.SimpleObjectProperty<>(imageView);
         });
 
-        // Set up other columns
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
         createdAtColumn.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
         publicColumn.setCellValueFactory(new PropertyValueFactory<>("isPublic"));
 
-        // Format the created at column
         createdAtColumn.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(Date item, boolean empty) {
@@ -154,7 +152,6 @@ public class AfficherSketchController implements Initializable {
             }
         });
 
-        // Format the public column
         publicColumn.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(Boolean item, boolean empty) {
@@ -163,7 +160,6 @@ public class AfficherSketchController implements Initializable {
             }
         });
 
-        // Setup actions column
         actionsColumn.setCellFactory(param -> new TableCell<>() {
             private final Button viewBtn = new Button("View");
             private final Button editBtn = new Button("Edit");
@@ -176,7 +172,7 @@ public class AfficherSketchController implements Initializable {
 
                 viewBtn.setOnAction(event -> {
                     CultureSketch sketch = getTableView().getItems().get(getIndex());
-                    showDetailPane(sketch);
+                    showDetailPane(sketch, null);
                 });
 
                 editBtn.setOnAction(event -> {
@@ -195,26 +191,14 @@ public class AfficherSketchController implements Initializable {
             @Override
             protected void updateItem(CultureSketch sketch, boolean empty) {
                 super.updateItem(sketch, empty);
-                if (empty || sketch == null) {
-                    setGraphic(null);
-                    return;
-                }
-                // Only show edit/delete buttons for the current user's sketches
-                boolean isOwnSketch = sketch.getUserId() == currentUser.getId();
-                HBox buttons = new HBox(5);
-                buttons.getChildren().add(viewBtn);
-                if (isOwnSketch) {
-                    buttons.getChildren().addAll(editBtn, deleteBtn);
-                }
-                setGraphic(buttons);
+                setGraphic(empty || sketch == null ? null : new HBox(5, viewBtn, editBtn, deleteBtn));
             }
         });
 
-        // Add row selection listener
         sketchTableView.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     if (newValue != null) {
-                        showDetailPane(newValue);
+                        showDetailPane(newValue, null);
                     }
                 });
     }
@@ -222,71 +206,25 @@ public class AfficherSketchController implements Initializable {
     private void setupDetailPane() {
         detailPane.setVisible(false);
         detailPane.setManaged(false);
+        editButton.setVisible(currentUser != null);
+        deleteButton.setVisible(currentUser != null);
     }
 
     private void loadSketches() {
-        List<CultureSketch> allSketches = sketchService.getPublicSketches();
-        allSketches.addAll(sketchService.getByUserId(currentUser.getId()));
-
-        // Remove duplicates
-        Set<Integer> sketchIds = new HashSet<>();
-        List<CultureSketch> uniqueSketches = new ArrayList<>();
-        for (CultureSketch sketch : allSketches) {
-            if (sketchIds.add(sketch.getId())) {
-                uniqueSketches.add(sketch);
-            }
-        }
-
-        sketches.setAll(uniqueSketches);
-        filterSketches();
+        List<CultureSketch> userSketches = sketchService.getByUserId(currentUser.getId());
+        sketches.setAll(userSketches);
+        updateTableView(userSketches);
+        updateTilePane(userSketches);
     }
 
-    private void filterSketches() {
-        String filter = filterComboBox.getValue();
-        String searchText = searchField.getText().toLowerCase();
-
-        List<CultureSketch> filteredList = new ArrayList<>();
-        for (CultureSketch sketch : sketches) {
-            boolean matchesFilter = true;
-            boolean matchesSearch = true;
-
-            // Apply filter
-            switch (filter) {
-                case "My Sketches":
-                    matchesFilter = sketch.getUserId() == currentUser.getId();
-                    break;
-                case "Public Only":
-                    matchesFilter = sketch.isPublic();
-                    break;
-                case "Most Recent":
-                    filteredList.add(sketch);
-                    filteredList.sort((s1, s2) -> s2.getCreatedAt().compareTo(s1.getCreatedAt()));
-                    matchesFilter = true;
-                    break;
-                case "Oldest First":
-                    filteredList.add(sketch);
-                    filteredList.sort(Comparator.comparing(CultureSketch::getCreatedAt));
-                    matchesFilter = true;
-                    break;
-                case "All Sketches":
-                default:
-                    matchesFilter = true;
-                    break;
-            }
-
-            // Apply search
-            if (!searchText.isEmpty()) {
-                matchesSearch = sketch.getTitle().toLowerCase().contains(searchText) ||
-                        (sketch.getDescription() != null && sketch.getDescription().toLowerCase().contains(searchText));
-            }
-
-            if (matchesFilter && matchesSearch) {
-                filteredList.add(sketch);
-            }
+    private void loadPublicSketches() {
+        try {
+            List<Object[]> publicSketchData = sketchService.getPublicSketchesWithUsernames();
+            publicSketches.setAll(publicSketchData);
+            updatePublicTilePane(publicSketchData);
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load public sketches: " + e.getMessage());
         }
-
-        updateTableView(filteredList);
-        updateTilePane(filteredList);
     }
 
     private void updateTableView(List<CultureSketch> filteredSketches) {
@@ -296,11 +234,20 @@ public class AfficherSketchController implements Initializable {
     private void updateTilePane(List<CultureSketch> filteredSketches) {
         sketchTilePane.getChildren().clear();
         for (CultureSketch sketch : filteredSketches) {
-            sketchTilePane.getChildren().add(createSketchCard(sketch));
+            sketchTilePane.getChildren().add(createSketchCard(sketch, null));
         }
     }
 
-    private VBox createSketchCard(CultureSketch sketch) {
+    private void updatePublicTilePane(List<Object[]> publicSketchData) {
+        publicSketchTilePane.getChildren().clear();
+        for (Object[] data : publicSketchData) {
+            CultureSketch sketch = (CultureSketch) data[0];
+            String username = (String) data[1];
+            publicSketchTilePane.getChildren().add(createSketchCard(sketch, username));
+        }
+    }
+
+    private VBox createSketchCard(CultureSketch sketch, String username) {
         VBox card = new VBox(10);
         card.setPadding(new Insets(10));
         card.setStyle("-fx-background-color: white; -fx-border-color: #dddddd; -fx-border-radius: 5;");
@@ -317,6 +264,12 @@ public class AfficherSketchController implements Initializable {
         titleLabel.setStyle("-fx-text-fill: #4a86e8;");
         titleLabel.setWrapText(true);
         titleLabel.setMaxWidth(200);
+
+        Label usernameLabel = new Label(username != null ? "By: " + username : "");
+        usernameLabel.setFont(Font.font("System", FontWeight.NORMAL, 12));
+        usernameLabel.setStyle("-fx-text-fill: #666666;");
+        usernameLabel.setWrapText(true);
+        usernameLabel.setMaxWidth(200);
 
         Text descText = new Text(sketch.getDescription() != null ? sketch.getDescription() : "");
         descText.setWrappingWidth(200);
@@ -337,12 +290,12 @@ public class AfficherSketchController implements Initializable {
 
         Button viewBtn = new Button("View");
         viewBtn.setStyle("-fx-background-color: #3498db; -fx-text-fill: white;");
-        viewBtn.setOnAction(event -> showDetailPane(sketch));
+        viewBtn.setOnAction(event -> showDetailPane(sketch, username));
 
-        HBox buttonBox = new HBox(10);
-        buttonBox.getChildren().add(viewBtn);
-        // Add edit/delete buttons only for the current user's sketches
-        if (sketch.getUserId() == currentUser.getId()) {
+        HBox buttonBox = new HBox(10, viewBtn);
+        buttonBox.setAlignment(Pos.CENTER);
+
+        if (currentUser != null && sketch.getUserId() == currentUser.getId()) {
             Button editBtn = new Button("Edit");
             editBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white;");
             editBtn.setOnAction(event -> {
@@ -359,10 +312,9 @@ public class AfficherSketchController implements Initializable {
 
             buttonBox.getChildren().addAll(editBtn, deleteBtn);
         }
-        buttonBox.setAlignment(Pos.CENTER);
 
-        card.getChildren().addAll(previewCanvas, titleLabel, descText, dateLabel, statusBox, buttonBox);
-        card.setOnMouseClicked(event -> showDetailPane(sketch));
+        card.getChildren().addAll(previewCanvas, titleLabel, usernameLabel, descText, dateLabel, statusBox, buttonBox);
+        card.setOnMouseClicked(event -> showDetailPane(sketch, username));
 
         return card;
     }
@@ -443,9 +395,10 @@ public class AfficherSketchController implements Initializable {
         return value instanceof Number ? ((Number) value).doubleValue() : 0.0;
     }
 
-    private void showDetailPane(CultureSketch sketch) {
+    private void showDetailPane(CultureSketch sketch, String username) {
         selectedSketch = sketch;
         detailTitle.setText(sketch.getTitle());
+        detailUsername.setText(username != null ? "By: " + username : "");
         detailDescription.setText(sketch.getDescription() != null ? sketch.getDescription() : "");
         detailCreatedAt.setText(dateFormat.format(sketch.getCreatedAt()));
         detailIsPublic.setSelected(sketch.isPublic());
@@ -457,15 +410,70 @@ public class AfficherSketchController implements Initializable {
         detailCanvas.snapshot(null, writableImage);
         detailImageView.setImage(writableImage);
 
-        // Enable edit/delete buttons only if the sketch belongs to the current user
-        boolean isOwnSketch = sketch.getUserId() == currentUser.getId();
-        editButton.setVisible(isOwnSketch);
-        editButton.setManaged(isOwnSketch);
-        deleteButton.setVisible(isOwnSketch);
-        deleteButton.setManaged(isOwnSketch);
+        boolean isOwner = currentUser != null && sketch.getUserId() == currentUser.getId();
+        editButton.setVisible(isOwner);
+        deleteButton.setVisible(isOwner);
+        reactionBox.setVisible(currentUser != null);
+        newCommentArea.setVisible(currentUser != null);
+        addCommentButton.setVisible(currentUser != null);
+
+        updateComments();
+        updateReactions();
 
         detailPane.setVisible(true);
         detailPane.setManaged(true);
+    }
+
+    private void updateComments() {
+        commentBox.getChildren().clear();
+        try {
+            List<Object[]> comments = commentService.getCommentsWithUserInfo(selectedSketch.getId());
+            for (Object[] commentData : comments) {
+                Comment comment = (Comment) commentData[0];
+                String username = (String) commentData[1];
+                VBox commentNode = createCommentNode(comment, username);
+                commentBox.getChildren().add(commentNode);
+            }
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load comments: " + e.getMessage());
+        }
+    }
+
+    private VBox createCommentNode(Comment comment, String username) {
+        VBox commentNode = new VBox(5);
+        commentNode.setPadding(new Insets(5));
+        commentNode.setStyle("-fx-background-color: #f9f9f9; -fx-border-color: #dddddd; -fx-border-radius: 5;");
+
+        Label userLabel = new Label(username);
+        userLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #4a86e8;");
+
+        Label contentLabel = new Label(comment.getContent());
+        contentLabel.setWrapText(true);
+        contentLabel.setMaxWidth(250);
+
+        Label timestampLabel = new Label(dateFormat.format(comment.getCreatedAt()));
+        timestampLabel.setStyle("-fx-font-size: 10; -fx-text-fill: #888888;");
+
+        commentNode.getChildren().addAll(userLabel, contentLabel, timestampLabel);
+        return commentNode;
+    }
+
+    private void updateReactions() {
+        try {
+            Map<String, Integer> reactionCounts = reactionService.countReactionsByType(selectedSketch.getId());
+            likeButton.setText("Like (" + reactionCounts.getOrDefault("LIKE", 0) + ")");
+            loveButton.setText("Love (" + reactionCounts.getOrDefault("LOVE", 0) + ")");
+            ideaButton.setText("Idea (" + reactionCounts.getOrDefault("IDEA", 0) + ")");
+
+            if (currentUser != null) {
+                List<Reaction> userReactions = reactionService.getUserReactionsForSketch(currentUser.getId(), selectedSketch.getId());
+                likeButton.setDisable(userReactions.stream().anyMatch(r -> r.getReactionType().equals("LIKE")));
+                loveButton.setDisable(userReactions.stream().anyMatch(r -> r.getReactionType().equals("LOVE")));
+                ideaButton.setDisable(userReactions.stream().anyMatch(r -> r.getReactionType().equals("IDEA")));
+            }
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load reactions: " + e.getMessage());
+        }
     }
 
     private Image generateThumbnail(CultureSketch sketch) {
@@ -477,8 +485,9 @@ public class AfficherSketchController implements Initializable {
         return writableImage;
     }
 
+    @FXML
     private void handleEdit(ActionEvent event) {
-        if (selectedSketch != null) {
+        if (selectedSketch != null && currentUser != null && selectedSketch.getUserId() == currentUser.getId()) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/sketch/CultureSketch.fxml"));
                 Parent root = loader.load();
@@ -496,8 +505,9 @@ public class AfficherSketchController implements Initializable {
         }
     }
 
+    @FXML
     private void handleDelete(ActionEvent event) {
-        if (selectedSketch != null) {
+        if (selectedSketch != null && currentUser != null && selectedSketch.getUserId() == currentUser.getId()) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirm Delete");
             alert.setHeaderText("Delete Sketch");
@@ -508,6 +518,7 @@ public class AfficherSketchController implements Initializable {
                     sketchService.delete(selectedSketch.getId());
                     showAlert(Alert.AlertType.INFORMATION, "Success", "Sketch deleted successfully");
                     loadSketches();
+                    loadPublicSketches();
                     detailPane.setVisible(false);
                     detailPane.setManaged(false);
                 }
@@ -515,6 +526,7 @@ public class AfficherSketchController implements Initializable {
         }
     }
 
+    @FXML
     private void handleShare(ActionEvent event) {
         if (selectedSketch != null) {
             Dialog<ButtonType> dialog = new Dialog<>();
@@ -575,6 +587,53 @@ public class AfficherSketchController implements Initializable {
         }
     }
 
+    @FXML
+    private void handleLike(ActionEvent event) {
+        addReaction("LIKE");
+    }
+
+    @FXML
+    private void handleLove(ActionEvent event) {
+        addReaction("LOVE");
+    }
+
+    @FXML
+    private void handleIdea(ActionEvent event) {
+        addReaction("IDEA");
+    }
+
+    private void addReaction(String reactionType) {
+        if (selectedSketch != null && currentUser != null) {
+            try {
+                Reaction reaction = new Reaction(selectedSketch.getId(), currentUser.getId(), reactionType);
+                reactionService.add(reaction);
+                updateReactions();
+            } catch (SQLException e) {
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to add reaction: " + e.getMessage());
+            }
+        }
+    }
+
+    @FXML
+    private void handleAddComment(ActionEvent event) {
+        if (selectedSketch != null && currentUser != null && !newCommentArea.getText().trim().isEmpty()) {
+            try {
+                Comment comment = new Comment(selectedSketch.getId(), currentUser.getId(), newCommentArea.getText().trim(), false);
+                commentService.add(comment);
+                newCommentArea.clear();
+                updateComments();
+            } catch (SQLException e) {
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to add comment: " + e.getMessage());
+            }
+        }
+    }
+
+    @FXML
+    private void handleCloseDetail(ActionEvent event) {
+        detailPane.setVisible(false);
+        detailPane.setManaged(false);
+    }
+
     private void updateSketchVisibility(CultureSketch sketch, boolean isPublic) {
         if (sketch.isPublic() != isPublic) {
             sketch.setPublic(isPublic);
@@ -582,6 +641,7 @@ public class AfficherSketchController implements Initializable {
             showAlert(Alert.AlertType.INFORMATION, "Success",
                     "Sketch is now " + (isPublic ? "public" : "private"));
             loadSketches();
+            loadPublicSketches();
             if (selectedSketch != null && selectedSketch.getId() == sketch.getId()) {
                 detailIsPublic.setSelected(isPublic);
                 selectedSketch.setPublic(isPublic);
@@ -619,18 +679,14 @@ public class AfficherSketchController implements Initializable {
     }
 
     @FXML
-    private void handleFilterChange(ActionEvent event) {
-        filterSketches();
-    }
-
-    @FXML
     private void handleRefresh(ActionEvent event) {
         loadSketches();
+        loadPublicSketches();
     }
 
     @FXML
-    private void handleBackToCanvas(ActionEvent event) {
-        navigateTo("/sketch/CultureSketch.fxml", "Culture Sketch Editor");
+    private void handleBackButton(ActionEvent event) {
+        navigateTo("/sidebar/Sidebar.fxml", "Dashboard");
     }
 
     private void showAlert(Alert.AlertType type, String title, String content) {
