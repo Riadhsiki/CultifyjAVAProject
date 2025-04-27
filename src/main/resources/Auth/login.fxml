@@ -12,53 +12,71 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.paint.Color?>
-<?import javafx.scene.layout.Background?>
-<?import javafx.scene.layout.BackgroundFill?>
-<?import javafx.scene.layout.CornerRadii?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.Auth.LoginController">
+<?import java.lang.String?>
+<BorderPane prefHeight="600.0" prefWidth="800.0" styleClass="root-pane"
+            xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.auth.LoginController">
+    <stylesheets>
+        <String fx:value="/styles/login.css" />
+    </stylesheets>
     <center>
-        <VBox alignment="CENTER" spacing="20.0" style="-fx-background-color: #f5f5f5;">
+        <VBox alignment="CENTER" spacing="25.0" styleClass="login-container">
             <padding>
-                <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+                <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
             </padding>
 
-            <Label text="Welcome Back" textAlignment="CENTER">
+            <!-- Welcome Header -->
+            <Label text="Welcome to CultureSketch" styleClass="welcome-label">
                 <font>
-                    <Font name="System Bold" size="32.0" />
+                    <Font name="System Bold" size="36.0" />
                 </font>
             </Label>
 
-            <Text fx:id="errorMessage" fill="RED" managed="false" text="Error message" visible="false" />
-            <Text fx:id="successMessage" fill="GREEN" managed="false" text="Success message" visible="false" />
+            <!-- Error/Success Messages -->
+            <Text fx:id="errorMessage" styleClass="error-message" text="Error message"
+                  managed="false" visible="false" />
+            <Text fx:id="successMessage" styleClass="success-message" text="Success message"
+                  managed="false" visible="false" />
 
-            <VBox alignment="CENTER" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 30;">
-                <VBox spacing="15.0">
-                    <HBox alignment="CENTER_LEFT" spacing="10.0">
-                        <Label prefWidth="100.0" text="Username:" style="-fx-font-weight: bold;" />
-                        <TextField fx:id="usernameField" prefWidth="250.0" promptText="Enter your username" style="-fx-background-radius: 5;" />
+            <!-- Login Card -->
+            <VBox alignment="CENTER" spacing="20.0" styleClass="login-card">
+                <padding>
+                    <Insets bottom="30.0" left="40.0" right="40.0" top="30.0" />
+                </padding>
+
+                <!-- Input Fields -->
+                <VBox spacing="20.0">
+                    <HBox alignment="CENTER_LEFT" spacing="15.0">
+                        <Label text="Username/Email:" styleClass="input-label" prefWidth="120.0" />
+                        <TextField fx:id="usernameField" prefWidth="250.0" promptText="Enter username or email"
+                                   styleClass="input-field" />
                     </HBox>
 
-                    <HBox alignment="CENTER_LEFT" spacing="10.0">
-                        <Label prefWidth="100.0" text="Password:" style="-fx-font-weight: bold;" />
-                        <PasswordField fx:id="passwordField" prefWidth="250.0" promptText="Enter your password" style="-fx-background-radius: 5;" />
+                    <HBox alignment="CENTER_LEFT" spacing="15.0">
+                        <Label text="Password:" styleClass="input-label" prefWidth="120.0" />
+                        <PasswordField fx:id="passwordField" prefWidth="250.0" promptText="Enter your password"
+                                       styleClass="input-field" />
                     </HBox>
 
-                    <HBox alignment="CENTER_LEFT" spacing="10.0">
-                        <CheckBox fx:id="rememberMeCheckbox" mnemonicParsing="false" text="Remember me" />
+                    <HBox alignment="CENTER_LEFT" spacing="15.0">
+                        <CheckBox fx:id="rememberMeCheckbox" text="Remember me" styleClass="checkbox" />
                     </HBox>
                 </VBox>
 
-                <Button mnemonicParsing="false" onAction="#handleLogin" prefHeight="40.0" prefWidth="200.0" text="Login"
-                    style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" />
+                <!-- Login Button -->
+                <Button fx:id="loginButton" onAction="#handleLogin" text="Sign In"
+                        styleClass="login-button" prefHeight="45.0" prefWidth="200.0" />
 
-                <HBox alignment="CENTER" spacing="5.0">
-                    <Label text="Don't have an account?" />
-                    <Hyperlink onAction="#navigateToRegister" text="Register" style="-fx-text-fill: #4CAF50;" />
+                <!-- Links -->
+                <HBox alignment="CENTER" spacing="10.0">
+                    <Label text="New to CultureSketch?" styleClass="link-label" />
+                    <Hyperlink onAction="#navigateToRegister" text="Create an Account"
+                               styleClass="hyperlink" />
                 </HBox>
 
-                <Hyperlink onAction="#navigateToForgotPassword" text="Forgot Password?" style="-fx-text-fill: #4CAF50;" />
+                <Hyperlink onAction="#navigateToForgotPassword" text="Forgot Password?"
+                           styleClass="hyperlink" />
             </VBox>
         </VBox>
     </center>

@@ -1,4 +1,4 @@
-package controllers.Auth;
+package controllers.auth;
 
 import java.util.prefs.Preferences;
 import java.util.Date;

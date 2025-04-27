@@ -2,6 +2,7 @@ package services.user;
 
 import models.User;
 import utils.DataSource;
+import utils.PasswordHasher;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,7 +18,8 @@ public class UserService implements Service<User> {
     @Override
     public void add(User user) throws SQLException {
         String query = "INSERT INTO user (nom, prenom, username, numTel, email, gender, " +
-                "datedenaissance, roles, profilePicture, password, montantAPayer) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "datedenaissance, roles, profilePicture, password, montantAPayer) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement pst = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pst.setString(1, user.getNom());
@@ -91,7 +93,6 @@ public class UserService implements Service<User> {
 
         try (Statement st = con.createStatement();
              ResultSet rs = st.executeQuery(query)) {
-
             while (rs.next()) {
                 users.add(mapResultSetToUser(rs));
             }
@@ -169,10 +170,10 @@ public class UserService implements Service<User> {
         return user;
     }
 
-    // Corrected create method to use the class's connection
     public boolean create(User user) throws SQLException {
         String query = "INSERT INTO user (nom, prenom, username, numTel, email, gender, datedenaissance, " +
-                "profilePicture, password, roles, montantAPayer) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "profilePicture, password, roles, montantAPayer) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = con.prepareStatement(query)) {
             stmt.setString(1, user.getNom());
@@ -185,11 +186,10 @@ public class UserService implements Service<User> {
             stmt.setString(8, user.getProfilePicture());
             stmt.setString(9, user.getPassword());
             stmt.setString(10, user.getRoles());
-
             if (user.getMontantAPayer() != null) {
                 stmt.setFloat(11, user.getMontantAPayer());
             } else {
-                stmt.setNull(11, java.sql.Types.FLOAT);
+                stmt.setNull(11, Types.FLOAT);
             }
 
             int rowsAffected = stmt.executeUpdate();
@@ -207,23 +207,33 @@ public class UserService implements Service<User> {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-
+            System.err.println("Error fetching user by username: " + e.getMessage());
         }
         return null;
     }
 
-    public User getByVerificationToken(String token) throws SQLException {
-        String query = "SELECT * FROM user WHERE verification_token = ?";
-        try (PreparedStatement pst = con.prepareStatement(query)) {
-            pst.setString(1, token);
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSetToUser(rs);
-                }
+    public boolean verifyPassword(String username, String password) {
+        try {
+            User user = getByUsername(username);
+            if (user != null && user.getPassword() != null) {
+                return PasswordHasher.verify(password, user.getPassword());
             }
+        } catch (SQLException e) {
+            System.err.println("Error verifying password: " + e.getMessage());
         }
-        return null;
+        return false;
     }
 
+    public void updateUser(User currentUser) {
+        try {
+            // Hash the password if it's being updated
+            String password = currentUser.getPassword();
+            if (password != null && !password.contains(":")) { // Check if not already hashed
+                currentUser.setPassword(PasswordHasher.hash(password));
+            }
+            update(currentUser);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update user: " + e.getMessage(), e);
+        }
+    }
 }

@@ -16,13 +16,11 @@ public class User {
     private String password;
     private String roles;
     private Float montantAPayer;
-    private String verificationToken;
-    private boolean verified;
 
     public User(String nom, String prenom, String username, String numTel, String email, String gender, Date datedenaissance, String profilePicture, String password, String roles, Float montantAPayer) {
         this.nom = nom;
         this.prenom = prenom;
-        this.username = username; // Fixed typo: removed "awaits"
+        this.username = username;
         this.numTel = numTel;
         this.email = email;
         this.gender = gender;
@@ -95,22 +93,6 @@ public class User {
 
     public Float getMontantAPayer() {
         return montantAPayer;
-    }
-
-    public String getVerificationToken() {
-        return verificationToken;
-    }
-
-    public void setVerificationToken(String verificationToken) {
-        this.verificationToken = verificationToken;
-    }
-
-    public boolean isVerified() {
-        return verified;
-    }
-
-    public void setVerified(boolean verified) {
-        this.verified = verified;
     }
 
     public void setId(Integer id) {

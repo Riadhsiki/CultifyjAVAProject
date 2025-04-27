@@ -228,6 +228,10 @@ public class AuthenticationService {
         loginAttempts.put(loginInput, attempt);
     }
 
+    public boolean initiatePasswordReset(String email) {
+        return false;
+    }
+
     /**
      * Inner class to store session information
      */

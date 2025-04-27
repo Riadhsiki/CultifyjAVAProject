@@ -4,6 +4,8 @@ import models.User;
 import services.user.UserService;
 import utils.PasswordHasher;
 import utils.EmailSender;
+import utils.VerificationService;
+import utils.SessionManager;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -12,14 +14,18 @@ public class UserRegistrationService {
 
     private final UserService userService;
     private final EmailSender emailSender;
+    private final VerificationService verificationService;
+    private final SessionManager sessionManager;
 
     public UserRegistrationService() {
         this.userService = new UserService();
         this.emailSender = new EmailSender();
+        this.verificationService = new VerificationService();
+        this.sessionManager = SessionManager.getInstance();
     }
 
     /**
-     * Register a new user
+     * Register a new user and send welcome email
      * @param user The User object with registration details
      * @return true if registration successful, false otherwise
      */
@@ -33,41 +39,62 @@ public class UserRegistrationService {
             return false;
         }
 
-        // Generate verification token
-        String verificationToken = UUID.randomUUID().toString();
-        user.setVerificationToken(verificationToken);
-        user.setVerified(false);
-
         // Hash the password before storing
         String hashedPassword = PasswordHasher.hash(user.getPassword());
         user.setPassword(hashedPassword);
 
         // Create the user in the database
         boolean created = userService.create(user);
-        
+
         if (created) {
-            // Send verification email
-            String verificationLink = "http://yourdomain.com/verify?token=" + verificationToken;
-            String emailBody = "Please click the following link to verify your email: " + verificationLink;
-            emailSender.sendEmail(user.getEmail(), "Email Verification", emailBody);
+            // Send welcome email
+            String emailSubject = "Welcome to Cultify!";
+            String emailBody = "Dear " + user.getUsername() + ",\n\n" +
+                    "Welcome to joining us at Cultify! We're excited to have you on board.\n" +
+                    "Explore our platform and start your journey with us today.\n\n" +
+                    "Best regards,\nThe Cultify Team";
+            emailSender.sendEmail(user.getEmail(), emailSubject, emailBody);
         }
-        
+
         return created;
     }
 
     /**
-     * Verify user's email using the verification token
-     * @param token The verification token
+     * Log in a user and create session
+     * @param username The username
+     * @param password The password
+     * @return true if login successful, false otherwise
+     */
+    public boolean login(String username, String password) throws SQLException {
+        // Verify credentials
+        if (!userService.verifyPassword(username, password)) {
+            return false;
+        }
+
+        // Get user
+        User user = userService.getByUsername(username);
+        if (user == null) {
+            return false;
+        }
+
+        // Generate session token
+        String sessionToken = UUID.randomUUID().toString();
+
+        // Store session
+        sessionManager.setSessionToken(sessionToken, true); // Remember me enabled
+        sessionManager.setCurrentUsername(username);
+
+        return true;
+    }
+
+    /**
+     * Verify a temporary token (e.g., for future verification needs)
+     * @param token The temporary token
      * @return true if verification successful, false otherwise
      */
-    public boolean verifyEmail(String token) throws SQLException {
-        User user = userService.getByVerificationToken(token);
-        if (user != null) {
-            user.setVerified(true);
-            user.setVerificationToken(null);
-            return userService.update(user);
-        }
-        return false;
+    public boolean verifyToken(String token) {
+        String email = verificationService.verifyToken(token);
+        return email != null;
     }
 
     /**

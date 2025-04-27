@@ -1,0 +1,205 @@
+package controllers.auth;
+
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import models.User;
+import services.auth.UserRegistrationService;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.Arrays;
+
+public class RegisterController {
+
+    @FXML private TextField prenomField;
+    @FXML private TextField nomField;
+    @FXML private TextField usernameField;
+    @FXML private TextField emailField;
+    @FXML private TextField numTelField;
+    @FXML private RadioButton maleRadio;
+    @FXML private RadioButton femaleRadio;
+    @FXML private RadioButton otherRadio;
+    @FXML private ToggleGroup genderGroup;
+    @FXML private DatePicker dateOfBirthPicker;
+    @FXML private TextField profilePicField;
+    @FXML private Button browseButton;
+    @FXML private ComboBox<String> roleComboBox;
+    @FXML private PasswordField passwordField;
+    @FXML private PasswordField confirmPasswordField;
+    @FXML private Text errorMessage;
+    @FXML private Text successMessage;
+
+    private final UserRegistrationService registrationService = new UserRegistrationService();
+
+    @FXML
+    private void initialize() {
+        // Populate roleComboBox
+        roleComboBox.getItems().addAll("User", "Artist", "Organizer");
+        roleComboBox.setValue("User");
+    }
+
+    @FXML
+    private void handleBrowse() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select Profile Picture");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+        );
+        File file = fileChooser.showOpenDialog(browseButton.getScene().getWindow());
+        if (file != null) {
+            profilePicField.setText(file.getAbsolutePath());
+        }
+    }
+
+    @FXML
+    private void handleRegister() {
+        // Clear messages
+        errorMessage.setVisible(false);
+        successMessage.setVisible(false);
+
+        // Get input values
+        String prenom = prenomField.getText().trim();
+        String nom = nomField.getText().trim();
+        String username = usernameField.getText().trim();
+        String email = emailField.getText().trim();
+        String numTel = numTelField.getText().trim();
+        String gender = getSelectedGender();
+        LocalDate dateOfBirth = dateOfBirthPicker.getValue();
+        String profilePic = profilePicField.getText().trim();
+        String role = roleComboBox.getValue();
+        String password = passwordField.getText();
+        String confirmPassword = confirmPasswordField.getText();
+
+        // Validate inputs
+        if (!validateInputs(prenom, nom, username, email, numTel, gender, dateOfBirth, role, password, confirmPassword)) {
+            return;
+        }
+
+        // Create User object
+        User user = new User();
+        user.setPrenom(prenom);
+        user.setNom(nom);
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setNumTel(numTel);
+        user.setGender(gender);
+        user.setDatedenaissance(Date.valueOf(dateOfBirth));
+        user.setProfilePicture(profilePic.isEmpty() ? null : profilePic);
+        user.setRoles(role);
+        user.setPassword(password);
+        user.setMontantAPayer(0.0f);
+
+        try {
+            if (registrationService.registerUser(user)) {
+                errorMessage.setVisible(false);
+                successMessage.setText("Registration successful! Check your email for a welcome message.");
+                successMessage.setVisible(true);
+
+                // Navigate to login
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Auth/login.fxml"));
+                Parent root = loader.load();
+                Scene scene = new Scene(root);
+                Stage stage = (Stage) usernameField.getScene().getWindow();
+                stage.setScene(scene);
+                stage.setTitle("CultureSketch - Login");
+                stage.show();
+            } else {
+                errorMessage.setText("Username or email already exists.");
+                errorMessage.setVisible(true);
+                successMessage.setVisible(false);
+            }
+        } catch (SQLException | IOException e) {
+            errorMessage.setText("Registration error: " + e.getMessage());
+            errorMessage.setVisible(true);
+            successMessage.setVisible(false);
+        }
+    }
+
+    @FXML
+    private void navigateToLogin() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Auth/login.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) usernameField.getScene().getWindow();
+            stage.setScene(scene);
+            stage.setTitle("CultureSketch - Login");
+            stage.show();
+        } catch (IOException e) {
+            errorMessage.setText("Navigation error: " + e.getMessage());
+            errorMessage.setVisible(true);
+        }
+    }
+
+    private String getSelectedGender() {
+        if (maleRadio.isSelected()) return "Male";
+        if (femaleRadio.isSelected()) return "Female";
+        if (otherRadio.isSelected()) return "Other";
+        return null;
+    }
+
+    private boolean validateInputs(String prenom, String nom, String username, String email, String numTel,
+                                   String gender, LocalDate dateOfBirth, String role, String password, String confirmPassword) {
+        // Check for empty fields
+        if (prenom.isEmpty() || nom.isEmpty() || username.isEmpty() || email.isEmpty() || numTel.isEmpty() ||
+                gender == null || dateOfBirth == null || role == null || password.isEmpty() || confirmPassword.isEmpty()) {
+            errorMessage.setText("All required fields must be filled.");
+            errorMessage.setVisible(true);
+            return false;
+        }
+
+        // Validate username (4-20 characters, letters, numbers, underscore)
+        if (!username.matches("^[a-zA-Z0-9_]{4,20}$")) {
+            errorMessage.setText("Username must be 4-20 characters (letters, numbers, underscore).");
+            errorMessage.setVisible(true);
+            return false;
+        }
+
+        // Validate email
+        if (!email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            errorMessage.setText("Please enter a valid email address.");
+            errorMessage.setVisible(true);
+            return false;
+        }
+
+        // Validate phone number (8 digits)
+        if (!numTel.matches("^\\d{8}$")) {
+            errorMessage.setText("Phone number must be exactly 8 digits.");
+            errorMessage.setVisible(true);
+            return false;
+        }
+
+        // Validate age (at least 12 years old)
+        if (Period.between(dateOfBirth, LocalDate.now()).getYears() < 12) {
+            errorMessage.setText("You must be at least 12 years old.");
+            errorMessage.setVisible(true);
+            return false;
+        }
+
+        // Validate password (at least 8 characters)
+        if (password.length() < 8) {
+            errorMessage.setText("Password must be at least 8 characters.");
+            errorMessage.setVisible(true);
+            return false;
+        }
+
+        // Validate password match
+        if (!password.equals(confirmPassword)) {
+            errorMessage.setText("Passwords do not match.");
+            errorMessage.setVisible(true);
+            return false;
+        }
+
+        return true;
+    }
+}

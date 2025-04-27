@@ -543,7 +543,7 @@ public class CultureSketchController implements Initializable {
     @FXML
     private void handleViewAllSketches(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Sketch/afficherSketch.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sketch/afficherSketch.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
@@ -626,8 +626,6 @@ public class CultureSketchController implements Initializable {
                     break;
             }
         }
-
-        // Convert canvas to Image
         WritableImage writableImage = new WritableImage(50, 50);
         thumbnailCanvas.snapshot(null, writableImage);
         return writableImage ;

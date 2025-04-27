@@ -1,6 +1,6 @@
 package controllers.sidebar;
 
-import controllers.Auth.SessionManager;
+import utils.SessionManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

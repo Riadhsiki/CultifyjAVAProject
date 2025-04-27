@@ -14,7 +14,7 @@
 
 <BorderPane prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.user.DetailsUserController" style="-fx-background-image: url('/images/LogoCultify2.png'); -fx-background-size: cover;">
     <left>
-        <fx:include source="/Sidebar/Sidebar.fxml" />
+        <fx:include source="/sidebar/Sidebar.fxml" />
     </left>
     <center>
         <AnchorPane prefHeight="500.0" prefWidth="700.0">
