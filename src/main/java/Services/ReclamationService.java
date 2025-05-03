@@ -17,7 +17,9 @@ public class ReclamationService implements IServiceReclamation<Reclamation> {
     private ReponseService reponseService;
 
     public ReclamationService() {
-        this.con= MyDataBase.getInstance().getConn();
+        this.con = MyDataBase.getInstance().getConn();
+        // Initialize the reponseService
+        this.reponseService = new ReponseService();
     }
 
     @Override
