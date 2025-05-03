@@ -1,6 +1,5 @@
 package controllers.auth;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,7 +12,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import models.User;
 import services.auth.UserRegistrationService;
-import services.user.UserService;
 import utils.EmailSender;
 
 import java.io.File;
@@ -22,12 +20,8 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.UUID;
-import java.util.logging.Logger;
 
 public class RegisterController {
-
-    private static final Logger LOGGER = Logger.getLogger(RegisterController.class.getName());
 
     @FXML private TextField prenomField;
     @FXML private TextField nomField;
@@ -49,51 +43,23 @@ public class RegisterController {
     @FXML private Button togglePasswordButton;
     @FXML private Text errorMessage;
     @FXML private Text successMessage;
-    @FXML private Button fingerprintButton;
-    @FXML private Label fingerprintStatusLabel;
 
     private final UserRegistrationService registrationService = new UserRegistrationService();
-    private final UserService userService = new UserService();
     private final EmailSender emailSender = new EmailSender();
     private boolean isPasswordVisible = false;
-    private String biometricId;
 
     @FXML
     private void initialize() {
-        LOGGER.info("Initializing RegisterController");
         // Populate roleComboBox
         roleComboBox.getItems().addAll("User", "Artist", "Organizer");
         roleComboBox.setValue("User");
 
         // Initialize toggle button with eye icon
         updateToggleButtonIcon();
-
-        // Check Windows Hello availability
-        boolean isWindowsHello = isWindowsHelloAvailable();
-        LOGGER.info("Windows Hello available: " + isWindowsHello);
-        // Force-enable button for testing on Windows 10
-        fingerprintButton.setDisable(false);
-        LOGGER.info("Fingerprint button enabled: " + !fingerprintButton.isDisabled());
-        // Initialize fingerprint status label
-        if (fingerprintStatusLabel != null) {
-            fingerprintStatusLabel.setText("");
-        }
-    }
-
-    private boolean isWindowsHelloAvailable() {
-        try {
-            String osName = System.getProperty("os.name").toLowerCase();
-            LOGGER.info("OS Name: " + osName);
-            return osName.contains("windows");
-        } catch (Exception e) {
-            LOGGER.severe("Error checking OS: " + e.getMessage());
-            return false;
-        }
     }
 
     @FXML
     private void handleBrowse() {
-        LOGGER.info("Browse button clicked");
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select Profile Picture");
         fileChooser.getExtensionFilters().add(
@@ -106,104 +72,10 @@ public class RegisterController {
     }
 
     @FXML
-    private void handleCaptureFingerprint() {
-        LOGGER.info("Capture Fingerprint button clicked");
-        errorMessage.setVisible(false);
-        successMessage.setVisible(false);
-        if (fingerprintStatusLabel != null) {
-            fingerprintStatusLabel.setText("");
-        }
-
-        biometricId = promptWindowsHelloFingerprint();
-        if (biometricId != null) {
-            LOGGER.info("Biometric ID captured: " + biometricId);
-            try {
-                if (userService.biometricIdExists(biometricId)) {
-                    errorMessage.setText("This fingerprint is already registered.");
-                    errorMessage.setVisible(true);
-                    LOGGER.warning("Duplicate biometric ID detected");
-                    biometricId = null;
-                    if (fingerprintStatusLabel != null) {
-                        fingerprintStatusLabel.setText("Duplicate");
-                    }
-                    Platform.runLater(() -> {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Fingerprint Capture");
-                        alert.setHeaderText(null);
-                        alert.setContentText("This fingerprint is already registered.");
-                        alert.showAndWait();
-                    });
-                    return;
-                }
-                Platform.runLater(() -> {
-                    successMessage.setText("Fingerprint captured successfully.");
-                    successMessage.setVisible(true);
-                    successMessage.setManaged(true);
-                    LOGGER.info("Success message set: visible=" + successMessage.isVisible() + ", managed=" + successMessage.isManaged());
-                    if (fingerprintStatusLabel != null) {
-                        fingerprintStatusLabel.setText("Captured");
-                    }
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Fingerprint Capture");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Fingerprint captured successfully!");
-                    alert.showAndWait();
-                });
-                LOGGER.info("Fingerprint capture successful");
-            } catch (SQLException e) {
-                LOGGER.severe("SQL Error checking biometric ID: " + e.getMessage());
-                errorMessage.setText("Error checking fingerprint: " + e.getMessage());
-                errorMessage.setVisible(true);
-                biometricId = null;
-                if (fingerprintStatusLabel != null) {
-                    fingerprintStatusLabel.setText("Error");
-                }
-                Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Fingerprint Capture");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Error checking fingerprint: " + e.getMessage());
-                    alert.showAndWait();
-                });
-            }
-        } else {
-            LOGGER.warning("Failed to capture fingerprint");
-            errorMessage.setText("Failed to capture fingerprint. Please try again.");
-            errorMessage.setVisible(true);
-            if (fingerprintStatusLabel != null) {
-                fingerprintStatusLabel.setText("Failed");
-            }
-            Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Fingerprint Capture");
-                alert.setHeaderText(null);
-                alert.setContentText("Failed to capture fingerprint. Please try again.");
-                alert.showAndWait();
-            });
-        }
-    }
-
-    private String promptWindowsHelloFingerprint() {
-        LOGGER.info("Attempting fingerprint capture");
-        try {
-            // Simulate fingerprint capture for testing on Windows 10
-            LOGGER.info("Simulating Windows Hello fingerprint capture");
-            return "test_biometric_id_" + UUID.randomUUID().toString();
-        } catch (Exception e) {
-            LOGGER.severe("Fingerprint capture error: " + e.getMessage());
-            return null;
-        }
-    }
-
-    @FXML
     private void handleRegister() {
-        LOGGER.info("Register button clicked");
         // Clear messages
         errorMessage.setVisible(false);
         successMessage.setVisible(false);
-        if (fingerprintStatusLabel != null) {
-            fingerprintStatusLabel.setText("");
-        }
 
         // Get input values
         String prenom = prenomField.getText().trim();
@@ -223,7 +95,6 @@ public class RegisterController {
             return;
         }
 
-        // Create User object
         User user = new User();
         user.setPrenom(prenom);
         user.setNom(nom);
@@ -236,7 +107,6 @@ public class RegisterController {
         user.setRoles(role);
         user.setPassword(password);
         user.setMontantAPayer(0.0f);
-        user.setBiometricId(biometricId);
 
         try {
             if (registrationService.registerUser(user)) {
@@ -263,7 +133,6 @@ public class RegisterController {
                 errorMessage.setVisible(false);
                 successMessage.setText("Registration successful! Check your email for a welcome message.");
                 successMessage.setVisible(true);
-                successMessage.setManaged(true);
 
                 // Navigate to login
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/auth/login.fxml"));
@@ -287,7 +156,6 @@ public class RegisterController {
 
     @FXML
     private void navigateToLogin() {
-        LOGGER.info("Navigating to login");
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/auth/login.fxml"));
             Parent root = loader.load();
@@ -305,7 +173,6 @@ public class RegisterController {
 
     @FXML
     private void toggleConfirmPasswordVisibility() {
-        LOGGER.info("Toggling password visibility");
         isPasswordVisible = !isPasswordVisible;
 
         if (isPasswordVisible) {

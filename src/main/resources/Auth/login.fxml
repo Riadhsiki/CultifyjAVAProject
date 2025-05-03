@@ -66,9 +66,6 @@
                 <!-- Login Button -->
                 <Button fx:id="loginButton" onAction="#handleLogin" text="Sign In"
                         styleClass="action-button" prefHeight="45.0" prefWidth="200.0" />
-                <!-- Fingerprint Login Button -->
-                <Button fx:id="fingerprintLoginButton" onAction="#handleFingerprintLogin" text="Sign In with Fingerprint"
-                        styleClass="action-button" prefHeight="45.0" prefWidth="200.0" />
                 <!-- Links -->
                 <HBox alignment="CENTER" spacing="10.0">
                     <Label text="New to Cultify?" styleClass="form-label" />

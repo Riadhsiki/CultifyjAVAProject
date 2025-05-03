@@ -7,7 +7,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -19,10 +18,7 @@ import utils.DataSource;
 import utils.SessionManager;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.UUID;
 
 public class LoginController {
 
@@ -31,7 +27,6 @@ public class LoginController {
     @FXML private CheckBox rememberMeCheckbox;
     @FXML private Text errorMessage;
     @FXML private Text successMessage;
-    @FXML private Button fingerprintLoginButton;
 
     private final AuthenticationService authService;
     private static final int SESSION_TIMEOUT_MINUTES = 30;
@@ -62,18 +57,6 @@ public class LoginController {
         if (message != null && !message.isEmpty()) {
             showSuccess(message);
             SessionManager.getInstance().clearTemporaryMessage();
-        }
-
-        // Disable fingerprint login button if Windows Hello is not available
-        fingerprintLoginButton.setDisable(!isWindowsHelloAvailable());
-    }
-
-    private boolean isWindowsHelloAvailable() {
-        try {
-            return System.getProperty("os.name").toLowerCase().contains("windows") &&
-                    Integer.parseInt(System.getProperty("os.version").split("\\.")[0]) >= 10;
-        } catch (Exception e) {
-            return false;
         }
     }
 
@@ -129,65 +112,6 @@ public class LoginController {
             showError("Unexpected error: " + e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    @FXML
-    private void handleFingerprintLogin(ActionEvent event) {
-        hideMessages();
-
-        try {
-            String biometricId = promptWindowsHelloFingerprint();
-            if (biometricId == null) {
-                showError("Fingerprint authentication failed.");
-                return;
-            }
-
-            String ipAddress = "127.0.0.1";
-            String sessionToken = authService.loginWithBiometrics(biometricId, ipAddress);
-
-            if (sessionToken != null) {
-                String username = getUsernameFromBiometricId(biometricId);
-                SessionManager.getInstance().setSessionToken(sessionToken, rememberMeCheckbox.isSelected());
-                SessionManager.getInstance().setCurrentUsername(username);
-                SessionManager.getInstance().setSessionTimeout(SESSION_TIMEOUT_MINUTES);
-                SessionManager.getInstance().dumpPreferences();
-                showSuccess("Fingerprint login successful! Redirecting...");
-                redirectToDashboardWithDelay(event);
-            } else {
-                showError("Fingerprint not recognized.");
-            }
-        } catch (SecurityException e) {
-            showError(e.getMessage());
-        } catch (SQLException e) {
-            showError("Database error: " + e.getMessage());
-            e.printStackTrace();
-        } catch (Exception e) {
-            showError("Unexpected error: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    private String promptWindowsHelloFingerprint() {
-        try {
-            // Placeholder: Replace with actual Windows Hello verification API
-            return "biometric_id_" + UUID.randomUUID().toString();
-        } catch (Exception e) {
-            System.err.println("Windows Hello error: " + e.getMessage());
-            return null;
-        }
-    }
-
-    private String getUsernameFromBiometricId(String biometricId) throws SQLException {
-        String query = "SELECT username FROM user WHERE biometric_Id = ?";
-        try (PreparedStatement pstmt = DataSource.getInstance().getConnection().prepareStatement(query)) {
-            pstmt.setString(1, biometricId);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("username");
-                }
-            }
-        }
-        return "unknown";
     }
 
     private boolean isValidEmail(String email) {

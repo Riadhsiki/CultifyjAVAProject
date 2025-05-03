@@ -23,9 +23,7 @@ public class UserRegistrationService {
             return false;
         }
 
-        if (user.getBiometricId() != null && userService.biometricIdExists(user.getBiometricId())) {
-            return false;
-        }
+
 
         String hashedPassword = PasswordHasher.hash(user.getPassword());
         user.setPassword(hashedPassword);
@@ -49,11 +47,7 @@ public class UserRegistrationService {
             return false;
         }
 
-        if (user.getBiometricId() != null &&
-                !user.getBiometricId().equals(existingUser.getBiometricId()) &&
-                userService.biometricIdExists(user.getBiometricId())) {
-            return false;
-        }
+
 
         return userService.update(user);
     }
@@ -64,11 +58,6 @@ public class UserRegistrationService {
             return false;
         }
 
-        if (biometricId != null && userService.biometricIdExists(biometricId)) {
-            return false;
-        }
-
-        user.setBiometricId(biometricId);
         return userService.update(user);
     }
 

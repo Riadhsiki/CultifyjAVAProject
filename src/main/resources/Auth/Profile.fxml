@@ -2,8 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import java.net.URL?>
@@ -121,7 +120,6 @@
                     <children>
                         <Button fx:id="saveButton" onAction="#handleSaveProfile" text="Save Changes" styleClass="form-submit-button" />
                         <Button fx:id="changePasswordButton" onAction="#handleChangePassword" text="Change Password" styleClass="form-cancel-button" />
-                        <Button fx:id="fingerprintButton" onAction="#handleEnrollFingerprint" text="Enroll Fingerprint" styleClass="form-cancel-button" />
                         <Button fx:id="backButton" onAction="#handleBack" text="Back" styleClass="form-cancel-button" />
                         <Button fx:id="logoutButton" onAction="#handleLogout" text="Logout" styleClass="form-cancel-button" />
                     </children>

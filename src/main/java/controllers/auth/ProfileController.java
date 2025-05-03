@@ -12,7 +12,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import models.User;
 import services.user.UserService;
-import services.auth.UserRegistrationService;
 import utils.SessionManager;
 
 import java.io.File;
@@ -58,12 +57,10 @@ public class ProfileController {
     @FXML private Button changePasswordButton;
     @FXML private Button backButton;
     @FXML private Button logoutButton;
-    @FXML private Button fingerprintButton;
 
     private final SessionManager sessionManager = SessionManager.getInstance();
     private User currentUser;
     private final UserService userService = new UserService();
-    private final UserRegistrationService registrationService = new UserRegistrationService();
     private File selectedImageFile;
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
             "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$"
@@ -107,19 +104,7 @@ public class ProfileController {
         // Initially disable Save button
         saveButton.setDisable(true);
 
-        // Disable fingerprint button if Windows Hello is not available
-        fingerprintButton.setDisable(!isWindowsHelloAvailable());
-
         loadUserProfile();
-    }
-
-    private boolean isWindowsHelloAvailable() {
-        try {
-            return System.getProperty("os.name").toLowerCase().contains("windows") &&
-                    Integer.parseInt(System.getProperty("os.version").split("\\.")[0]) >= 10;
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     private void setupTooltips() {
@@ -128,7 +113,6 @@ public class ProfileController {
         changePasswordButton.setTooltip(new Tooltip("Change your password"));
         backButton.setTooltip(new Tooltip("Return to dashboard"));
         logoutButton.setTooltip(new Tooltip("Log out of your account"));
-        fingerprintButton.setTooltip(new Tooltip("Enroll or update your fingerprint"));
     }
 
     private void checkForChanges() {
@@ -162,7 +146,6 @@ public class ProfileController {
         changePasswordButton.setDisable(disable);
         backButton.setDisable(disable);
         logoutButton.setDisable(disable);
-        fingerprintButton.setDisable(disable || !isWindowsHelloAvailable());
     }
 
     private void loadUserProfile() {
@@ -291,36 +274,6 @@ public class ProfileController {
         }
 
         return true;
-    }
-
-    @FXML
-    private void handleEnrollFingerprint(ActionEvent event) {
-        try {
-            String biometricId = promptWindowsHelloFingerprint();
-            if (biometricId != null) {
-                boolean enrolled = registrationService.enrollFingerprint(currentUser.getId(), biometricId);
-                if (enrolled) {
-                    currentUser.setBiometricId(biometricId);
-                    showAlert("Fingerprint enrolled successfully!", Alert.AlertType.INFORMATION);
-                } else {
-                    showAlert("Failed to enroll fingerprint: Biometric ID already in use or user not found.", Alert.AlertType.ERROR);
-                }
-            } else {
-                showAlert("Failed to capture fingerprint.", Alert.AlertType.ERROR);
-            }
-        } catch (SQLException e) {
-            showAlert("Error enrolling fingerprint: " + e.getMessage(), Alert.AlertType.ERROR);
-        }
-    }
-
-    private String promptWindowsHelloFingerprint() {
-        try {
-            // Placeholder: Replace with actual Windows Hello enrollment API
-            return "biometric_id_" + UUID.randomUUID().toString();
-        } catch (Exception e) {
-            System.err.println("Windows Hello error: " + e.getMessage());
-            return null;
-        }
     }
 
     @FXML

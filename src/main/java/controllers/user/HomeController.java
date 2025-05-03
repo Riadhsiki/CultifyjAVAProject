@@ -71,10 +71,10 @@ public class HomeController {
     @FXML
     void initialize(){
         if (eventButton != null) {
-        eventButton.setOnAction(this::handleEventButtonAction);
-    }
+            eventButton.setOnAction(this::handleEventButtonAction);
+        }
         if (userManagementButton != null) {
-        userManagementButton.setOnAction(this::handleUserManagementButtonAction);
+            userManagementButton.setOnAction(this::handleUserManagementButtonAction);
+        }
     }
-}
 }

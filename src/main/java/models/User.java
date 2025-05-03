@@ -16,15 +16,14 @@ public class User {
     private String password;
     private String roles;
     private Float montantAPayer;
-    private String biometricId; // New field for fingerprint identifier
+    private String firstName;
+    private String lastName;
+    private String profileImage;
 
-    // Constructor with all fields
-    public User(String nom, String prenom, String username, String numTel, String email, String gender,
-                Date datedenaissance, String profilePicture, String password, String roles,
-                Float montantAPayer, String biometricId) {
+    public User(String nom, String prenom, String username, String numTel, String email, String gender, Date datedenaissance, String profilePicture, String password, String roles, Float montantAPayer) {
         this.nom = nom;
         this.prenom = prenom;
-        this.username = username;
+        this.username = username; // Fixed typo: removed "awaits"
         this.numTel = numTel;
         this.email = email;
         this.gender = gender;
@@ -33,31 +32,24 @@ public class User {
         this.password = password;
         this.roles = roles;
         this.montantAPayer = montantAPayer;
-        this.biometricId = biometricId;
     }
 
-    // Default constructor
     public User() {}
 
-    // Alternate constructor (with int numTel)
-    public User(String nom, String prenom, String username, int numTel, String email, String gender,
-                String roles, String profilePicture, String password, Date datedenaissance,
-                Float montantAPayer, String biometricId) {
+    public User(String nom, String prenom, String username, int num, String email, String gender, String roles, String profilePic, String password, Date sqlDate, Float montantAPayer) {
         this.nom = nom;
         this.prenom = prenom;
         this.username = username;
-        this.numTel = String.valueOf(numTel);
+        this.numTel = String.valueOf(num);
         this.email = email;
         this.gender = gender;
-        this.datedenaissance = datedenaissance;
-        this.profilePicture = profilePicture;
+        this.datedenaissance = sqlDate;
+        this.profilePicture = profilePic;
         this.password = password;
         this.roles = roles;
         this.montantAPayer = montantAPayer;
-        this.biometricId = biometricId;
     }
 
-    // Getters
     public Integer getId() {
         return id;
     }
@@ -106,11 +98,18 @@ public class User {
         return montantAPayer;
     }
 
-    public String getBiometricId() {
-        return biometricId;
+    public String getFirstName() {
+        return firstName;
     }
 
-    // Setters
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
     public void setId(Integer id) {
         this.id = id;
     }
@@ -159,8 +158,16 @@ public class User {
         this.montantAPayer = montantAPayer;
     }
 
-    public void setBiometricId(String biometricId) {
-        this.biometricId = biometricId;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 
     @Override
@@ -176,9 +183,8 @@ public class User {
                 ", datedenaissance=" + datedenaissance +
                 ", profilePicture='" + profilePicture + '\'' +
                 ", password='[PROTECTED]'" +
-                ", roles='" + roles + '\'' +
+                ", roles=" + roles +
                 ", montantAPayer=" + montantAPayer +
-                ", biometricId='" + (biometricId != null ? biometricId : "null") + '\'' +
                 '}';
     }
 }

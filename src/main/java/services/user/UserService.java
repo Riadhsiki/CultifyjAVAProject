@@ -1,5 +1,6 @@
 package services.user;
 
+
 import models.User;
 import utils.DataSource;
 import utils.PasswordHasher;
@@ -18,8 +19,8 @@ public class UserService implements Service<User> {
     @Override
     public void add(User user) throws SQLException {
         String query = "INSERT INTO user (nom, prenom, username, numTel, email, gender, " +
-                "datedenaissance, roles, profilePicture, password, montantAPayer, biometric_Id) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "datedenaissance, roles, profilePicture, password, montantAPayer) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement pst = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pst.setString(1, user.getNom());
@@ -37,7 +38,6 @@ public class UserService implements Service<User> {
             } else {
                 pst.setNull(11, Types.FLOAT);
             }
-            pst.setString(12, user.getBiometricId());
 
             int affectedRows = pst.executeUpdate();
 
@@ -54,7 +54,7 @@ public class UserService implements Service<User> {
     @Override
     public boolean update(User user) throws SQLException {
         String query = "UPDATE user SET nom=?, prenom=?, username=?, numTel=?, email=?, " +
-                "gender=?, datedenaissance=?, roles=?, profilePicture=?, password=?, montantAPayer=?, biometric_Id=? WHERE id=?";
+                "gender=?, datedenaissance=?, roles=?, profilePicture=?, password=?, montantAPayer=? WHERE id=?";
 
         try (PreparedStatement pst = con.prepareStatement(query)) {
             pst.setString(1, user.getNom());
@@ -72,8 +72,7 @@ public class UserService implements Service<User> {
             } else {
                 pst.setNull(11, Types.FLOAT);
             }
-            pst.setString(12, user.getBiometricId());
-            pst.setInt(13, user.getId());
+            pst.setInt(12, user.getId());
 
             return pst.executeUpdate() > 0;
         }
@@ -123,19 +122,6 @@ public class UserService implements Service<User> {
         return getByEmail(email) != null;
     }
 
-    public boolean biometricIdExists(String biometricId) throws SQLException {
-        if (biometricId == null) {
-            return false;
-        }
-        String query = "SELECT 1 FROM user WHERE biometric_Id=?";
-        try (PreparedStatement pst = con.prepareStatement(query)) {
-            pst.setString(1, biometricId);
-            try (ResultSet rs = pst.executeQuery()) {
-                return rs.next();
-            }
-        }
-    }
-
     public User getByUsername(String username) throws SQLException {
         String query = "SELECT * FROM user WHERE username=?";
         try (PreparedStatement pst = con.prepareStatement(query)) {
@@ -162,10 +148,33 @@ public class UserService implements Service<User> {
         return null;
     }
 
+    private User mapResultSetToUser(ResultSet rs) throws SQLException {
+        Float montantAPayer = rs.getFloat("montantAPayer");
+        if (rs.wasNull()) {
+            montantAPayer = null;
+        }
+
+        User user = new User(
+                rs.getString("nom"),
+                rs.getString("prenom"),
+                rs.getString("username"),
+                rs.getString("numTel"),
+                rs.getString("email"),
+                rs.getString("gender"),
+                rs.getDate("datedenaissance"),
+                rs.getString("profilePicture"),
+                rs.getString("password"),
+                rs.getString("roles"),
+                montantAPayer
+        );
+        user.setId(rs.getInt("id"));
+        return user;
+    }
+
     public boolean create(User user) throws SQLException {
         String query = "INSERT INTO user (nom, prenom, username, numTel, email, gender, datedenaissance, " +
-                "profilePicture, password, roles, montantAPayer, biometric_Id) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "profilePicture, password, roles, montantAPayer) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = con.prepareStatement(query)) {
             stmt.setString(1, user.getNom());
@@ -183,7 +192,6 @@ public class UserService implements Service<User> {
             } else {
                 stmt.setNull(11, Types.FLOAT);
             }
-            stmt.setString(12, user.getBiometricId());
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -230,27 +238,5 @@ public class UserService implements Service<User> {
         }
     }
 
-    private User mapResultSetToUser(ResultSet rs) throws SQLException {
-        Float montantAPayer = rs.getFloat("montantAPayer");
-        if (rs.wasNull()) {
-            montantAPayer = null;
-        }
 
-        User user = new User(
-                rs.getString("nom"),
-                rs.getString("prenom"),
-                rs.getString("username"),
-                rs.getString("numTel"),
-                rs.getString("email"),
-                rs.getString("gender"),
-                rs.getDate("datedenaissance"),
-                rs.getString("profilePicture"),
-                rs.getString("password"),
-                rs.getString("roles"),
-                montantAPayer,
-                rs.getString("biometricId")
-        );
-        user.setId(rs.getInt("id"));
-        return user;
-    }
 }

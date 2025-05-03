@@ -27,15 +27,15 @@
                     <!-- Error Message -->
                     <Text fx:id="errorMessage" styleClass="error-message" text="Error message"
                           managed="false" visible="false" />
+                    <!-- Success Message -->
+                    <Text fx:id="successMessage" styleClass="success-message" text="Registration successful!"
+                          managed="false" visible="false" />
                     <!-- Register Card -->
                     <VBox alignment="CENTER" spacing="15.0" styleClass="login-card">
                         <padding>
                             <Insets bottom="25.0" left="30.0" right="30.0" top="25.0" />
                         </padding>
                         <children>
-                            <!-- Success Message -->
-                            <Text fx:id="successMessage" styleClass="success-message" text="Registration successful!"
-                                  managed="false" visible="false" />
                             <!-- Logo -->
                             <ImageView fx:id="logoImageView">
                                 <image>
@@ -103,13 +103,6 @@
                                            styleClass="form-field" editable="false" />
                                 <Button fx:id="browseButton" onAction="#handleBrowse" text="Browse"
                                         styleClass="secondary-button" />
-                            </HBox>
-                            <!-- Fingerprint -->
-                            <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                <Label text="Fingerprint:" styleClass="form-label" prefWidth="130.0" />
-                                <Button fx:id="fingerprintButton" onAction="#handleCaptureFingerprint" text="Capture Fingerprint"
-                                        styleClass="secondary-button" />
-                                <Label fx:id="fingerprintStatusLabel" styleClass="form-label" text="" prefWidth="100.0" />
                             </HBox>
                             <!-- Role -->
                             <HBox alignment="CENTER_LEFT" spacing="10.0">
