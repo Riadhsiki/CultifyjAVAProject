@@ -1,12 +1,11 @@
 package utils;
 
-import jakarta.mail.*;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
-
+import jakarta.activation.DataHandler;
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
-import java.util.Properties;
+import jakarta.mail.util.ByteArrayDataSource;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class EmailSender {
@@ -29,6 +28,7 @@ public class EmailSender {
         });
     }
 
+    // Original method for plain text emails
     public void sendEmail(String toEmail, String subject, String body) {
         try {
             Session session = createEmailSession();
@@ -46,6 +46,58 @@ public class EmailSender {
             System.err.println("❌ Failed to send email to " + toEmail);
             e.printStackTrace();
             throw new RuntimeException("Failed to send email", e);
+        }
+    }
+
+    // Method to send email with LogoCultify.png attachment
+    public void sendEmailWithAttachment(String toEmail, String subject, String body, String prenom, String username) {
+        try {
+            Session session = createEmailSession();
+
+            // Create MimeMessage
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(FROM_EMAIL));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+            message.setSubject(subject);
+
+            // Create the message body part
+            MimeBodyPart textPart = new MimeBodyPart();
+            String personalizedBody = body.replace("{prenom}", prenom).replace("{username}", username);
+            textPart.setText(personalizedBody);
+
+            // Create the attachment part
+            MimeBodyPart attachmentPart = new MimeBodyPart();
+            // Access LogoCultify.png from resources
+            InputStream imageStream = getClass().getResourceAsStream("/images/LogoCultify.png");
+            if (imageStream == null) {
+                throw new IOException("LogoCultify.png not found in resources");
+            }
+
+            // Read the image into a byte array
+            byte[] imageBytes = imageStream.readAllBytes();
+            imageStream.close();
+
+            // Attach the image using ByteArrayDataSource
+            ByteArrayDataSource dataSource = new ByteArrayDataSource(imageBytes, "image/png");
+            attachmentPart.setDataHandler(new DataHandler(dataSource));
+            attachmentPart.setFileName("LogoCultify.png");
+
+            // Create Multipart
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(textPart);
+            multipart.addBodyPart(attachmentPart);
+
+            // Set the multipart content
+            message.setContent(multipart);
+
+            // Send the email
+            Transport.send(message);
+            System.out.println("✅ Email with attachment sent successfully to " + toEmail);
+
+        } catch (MessagingException | IOException e) {
+            System.err.println("❌ Failed to send email with attachment to " + toEmail);
+            e.printStackTrace();
+            throw new RuntimeException("Failed to send email with attachment", e);
         }
     }
 }

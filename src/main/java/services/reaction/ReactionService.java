@@ -165,6 +165,19 @@ public class ReactionService implements Service<Reaction> {
         return results;
     }
 
+    public Reaction getById(int id) throws SQLException {
+        String query = "SELECT * FROM reaction WHERE id=?";
+        try (PreparedStatement pst = con.prepareStatement(query)) {
+            pst.setInt(1, id);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToReaction(rs);
+                }
+            }
+        }
+        return null;
+    }
+
     private Reaction mapResultSetToReaction(ResultSet rs) throws SQLException {
         Reaction reaction = new Reaction();
         reaction.setId(rs.getInt("id"));

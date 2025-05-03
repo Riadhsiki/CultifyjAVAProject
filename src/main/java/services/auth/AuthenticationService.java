@@ -16,7 +16,7 @@ public class AuthenticationService {
     private final Connection con;
     private final UserService userService;
     private final Map<String, LoginAttempt> loginAttempts;
-    private static final int SESSION_TIMEOUT_MINUTES = 60; // Match LoginController
+    private static final int SESSION_TIMEOUT_MINUTES = 60;
     private static final int MAX_LOGIN_ATTEMPTS = 5;
     private static final int LOCKOUT_DURATION_MINUTES = 15;
     private static final int RATE_LIMIT_WINDOW_MINUTES = 1;
@@ -86,6 +86,38 @@ public class AuthenticationService {
         return sessionToken;
     }
 
+    public String loginWithBiometrics(String biometricId, String ipAddress) throws SQLException {
+        LoginAttempt attempt = loginAttempts.get(biometricId);
+        if (attempt != null) {
+            if (attempt.isLocked()) {
+                throw new SecurityException("Account is temporarily locked. Please try again later.");
+            }
+            if (attempt.isRateLimited()) {
+                throw new SecurityException("Too many login attempts. Please wait a moment and try again.");
+            }
+        }
+
+        String sql = "SELECT id, username FROM user WHERE biometric_id = ?";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setString(1, biometricId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                int userId = rs.getInt("id");
+                String username = rs.getString("username");
+                loginAttempts.remove(biometricId);
+                String sessionToken = generateSessionToken();
+                createSession(sessionToken, userId, ipAddress);
+                System.out.println("Biometric login successful for user: " + username);
+                System.out.println("Generated session token: " + sessionToken);
+                return sessionToken;
+            }
+        }
+
+        recordFailedAttempt(biometricId);
+        System.out.println("Biometric login failed: No user found for biometric ID " + biometricId);
+        return null;
+    }
+
     public boolean logout(String sessionToken) {
         String sql = "DELETE FROM sessions WHERE session_token = ?";
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
@@ -142,14 +174,6 @@ public class AuthenticationService {
                     System.out.println("Session expired for token: " + sessionToken);
                     return false;
                 }
-                // Optionally re-enable IP check with proper handling
-                /*
-                String storedIp = rs.getString("ip_address");
-                if (!currentIpAddress.equals(storedIp)) {
-                    System.out.println("IP mismatch for session token: " + sessionToken + ", stored: " + storedIp + ", current: " + currentIpAddress);
-                    return false;
-                }
-                */
                 System.out.println("Session validated for token: " + sessionToken);
                 return true;
             }
@@ -216,26 +240,16 @@ public class AuthenticationService {
     }
 
     public boolean initiatePasswordReset(String email) {
-        // Placeholder for future implementation
         System.out.println("Password reset requested for email: " + email);
         return false;
     }
 
-    private static class SessionInfo {
-        private final int userId;
-        private final String ipAddress;
-
-        public SessionInfo(int userId, String ipAddress) {
-            this.userId = userId;
-            this.ipAddress = ipAddress;
-        }
-
-        public int getUserId() {
-            return userId;
-        }
-
-        public String getIpAddress() {
-            return ipAddress;
+    public User getUserById(int userId) {
+        try {
+            return userService.getById(userId);
+        } catch (SQLException e) {
+            System.err.println("Error fetching user by ID: " + e.getMessage());
+            return null;
         }
     }
 

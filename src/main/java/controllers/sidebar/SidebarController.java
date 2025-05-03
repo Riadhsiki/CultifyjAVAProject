@@ -25,6 +25,11 @@ public class SidebarController {
     @FXML private Button btnCreateArt;
     @FXML private Button btnMyPortfolio;
     @FXML private Button btnLogout;
+    @FXML private Button btnEventAdmin;
+    @FXML private Button btnEventUser;
+    @FXML private Button btnManageReservations;
+    @FXML private Button btnAddEvent;
+    @FXML private Button btnQuit;
 
     private AuthenticationService authService;
     private static final String LOGIN_FXML = "/auth/Login.fxml";
@@ -53,13 +58,6 @@ public class SidebarController {
             showLoginAlertAndRedirect();
             return;
         }
-
-        // Temporarily bypass role check for testing
-        // if (!authService.hasRole(sessionToken, "Organisateur")) {
-        //     System.out.println("User does not have 'Organisateur' role.");
-        //     showAlert("Access Denied", "You do not have permission to access User Management.");
-        //     return;
-        // }
 
         boolean isVisible = userManagementSubmenu.isVisible();
         userManagementSubmenu.setVisible(!isVisible);
@@ -110,6 +108,31 @@ public class SidebarController {
         navigateTo(LOGIN_FXML, "Login");
     }
 
+    @FXML
+    private void navigateToEventAdmin(ActionEvent event) {
+        navigateTo("/event/TableView.fxml", "Event Admin"); // Fixed from /event/CardView.fxml
+    }
+
+    @FXML
+    private void navigateToEventUser(ActionEvent event) {
+        navigateTo("/event/CardView.fxml", "Event User");
+    }
+
+    @FXML
+    private void navigateToAdminReservations(ActionEvent event) {
+        navigateTo("/reservation/DetailReservation.fxml", "Manage Reservations");
+    }
+
+    @FXML
+    private void navigateToAddEvent(ActionEvent event) {
+        navigateTo("/event/AjouterEvent.fxml", "Add Event");
+    }
+
+    @FXML
+    private void quit(ActionEvent event) {
+        System.exit(0);
+    }
+
     private void checkAuthAndNavigate(String fxmlPath, String title) {
         String sessionToken = SessionManager.getInstance().getSessionToken();
         String username = SessionManager.getInstance().getCurrentUsername();
@@ -124,7 +147,6 @@ public class SidebarController {
             return;
         }
         try {
-            // Test authentication service
             System.out.println("Validating user with authService");
             if (authService.getCurrentUser(sessionToken) == null) {
                 System.out.println("authService.getCurrentUser returned null");

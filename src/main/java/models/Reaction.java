@@ -30,7 +30,7 @@ public class Reaction {
     }
 
     // Getters and setters
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 

@@ -7,10 +7,11 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <?import java.lang.String?>
@@ -18,63 +19,62 @@
             xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controllers.auth.LoginController">
     <stylesheets>
-        <String fx:value="/styles/login.css" />
+        <String fx:value="/styles/auth.css" />
     </stylesheets>
     <center>
         <VBox alignment="CENTER" spacing="25.0" styleClass="login-container">
             <padding>
                 <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
             </padding>
-
+            <!-- Logo -->
+            <ImageView fx:id="logoImageView">
+                <image>
+                    <Image url="@../images/LogoCultify.png" />
+                </image>
+                <fitWidth>100.0</fitWidth>
+                <fitHeight>100.0</fitHeight>
+                <preserveRatio>true</preserveRatio>
+            </ImageView>
             <!-- Welcome Header -->
-            <Label text="Welcome to CultureSketch" styleClass="welcome-label">
-                <font>
-                    <Font name="System Bold" size="36.0" />
-                </font>
-            </Label>
-
+            <Label text="Welcome to Cultify" styleClass="welcome-label" />
             <!-- Error/Success Messages -->
             <Text fx:id="errorMessage" styleClass="error-message" text="Error message"
                   managed="false" visible="false" />
             <Text fx:id="successMessage" styleClass="success-message" text="Success message"
                   managed="false" visible="false" />
-
             <!-- Login Card -->
             <VBox alignment="CENTER" spacing="20.0" styleClass="login-card">
                 <padding>
                     <Insets bottom="30.0" left="40.0" right="40.0" top="30.0" />
                 </padding>
-
                 <!-- Input Fields -->
                 <VBox spacing="20.0">
                     <HBox alignment="CENTER_LEFT" spacing="15.0">
                         <Label text="Username/Email:" styleClass="input-label" prefWidth="120.0" />
                         <TextField fx:id="usernameField" prefWidth="250.0" promptText="Enter username or email"
-                                   styleClass="input-field" />
+                                   styleClass="form-field" />
                     </HBox>
-
                     <HBox alignment="CENTER_LEFT" spacing="15.0">
                         <Label text="Password:" styleClass="input-label" prefWidth="120.0" />
                         <PasswordField fx:id="passwordField" prefWidth="250.0" promptText="Enter your password"
-                                       styleClass="input-field" />
+                                       styleClass="form-field" />
                     </HBox>
-
                     <HBox alignment="CENTER_LEFT" spacing="15.0">
                         <CheckBox fx:id="rememberMeCheckbox" text="Remember me" styleClass="checkbox" />
                     </HBox>
                 </VBox>
-
                 <!-- Login Button -->
                 <Button fx:id="loginButton" onAction="#handleLogin" text="Sign In"
-                        styleClass="login-button" prefHeight="45.0" prefWidth="200.0" />
-
+                        styleClass="action-button" prefHeight="45.0" prefWidth="200.0" />
+                <!-- Fingerprint Login Button -->
+                <Button fx:id="fingerprintLoginButton" onAction="#handleFingerprintLogin" text="Sign In with Fingerprint"
+                        styleClass="action-button" prefHeight="45.0" prefWidth="200.0" />
                 <!-- Links -->
                 <HBox alignment="CENTER" spacing="10.0">
-                    <Label text="New to CultureSketch?" styleClass="link-label" />
+                    <Label text="New to Cultify?" styleClass="form-label" />
                     <Hyperlink onAction="#navigateToRegister" text="Create an Account"
                                styleClass="hyperlink" />
                 </HBox>
-
                 <Hyperlink onAction="#navigateToForgotPassword" text="Forgot Password?"
                            styleClass="hyperlink" />
             </VBox>

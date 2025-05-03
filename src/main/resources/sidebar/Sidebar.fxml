@@ -83,7 +83,7 @@
                 </VBox.margin>
             </Button>
 
-            <!-- New Art-Related Buttons -->
+            <!-- Art-Related Buttons -->
             <Button fx:id="btnBrowseArt"
                     mnemonicParsing="false"
                     onAction="#navigateToBrowseArt"
@@ -120,6 +120,56 @@
                 </VBox.margin>
             </Button>
 
+            <!-- New Buttons for Event Admin and Event User -->
+            <Button fx:id="btnEventAdmin"
+                    mnemonicParsing="false"
+                    onAction="#navigateToEventAdmin"
+                    prefHeight="50.0"
+                    prefWidth="220.0"
+                    styleClass="sidebar-button"
+                    text="Event Admin">
+                <VBox.margin>
+                    <Insets bottom="10.0" />
+                </VBox.margin>
+            </Button>
+
+            <Button fx:id="btnEventUser"
+                    mnemonicParsing="false"
+                    onAction="#navigateToEventUser"
+                    prefHeight="50.0"
+                    prefWidth="220.0"
+                    styleClass="sidebar-button"
+                    text="Event User">
+                <VBox.margin>
+                    <Insets bottom="10.0" />
+                </VBox.margin>
+            </Button>
+
+            <!-- Existing Buttons -->
+            <Button fx:id="btnManageReservations"
+                    mnemonicParsing="false"
+                    onAction="#navigateToAdminReservations"
+                    prefHeight="50.0"
+                    prefWidth="220.0"
+                    styleClass="sidebar-button"
+                    text="Manage Reservations">
+                <VBox.margin>
+                    <Insets bottom="10.0" />
+                </VBox.margin>
+            </Button>
+
+            <Button fx:id="btnAddEvent"
+                    mnemonicParsing="false"
+                    onAction="#navigateToAddEvent"
+                    prefHeight="50.0"
+                    prefWidth="220.0"
+                    styleClass="sidebar-button"
+                    text="Add Event">
+                <VBox.margin>
+                    <Insets bottom="20.0" />
+                </VBox.margin>
+            </Button>
+
             <!-- Spacer -->
             <VBox VBox.vgrow="ALWAYS" />
 
@@ -131,6 +181,19 @@
                     prefWidth="220.0"
                     styleClass="logout-button"
                     text="DÉCONNEXION">
+                <VBox.margin>
+                    <Insets bottom="20.0" />
+                </VBox.margin>
+            </Button>
+
+            <!-- Quit Button -->
+            <Button fx:id="btnQuit"
+                    mnemonicParsing="false"
+                    onAction="#quit"
+                    prefHeight="50.0"
+                    prefWidth="220.0"
+                    styleClass="logout-button"
+                    text="Quit">
                 <VBox.margin>
                     <Insets bottom="20.0" />
                 </VBox.margin>

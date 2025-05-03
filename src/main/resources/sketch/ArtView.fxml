@@ -7,11 +7,15 @@
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.image.ImageView?>
 
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controllers.sketch.ArtViewController"
             prefWidth="900.0" prefHeight="600.0"
-            style="-fx-background-color: linear-gradient(to bottom right, #f0f8ff, #e6f2ff);">
+            style="-fx-background-image: url('/images/LogoCultify2.png'); -fx-background-size: cover;">
+    <left>
+        <fx:include source="/sidebar/Sidebar.fxml"/>
+    </left>
+
     <top>
         <VBox spacing="10" style="-fx-background-color: #4a86e8; -fx-background-radius: 0 0 10 10;">
             <padding>

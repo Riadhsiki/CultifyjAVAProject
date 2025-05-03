@@ -1,46 +1,194 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.ImageView?>
 
-<BorderPane prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.user.AfficherUsersController" style="-fx-background-image: url('/images/LogoCultify2.png'); -fx-background-size: cover;">
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controllers.sketch.ArtViewController"
+            prefWidth="900.0" prefHeight="600.0"
+            style="-fx-background-image: url('/images/LogoCultify2.png'); -fx-background-size: cover;">
     <left>
         <fx:include source="/sidebar/Sidebar.fxml"/>
     </left>
-    <center>
-        <AnchorPane>
-            <children>
-                <Text layoutX="316.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Liste des Utilisateurs" textAlignment="CENTER" wrappingWidth="169.13409423828125" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+
+    <top>
+        <VBox spacing="10" style="-fx-background-color: #4a86e8; -fx-background-radius: 0 0 10 10;">
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
+            <HBox alignment="CENTER_LEFT">
+                <Label text="My Portfolio" style="-fx-text-fill: white;">
                     <font>
-                        <Font name="System Bold" size="14.0"/>
+                        <Font name="System Bold" size="24"/>
                     </font>
-                </Text>
+                    <effect>
+                        <DropShadow color="#00000066" radius="3" spread="0.1"/>
+                    </effect>
+                </Label>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="backButton" text="Back to Dashboard"
+                        style="-fx-background-color: #f39c12; -fx-text-fill: white;"
+                        onAction="#handleBackButton">
+                    <padding>
+                        <Insets top="5" right="10" bottom="5" left="10"/>
+                    </padding>
+                    <effect>
+                        <InnerShadow choke="0.1" radius="3" width="2" height="2" color="#00000066"/>
+                    </effect>
+                </Button>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="View and manage your sketches" style="-fx-text-fill: #f0f8ff;">
+                    <font>
+                        <Font size="14"/>
+                    </font>
+                </Label>
+            </HBox>
+        </VBox>
+    </top>
 
-                <!-- Button and Search Container -->
-                <HBox layoutX="25.0" layoutY="50.0" spacing="10.0" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="50.0">
-                    <children>
-                        <TextField fx:id="searchField" promptText="Search by username..." prefWidth="200.0" />
-                        <Button fx:id="addUserButton" mnemonicParsing="false" onAction="#openAddUserPage" text="Ajouter Utilisateur"/>
-                        <Button fx:id="profileButton" mnemonicParsing="false" onAction="#navigateToProfile" text="Mon Profil"/>
-                        <Button fx:id="viewDetailsButton" mnemonicParsing="false" onAction="#viewSelectedUserDetails" text="Voir Détails" disable="true"/>
-                    </children>
-                </HBox>
+    <center>
+        <VBox spacing="15" style="-fx-background-color: white; -fx-background-radius: 10;">
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
 
-                <ScrollPane layoutX="25.0" layoutY="90.0" prefHeight="385.0" prefWidth="750.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="90.0">
-                    <content>
-                        <ListView fx:id="userListView" prefHeight="385.0" prefWidth="750.0"/>
-                    </content>
-                </ScrollPane>
-            </children>
-        </AnchorPane>
+            <TabPane fx:id="viewTabPane" VBox.vgrow="ALWAYS">
+                <Tab text="Grid View" closable="false">
+                    <ScrollPane fitToWidth="true" style="-fx-background: transparent;">
+                        <content>
+                            <TilePane fx:id="sketchTilePane" hgap="15" vgap="15" prefColumns="3"
+                                      style="-fx-background-color: transparent;" alignment="CENTER">
+                                <padding>
+                                    <Insets top="10" right="10" bottom="10" left="10"/>
+                                </padding>
+                            </TilePane>
+                        </content>
+                    </ScrollPane>
+                </Tab>
+                <Tab text="List View" closable="false">
+                    <TableView fx:id="sketchTableView" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="thumbnailColumn" text="Thumbnail" prefWidth="100" />
+                            <TableColumn fx:id="titleColumn" text="Title" prefWidth="150" />
+                            <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="250" />
+                            <TableColumn fx:id="createdAtColumn" text="Created" prefWidth="100" />
+                            <TableColumn fx:id="publicColumn" text="Public" prefWidth="60" />
+                            <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="150" />
+                        </columns>
+                    </TableView>
+                </Tab>
+                <Tab text="Public Sketches" closable="false">
+                    <ScrollPane fitToWidth="true" style="-fx-background: transparent;">
+                        <content>
+                            <TilePane fx:id="publicSketchTilePane" hgap="15" vgap="15" prefColumns="3"
+                                      style="-fx-background-color: transparent;" alignment="CENTER">
+                                <padding>
+                                    <Insets top="10" right="10" bottom="10" left="10"/>
+                                </padding>
+                            </TilePane>
+                        </content>
+                    </ScrollPane>
+                </Tab>
+            </TabPane>
+
+            <HBox spacing="10" alignment="CENTER">
+                <Button fx:id="refreshButton" text="Refresh"
+                        style="-fx-background-color: #3498db; -fx-text-fill: white;"
+                        onAction="#handleRefresh">
+                    <padding>
+                        <Insets top="5" right="15" bottom="5" left="15"/>
+                    </padding>
+                    <effect>
+                        <InnerShadow choke="0.1" radius="3" width="2" height="2" color="#00000066"/>
+                    </effect>
+                </Button>
+            </HBox>
+        </VBox>
     </center>
+
+    <right>
+        <VBox fx:id="detailPane" spacing="10" style="-fx-background-color: white; -fx-background-radius: 10;"
+              prefWidth="300.0" visible="false" managed="false">
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
+            <Label fx:id="detailTitle" text="Sketch Title" style="-fx-font-weight: bold; -fx-text-fill: #4a86e8;">
+                <font>
+                    <Font size="18"/>
+                </font>
+            </Label>
+            <Label fx:id="detailUsername" text="By: Username" style="-fx-font-weight: bold;"/>
+            <ImageView fx:id="detailImageView" fitWidth="270" fitHeight="200" preserveRatio="true">
+                <effect>
+                    <DropShadow color="#00000040" radius="5" spread="0.05"/>
+                </effect>
+            </ImageView>
+            <Label text="Description:" style="-fx-font-weight: bold;"/>
+            <TextArea fx:id="detailDescription" prefHeight="100" editable="false" wrapText="true"/>
+            <Label text="Created:" style="-fx-font-weight: bold;"/>
+            <Label fx:id="detailCreatedAt"/>
+            <CheckBox fx:id="detailIsPublic" text="Public" disable="true"/>
+            <Label text="Reactions:" style="-fx-font-weight: bold;"/>
+            <HBox fx:id="reactionBox" spacing="5">
+                <Button fx:id="likeButton" text="Like" style="-fx-background-color: #3498db; -fx-text-fill: white;"
+                        onAction="#handleLike"/>
+                <Button fx:id="loveButton" text="Love" style="-fx-background-color: #e91e63; -fx-text-fill: white;"
+                        onAction="#handleLove"/>
+                <Button fx:id="ideaButton" text="Idea" style="-fx-background-color: #f1c40f; -fx-text-fill: white;"
+                        onAction="#handleIdea"/>
+            </HBox>
+            <Label text="Comments:" style="-fx-font-weight: bold;"/>
+            <ScrollPane fx:id="commentScrollPane" fitToWidth="true" prefHeight="100">
+                <content>
+                    <VBox fx:id="commentBox" spacing="5"/>
+                </content>
+            </ScrollPane>
+            <TextArea fx:id="newCommentArea" promptText="Add a comment..." wrapText="true"/>
+            <Button fx:id="addCommentButton" text="Post Comment"
+                    style="-fx-background-color: #27ae60; -fx-text-fill: white;"
+                    onAction="#handleAddComment"/>
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button fx:id="editButton" text="Edit"
+                        style="-fx-background-color: #27ae60; -fx-text-fill: white;"
+                        onAction="#handleEdit">
+                    <effect>
+                        <InnerShadow choke="0.1" radius="3" width="2" height="2" color="#00000066"/>
+                    </effect>
+                </Button>
+                <Button fx:id="deleteButton" text="Delete"
+                        style="-fx-background-color: #e74c3c; -fx-text-fill: white;"
+                        onAction="#handleDelete">
+                    <effect>
+                        <InnerShadow choke="0.1" radius="3" width="2" height="2" color="#00000066"/>
+                    </effect>
+                </Button>
+                <Button fx:id="shareButton" text="Share"
+                        style="-fx-background-color: #9b59b6; -fx-text-fill: white;"
+                        onAction="#handleShare">
+                    <effect>
+                        <InnerShadow choke="0.1" radius="3" width="2" height="2" color="#00000066"/>
+                    </effect>
+                </Button>
+                <Button fx:id="closeDetailButton" text="Close"
+                        style="-fx-background-color: #7f8c8d; -fx-text-fill: white;"
+                        onAction="#handleCloseDetail">
+                    <effect>
+                        <InnerShadow choke="0.1" radius="3" width="2" height="2" color="#00000066"/>
+                    </effect>
+                </Button>
+            </HBox>
+        </VBox>
+    </right>
+
+    <bottom>
+        <HBox style="-fx-background-color: #f5f5f5; -fx-padding: 5;" alignment="CENTER_RIGHT">
+            <Label text="© 2025 CultureSketch Studio" style="-fx-text-fill: #888888;"/>
+        </HBox>
+    </bottom>
 </BorderPane>

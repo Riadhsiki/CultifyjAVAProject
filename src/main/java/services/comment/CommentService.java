@@ -117,21 +117,9 @@ public class CommentService implements Service<Comment> {
         return null;
     }
 
-    private Comment mapResultSetToComment(ResultSet rs) throws SQLException {
-        Comment comment = new Comment();
-        comment.setId(rs.getInt("id"));
-        comment.setSketchId(rs.getInt("sketch_id"));
-        comment.setUserId(rs.getInt("user_id"));
-        comment.setContent(rs.getString("content"));
-        comment.setCreatedAt(rs.getTimestamp("created_at"));
-        comment.setIsEdited(rs.getBoolean("is_edited"));
-        return comment;
-    }
-
-    // Get comments with user information
     public List<Object[]> getCommentsWithUserInfo(int sketchId) throws SQLException {
         List<Object[]> results = new ArrayList<>();
-        String query = "SELECT c.*, u.username, u.profilePicture FROM comment c " +
+        String query = "SELECT c.*, u.username FROM comment c " +
                 "JOIN user u ON c.user_id = u.id " +
                 "WHERE c.sketch_id = ? " +
                 "ORDER BY c.created_at DESC";
@@ -142,15 +130,13 @@ public class CommentService implements Service<Comment> {
                 while (rs.next()) {
                     Comment comment = mapResultSetToComment(rs);
                     String username = rs.getString("username");
-                    String profilePicture = rs.getString("profilePicture");
-                    results.add(new Object[]{comment, username, profilePicture});
+                    results.add(new Object[]{comment, username, null}); // profilePicture set to null
                 }
             }
         }
         return results;
     }
 
-    // Count comments for a sketch
     public int countCommentsBySketchId(int sketchId) throws SQLException {
         String query = "SELECT COUNT(*) FROM comment WHERE sketch_id = ?";
         try (PreparedStatement pst = con.prepareStatement(query)) {
@@ -162,5 +148,16 @@ public class CommentService implements Service<Comment> {
             }
         }
         return 0;
+    }
+
+    private Comment mapResultSetToComment(ResultSet rs) throws SQLException {
+        Comment comment = new Comment();
+        comment.setId(rs.getInt("id"));
+        comment.setSketchId(rs.getInt("sketch_id"));
+        comment.setUserId(rs.getInt("user_id"));
+        comment.setContent(rs.getString("content"));
+        comment.setCreatedAt(rs.getTimestamp("created_at"));
+        comment.setIsEdited(rs.getBoolean("is_edited"));
+        return comment;
     }
 }
