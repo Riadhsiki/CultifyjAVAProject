@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="Controllers.ReclamationController.ReclamationList"
+            prefHeight="600.0" prefWidth="800.0">
+
+    <VBox spacing="10" AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0"
+          AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0">
+
+        <Label text="Liste des Réclamations" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+
+        <!-- Filtrage, recherche et tri -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <ComboBox fx:id="filterStatusComboBox" promptText="Filtrer par statut"/>
+            <ComboBox fx:id="filterTypeComboBox" promptText="Filtrer par type"/>
+            <ComboBox fx:id="filterPrioriteComboBox" promptText="Filtrer par priorité"/>
+            <Region HBox.hgrow="ALWAYS" />
+            <TextField fx:id="searchField" promptText="Rechercher..." prefWidth="200"/>
+            <Button text="Rechercher" onAction="#handleSearch"/>
+        </HBox>
+
+        <!-- Options de tri -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Trier par:" />
+            <ComboBox fx:id="sortComboBox" />
+            <CheckBox fx:id="ascendingCheckBox" text="Ordre croissant" selected="true" />
+        </HBox>
+
+        <!-- Liste des réclamations -->
+        <ListView fx:id="reclamationListView" VBox.vgrow="ALWAYS"/>
+
+        <!-- Boutons d'action -->
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <Button text="Actualiser" onAction="#refreshList"/>
+            <Button text="Nouvelle Réclamation" onAction="#newReclamation"/>
+        </HBox>
+    </VBox>
+
+</AnchorPane>
