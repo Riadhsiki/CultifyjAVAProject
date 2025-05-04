@@ -1,50 +1,19 @@
-### Maven ###
+IntelliJ IDEA
+
+.idea/ *.iml
+
+Maven
+
 target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
 
-### Build Directories ###
-bin/
-build/
-out/
-!**/src/main/**/build/  # Keep build files for main source
-!**/src/test/**/build/  # Keep build files for test source
+Logs
 
-### IntelliJ IDEA ###
-.idea/
-*.iml
-*.iws
-*.ipr
-!/.mvn/wrapper/maven-wrapper.jar  # Ensure Maven wrapper is kept
-
-### Eclipse ###
-.classpath
-.project
-.settings/
-.factorypath
-.springBeans
-.sts4-cache/
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
-.vscode/
-
-### Logs and Temp Files ###
 *.log
-*.tmp
-*.bak
 
-### System Files ###
-.DS_Store
-Thumbs.db
+Dependency directories
 
-### Local Configuration ###
-*.properties
-*.cfg
-.env
+node_modules/
+
+Optional: Uploads directory (if it contains temporary or user-generated files)
+
+uploads/
