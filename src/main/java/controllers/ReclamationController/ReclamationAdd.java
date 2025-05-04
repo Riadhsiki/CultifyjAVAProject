@@ -1,7 +1,7 @@
-package Controllers.ReclamationController;
+package controllers.ReclamationController;
 
-import Entities.Reclamation;
-import Services.ReclamationService;
+import models.Reclamation;
+import services.ReclamationService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import java.net.URL?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controllers.ReponseController.ReponseListAdmin"
+            prefHeight="600.0" prefWidth="1150.0" styleClass="anchor-pane">
+    <stylesheets>
+        <URL value="@/styles/style.css" />
+    </stylesheets>
+    <left>
+        <fx:include source="/sidebar/Sidebar.fxml" />
+    </left>
+    <center>
+        <AnchorPane styleClass="anchor-pane">
+            <VBox fx:id="mainPane" styleClass="form-vbox" prefHeight="600.0" prefWidth="900.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                <children>
+                    <Label text="Liste des Réponses" styleClass="form-title" />
+                    <HBox styleClass="header-hbox" spacing="10" alignment="CENTER_LEFT">
+                        <children>
+                            <TextField fx:id="searchField" promptText="Rechercher par titre" prefWidth="200.0" />
+                            <Button fx:id="searchButton" text="Rechercher" styleClass="form-submit-button" onAction="#handleSearch" />
+                            <Button fx:id="addButton" text="Ajouter une réponse" styleClass="form-submit-button" onAction="#handleAdd" />
+                            <Button fx:id="refreshButton" text="Actualiser" styleClass="form-cancel-button" onAction="#handleRefresh" />
+                        </children>
+                    </HBox>
+                    <ListView fx:id="reponsesListView" styleClass="list-view" VBox.vgrow="ALWAYS" />
+                </children>
+            </VBox>
+        </AnchorPane>
+    </center>
+</BorderPane>

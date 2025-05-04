@@ -8,10 +8,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import services.auth.AuthenticationService;
 import utils.SessionManager;
+
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -24,28 +26,36 @@ public class SidebarController {
     @FXML private Button btnBrowseArt;
     @FXML private Button btnCreateArt;
     @FXML private Button btnMyPortfolio;
-    @FXML private Button btnLogout;
     @FXML private Button btnEventAdmin;
     @FXML private Button btnEventUser;
     @FXML private Button btnManageReservations;
     @FXML private Button btnAddEvent;
+    @FXML private Button btnReclamations;
+    @FXML private VBox reclamationSubmenu;
+    @FXML private Button btnLogout;
     @FXML private Button btnQuit;
 
     private AuthenticationService authService;
+    private boolean isReclamationSubmenuVisible = false;
     private static final String LOGIN_FXML = "/auth/Login.fxml";
 
     @FXML
     public void initialize() {
         authService = AuthenticationService.getInstance();
+        // Initialize User Management submenu
         userManagementSubmenu.setVisible(false);
         userManagementSubmenu.setManaged(false);
         userManagementSubmenu.setPrefHeight(0);
+        // Initialize Reclamation submenu
+        reclamationSubmenu.setVisible(false);
+        reclamationSubmenu.setManaged(false);
+        reclamationSubmenu.setPrefHeight(0);
         SessionManager.getInstance().dumpPreferences();
         System.out.println("SidebarController initialized");
     }
 
     @FXML
-    private void navigateToHome(ActionEvent event) {
+    private void navigateToHome(MouseEvent event) {
         navigateTo("/home/Home.fxml", "Home");
     }
 
@@ -97,20 +107,8 @@ public class SidebarController {
     }
 
     @FXML
-    private void logOut(ActionEvent event) {
-        String sessionToken = SessionManager.getInstance().getSessionToken();
-        System.out.println("Logging out - Session Token: " + (sessionToken != null ? sessionToken : "null"));
-        if (sessionToken != null) {
-            authService.logout(sessionToken);
-            SessionManager.getInstance().clearSession();
-            System.out.println("Session cleared and logged out.");
-        }
-        navigateTo(LOGIN_FXML, "Login");
-    }
-
-    @FXML
     private void navigateToEventAdmin(ActionEvent event) {
-        navigateTo("/event/TableView.fxml", "Event Admin"); // Fixed from /event/CardView.fxml
+        navigateTo("/event/TableView.fxml", "Event Admin");
     }
 
     @FXML
@@ -126,6 +124,45 @@ public class SidebarController {
     @FXML
     private void navigateToAddEvent(ActionEvent event) {
         navigateTo("/event/AjouterEvent.fxml", "Add Event");
+    }
+
+    @FXML
+    private void toggleReclamationSubmenu(ActionEvent event) {
+        String sessionToken = SessionManager.getInstance().getSessionToken();
+        System.out.println("Toggling Reclamation Submenu - Session Token: " + (sessionToken != null ? sessionToken : "null"));
+        if (!SessionManager.getInstance().isLoggedIn()) {
+            System.out.println("User not authenticated, redirecting to login.");
+            showLoginAlertAndRedirect();
+            return;
+        }
+
+        isReclamationSubmenuVisible = !isReclamationSubmenuVisible;
+        reclamationSubmenu.setVisible(isReclamationSubmenuVisible);
+        reclamationSubmenu.setManaged(isReclamationSubmenuVisible);
+        reclamationSubmenu.setPrefHeight(isReclamationSubmenuVisible ? 80 : 0);
+        System.out.println("Reclamation submenu visibility toggled to: " + isReclamationSubmenuVisible);
+    }
+
+    @FXML
+    private void navigateToReclamationList(ActionEvent event) {
+        checkAuthAndNavigate("/Reclamation/ReclamationListAdmin.fxml", "Reclamation List");
+    }
+
+    @FXML
+    private void navigateToReponseList(ActionEvent event) {
+        checkAuthAndNavigate("/Reponse/ReponseListAdmin.fxml", "Response List");
+    }
+
+    @FXML
+    private void logOut(ActionEvent event) {
+        String sessionToken = SessionManager.getInstance().getSessionToken();
+        System.out.println("Logging out - Session Token: " + (sessionToken != null ? sessionToken : "null"));
+        if (sessionToken != null) {
+            authService.logout(sessionToken);
+            SessionManager.getInstance().clearSession();
+            System.out.println("Session cleared and logged out.");
+        }
+        navigateTo(LOGIN_FXML, "Login");
     }
 
     @FXML

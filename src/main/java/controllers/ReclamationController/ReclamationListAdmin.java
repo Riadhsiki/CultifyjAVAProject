@@ -1,7 +1,8 @@
 package controllers.ReclamationController;
 
 import models.Reclamation;
-import services.ReclamationService;
+import controllers.ReponseController.ReponseAdd;
+import services.reclamation.ReclamationService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-public class ReclamationList implements Initializable {
+public class ReclamationListAdmin implements Initializable {
 
     @FXML
     private ListView<Reclamation> reclamationListView;
@@ -114,6 +115,39 @@ public class ReclamationList implements Initializable {
         }
     }
 
+    @FXML
+    private void addResponse() {
+        // Récupérer la réclamation sélectionnée
+        Reclamation selectedReclamation = reclamationListView.getSelectionModel().getSelectedItem();
+
+        if (selectedReclamation == null) {
+            showAlert(Alert.AlertType.WARNING, "Attention", "Aucune sélection",
+                    "Veuillez sélectionner une réclamation pour ajouter une réponse.");
+            return;
+        }
+
+        try {
+            // Charger le fichier FXML pour ajouter une réponse
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Reponse/ReponseAdd.fxml"));
+            Parent root = loader.load();
+
+            // Récupérer le contrôleur et définir la réclamation sélectionnée
+            controllers.ReponseController.ReponseAdd addResponseController = loader.getController();
+            addResponseController.setSelectedReclamation(selectedReclamation);
+
+            // Réutiliser le stage actuel
+            Stage stage = (Stage) reclamationListView.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Ajouter une réponse à la réclamation #" + selectedReclamation.getId_reclamation());
+            stage.show();
+
+            // Rafraîchir la liste après la soumission de la réponse (en supposant que ReponseAdd renvoie à la liste)
+            // Note : Cela dépend de la logique dans ReponseAdd pour revenir à ReclamationListAdmin
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de l'ouverture du formulaire de réponse", e.getMessage());
+        }
+    }
+
     private void filterReclamations() {
         try {
             String searchText = searchField.getText().toLowerCase();
@@ -150,7 +184,7 @@ public class ReclamationList implements Initializable {
             Parent root = loader.load();
 
             // Récupérer le contrôleur et définir la réclamation à modifier
-            controllers.ReclamationController.ReclamationUpdate updateController = loader.getController();
+            ReclamationUpdate updateController = loader.getController();
             updateController.setReclamation(reclamation);
 
             Stage stage = (Stage) reclamationListView.getScene().getWindow();
@@ -289,6 +323,7 @@ public class ReclamationList implements Initializable {
                 confirmButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
                 confirmButton.setOnAction(e -> handleConfirm(reclamation));
 
+                // Ajouter les boutons dans l'ordre : Modifier, Supprimer, Confirmer
                 actionBox.getChildren().addAll(modifyButton, deleteButton, confirmButton);
             } else {
                 actionBox.getChildren().addAll(modifyButton, deleteButton);

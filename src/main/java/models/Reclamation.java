@@ -1,4 +1,4 @@
-package Entities;
+package models;
 
 public class Reclamation {
     private int id_reclamation;

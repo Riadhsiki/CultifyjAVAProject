@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2dae73f0-5630-42ea-89fd-a074e93d5679" name="Changes" comment="integration UserManagement avec module Reclamation complet et correct">
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/controllers/ReclamationController/ReclamationListAdmin.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/controllers/ReponseController/ReponseListAdmin.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/services/reclamation/IServiceReclamation.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/services/reclamation/ReclamationService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/services/reponse/IServiceReponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/services/reponse/ReponseService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/Reclamation/ReclamationListAdmin.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/Reponse/ReponseListAdmin.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Entities/Reclamation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/models/Reclamation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Entities/Reponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/models/Reponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Main/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/Menu/MainMenu.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/ReclamationController/ReclamationAdd.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/ReclamationController/ReclamationAdd.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/ReclamationController/ReclamationList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/ReclamationController/ReclamationList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/ReclamationController/ReclamationUpdate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/ReclamationController/ReclamationUpdate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/ReponseController/ReponseAdd.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/ReponseController/ReponseAdd.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/ReponseController/ReponseList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/ReponseController/ReponseList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/ReponseController/ReponseUpdate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/ReponseController/ReponseUpdate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/sidebar/SidebarController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/sidebar/SidebarController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/services/ReclamationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/services/ReclamationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/services/ReponseService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/services/ReponseService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/utils/MyDataBase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/utils/MyDataBase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/Menu/MainMenu.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/sidebar/Sidebar.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/sidebar/Sidebar.fxml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+        <option value="FxmlFile" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Riadhsiki&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Riadhsiki/CultifyjAVAProject.git&quot;,
+    &quot;accountId&quot;: &quot;2131edaa-7665-479a-977e-fa6ab645f2a0&quot;
+  }
+}</component>
+  <component name="HierarchyBrowserManager">
+    <option name="SCOPE" value="Production" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="2v7oIUET3DQQSOa3TH9ooybLfnu" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Application.Home.executor": "Debug",
+    "Application.Main.executor": "Run",
+    "Maven.UserManagementJAVA [javafx:run].executor": "Debug",
+    "Maven.UserManagementJAVA [org.openjfx:javafx-maven-plugin:0.0.8:run].executor": "Run",
+    "Maven.UserTest [org.openjfx:javafx-maven-plugin:0.0.8:jlink].executor": "Run",
+    "Maven.UserTest [org.openjfx:javafx-maven-plugin:0.0.8:run].executor": "Run",
+    "Maven.cultify [org.openjfx:javafx-maven-plugin:0.0.8:run].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_directory_selection": "C:/pi/UserManagementJAVA/src/main/java",
+    "last_opened_file_path": "C:/pi/UserManagementJAVA/src/main/java/services",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "onboarding.tips.debug.path": "C:/pi/UserManagementJAVA/src/main/java/org/example/Main.java",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "advanced.settings",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="controllers.ReponseController" />
+      <recent name="controllers.user" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\pi\UserManagementJAVA\src\main\java\services" />
+      <recent name="C:\pi\UserManagementJAVA\src\main\resources\Reponse" />
+      <recent name="C:\pi\UserManagementJAVA\src\main\resources\Reclamation" />
+      <recent name="C:\pi\UserManagementJAVA\src\main\java\models" />
+      <recent name="C:\pi\UserManagementJAVA" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\pi\UserManagementJAVA\src\main\resources\event" />
+      <recent name="C:\pi\UserManagementJAVA\src\main\resources" />
+      <recent name="C:\pi\UserManagementJAVA\src\main\resources\UserInteface" />
+      <recent name="C:\pi\UserManagementJAVA\src\main\resources\images" />
+      <recent name="C:\pi\UserManagementJAVA\src\main\resources\Sidebar" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="controllers.ReponseController" />
+      <recent name="controllers.ReclamationController" />
+      <recent name="controllers.Auth" />
+      <recent name="services.user" />
+      <recent name="services" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="UserManagementJAVA [javafx:run]" type="MavenRunConfiguration" factoryName="Maven" temporary="true">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="cmdOptions" />
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="javafx:run" />
+              </list>
+            </option>
+            <option name="multimoduleDir" />
+            <option name="pomFileName" value="pom.xml" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="projectsCmdOptionValues">
+              <list />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Maven.UserManagementJAVA [javafx:run]" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.26053.27" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.26053.27" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2dae73f0-5630-42ea-89fd-a074e93d5679" name="Changes" comment="" />
+      <created>1743505397523</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1743505397523</updated>
+      <workItem from="1743505399179" duration="362000" />
+      <workItem from="1743507139462" duration="46000" />
+      <workItem from="1743983295928" duration="626000" />
+      <workItem from="1744029764975" duration="4121000" />
+      <workItem from="1744215244701" duration="39000" />
+      <workItem from="1744234207292" duration="115000" />
+      <workItem from="1744311613644" duration="2129000" />
+      <workItem from="1744327464575" duration="835000" />
+      <workItem from="1744328410422" duration="2584000" />
+      <workItem from="1744354462130" duration="1594000" />
+      <workItem from="1744500341496" duration="518000" />
+      <workItem from="1744536199593" duration="32621000" />
+      <workItem from="1744635010787" duration="2376000" />
+      <workItem from="1744925753393" duration="9101000" />
+      <workItem from="1745006873767" duration="6089000" />
+      <workItem from="1745025099832" duration="4760000" />
+      <workItem from="1745065765610" duration="8851000" />
+      <workItem from="1745086099582" duration="16587000" />
+      <workItem from="1745152236336" duration="675000" />
+      <workItem from="1745153356000" duration="316000" />
+      <workItem from="1745174318647" duration="4820000" />
+      <workItem from="1745260076997" duration="3035000" />
+      <workItem from="1745282754868" duration="25000" />
+      <workItem from="1745345870650" duration="2153000" />
+      <workItem from="1745358788545" duration="9027000" />
+      <workItem from="1745370337676" duration="1428000" />
+      <workItem from="1745506463931" duration="360000" />
+      <workItem from="1745506907147" duration="79000" />
+      <workItem from="1745539584453" duration="757000" />
+      <workItem from="1745591604039" duration="11578000" />
+      <workItem from="1745692536124" duration="8017000" />
+      <workItem from="1745766169875" duration="23449000" />
+      <workItem from="1745841641713" duration="798000" />
+      <workItem from="1745844779684" duration="1620000" />
+      <workItem from="1746048401870" duration="9742000" />
+      <workItem from="1746146176056" duration="1411000" />
+      <workItem from="1746294442770" duration="10534000" />
+      <workItem from="1746326324784" duration="2168000" />
+    </task>
+    <task id="LOCAL-00001" summary="Login Interface Registration and reset password with the logic">
+      <option name="closed" value="true" />
+      <created>1745067761784</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1745067761784</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Design des interfaces">
+      <option name="closed" value="true" />
+      <created>1745114887383</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1745114887383</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Design des interfacesAuthentication HashPassword and Session Implementation">
+      <option name="closed" value="true" />
+      <created>1745261133829</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1745261133829</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Login and Authentication functionnal">
+      <option name="closed" value="true" />
+      <created>1745359962766</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1745359962766</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Login and Authentication functionnal">
+      <option name="closed" value="true" />
+      <created>1745360222936</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1745360222936</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Added Reaction and Comments to the project">
+      <option name="closed" value="true" />
+      <created>1745725210418</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1745725210418</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Added Reaction and Comments to the project">
+      <option name="closed" value="true" />
+      <created>1745725347703</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1745725347703</updated>
+    </task>
+    <task id="LOCAL-00008" summary="ajout de donne biometrique pour une login avec empreinte et correction des interfaces design">
+      <option name="closed" value="true" />
+      <created>1746295029686</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1746295029686</updated>
+    </task>
+    <task id="LOCAL-00009" summary="integration UserManagement avec module Reclamation complet et correct">
+      <option name="closed" value="true" />
+      <created>1746327739548</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1746327739548</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Login Interface Registration and reset password with the logic" />
+    <MESSAGE value="Design des interfaces" />
+    <MESSAGE value="Design des interfacesAuthentication HashPassword and Session Implementation" />
+    <MESSAGE value="Login and Authentication functionnal" />
+    <MESSAGE value="Added Reaction and Comments to the project" />
+    <MESSAGE value="ajout de donne biometrique pour une login avec empreinte et correction des interfaces design" />
+    <MESSAGE value="integration UserManagement avec module Reclamation complet et correct" />
+    <option name="LAST_COMMIT_MESSAGE" value="integration UserManagement avec module Reclamation complet et correct" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

@@ -1,7 +1,7 @@
-package Controllers.ReponseController;
+package controllers.ReponseController;
 
-import Entities.Reponse;
-import Services.ReponseService;
+import models.Reponse;
+import services.ReponseService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
