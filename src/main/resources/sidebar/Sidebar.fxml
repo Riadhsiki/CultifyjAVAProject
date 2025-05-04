@@ -62,13 +62,15 @@
                           styleClass="submenu-container"
                           visible="false">
                         <children>
-                            <Button mnemonicParsing="false"
+                            <Button fx:id="btnAddUser"
+                                    mnemonicParsing="false"
                                     onAction="#navigateToAddUser"
                                     prefHeight="30.0"
                                     prefWidth="200.0"
                                     styleClass="submenu-button"
                                     text="Add User" />
-                            <Button mnemonicParsing="false"
+                            <Button fx:id="btnUserList"
+                                    mnemonicParsing="false"
                                     onAction="#navigateToUserList"
                                     prefHeight="30.0"
                                     prefWidth="200.0"
@@ -140,7 +142,6 @@
                         </VBox.margin>
                     </Button>
 
-                    <!-- Association submenu container (hidden by default) -->
                     <VBox fx:id="associationSubmenu"
                           managed="false"
                           prefHeight="0.0"
@@ -148,23 +149,26 @@
                           styleClass="submenu-container"
                           visible="false">
                         <children>
-                            <Button mnemonicParsing="false"
+                            <Button fx:id="btnAssociationUser"
+                                    mnemonicParsing="false"
                                     onAction="#navigateToAssociationUser"
                                     prefHeight="30.0"
                                     prefWidth="200.0"
                                     styleClass="submenu-button"
-                                    text="Associations utilisateur" />
-                            <Button mnemonicParsing="false"
+                                    text="Associations User" />
+                            <Button fx:id="btnAssociationAdmin"
+                                    mnemonicParsing="false"
                                     onAction="#navigateToAssociationAdmin"
                                     prefHeight="30.0"
                                     prefWidth="200.0"
                                     styleClass="submenu-button"
-                                    text="Associations admin" />
+                                    text="Associations Admin" />
                         </children>
                     </VBox>
 
                     <!-- Don Button -->
-                    <Button mnemonicParsing="false"
+                    <Button fx:id="btnDons"
+                            mnemonicParsing="false"
                             onAction="#navigateToDons"
                             prefHeight="40.0"
                             prefWidth="220.0"
@@ -223,6 +227,43 @@
                             <Insets bottom="5.0" />
                         </VBox.margin>
                     </Button>
+
+                    <!-- Reclamation Section -->
+                    <Button fx:id="btnReclamations"
+                            mnemonicParsing="false"
+                            onAction="#toggleReclamationSubmenu"
+                            prefHeight="40.0"
+                            prefWidth="220.0"
+                            styleClass="sidebar-button"
+                            text="Reclamations">
+                        <VBox.margin>
+                            <Insets bottom="5.0" />
+                        </VBox.margin>
+                    </Button>
+
+                    <VBox fx:id="reclamationSubmenu"
+                          managed="false"
+                          prefHeight="0.0"
+                          prefWidth="220.0"
+                          styleClass="submenu-container"
+                          visible="false">
+                        <children>
+                            <Button fx:id="btnReclamationList"
+                                    mnemonicParsing="false"
+                                    onAction="#navigateToReclamationList"
+                                    prefHeight="30.0"
+                                    prefWidth="200.0"
+                                    styleClass="submenu-button"
+                                    text="Reclamation List" />
+                            <Button fx:id="btnReponseList"
+                                    mnemonicParsing="false"
+                                    onAction="#navigateToReponseList"
+                                    prefHeight="30.0"
+                                    prefWidth="200.0"
+                                    styleClass="submenu-button"
+                                    text="Response List" />
+                        </children>
+                    </VBox>
 
                     <!-- Spacer -->
                     <VBox VBox.vgrow="ALWAYS" />

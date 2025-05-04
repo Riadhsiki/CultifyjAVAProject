@@ -165,7 +165,7 @@ public class LoginController {
         PauseTransition pause = new PauseTransition(Duration.seconds(1));
         pause.setOnFinished(e -> {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/sidebar/Sidebar.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/userinterfaces/Dashboard.fxml"));
                 if (loader.getLocation() == null) {
                     showError("Dashboard page not found");
                     return;

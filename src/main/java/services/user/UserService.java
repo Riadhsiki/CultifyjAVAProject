@@ -14,6 +14,7 @@ import java.util.List;
 public class UserService implements Service<User> {
     private Connection con;
     private EventService eventService;
+
     public UserService() {
         con = DataSource.getInstance().getConnection();
         eventService = new EventService();
@@ -151,6 +152,41 @@ public class UserService implements Service<User> {
         return null;
     }
 
+    public void changePassword(String username, String newPassword) throws SQLException {
+        User user = getByUsername(username);
+        if (user == null) {
+            throw new SQLException("User not found.");
+        }
+        user.setPassword(PasswordHasher.hash(newPassword));
+        update(user);
+    }
+
+    public void updateUserRoles(User user, boolean grantAdmin) throws SQLException {
+        String currentRoles = user.getRoles();
+        String newRoles;
+        if (grantAdmin) {
+            // Add admin role if not already present
+            if (currentRoles == null || currentRoles.isEmpty()) {
+                newRoles = "Admin";
+            } else if (!currentRoles.contains("Admin")) {
+                newRoles = currentRoles + ",Admin";
+            } else {
+                return; // Already admin, no update needed
+            }
+        } else {
+            // Remove admin role
+            if (currentRoles == null || !currentRoles.contains("Admin")) {
+                return; // Not admin, no update needed
+            }
+            newRoles = currentRoles.replace(",Admin", "").replace("Admin,", "").replace("Admin", "");
+            if (newRoles.isEmpty()) {
+                newRoles = "User"; // Default to User if no roles remain
+            }
+        }
+        user.setRoles(newRoles);
+        update(user);
+    }
+
     private User mapResultSetToUser(ResultSet rs) throws SQLException {
         Float montantAPayer = rs.getFloat("montantAPayer");
         if (rs.wasNull()) {
@@ -264,6 +300,7 @@ public class UserService implements Service<User> {
         // Step 5: Update the user in the database
         update(user);
     }
+
     public String getRoleByUsername(String username) throws SQLException {
         String query = "SELECT roles FROM user WHERE username = ?";
         try (PreparedStatement pst = con.prepareStatement(query)) {

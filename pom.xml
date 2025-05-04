@@ -141,6 +141,11 @@
             <artifactId>stripe-java</artifactId>
             <version>26.5.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.12.0</version>
+        </dependency>
 
         <!-- Java Activation Framework -->
         <dependency>

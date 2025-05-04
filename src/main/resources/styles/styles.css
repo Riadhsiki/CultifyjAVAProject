@@ -1,0 +1,84 @@
+
+.users-pane {
+    -fx-background-color: #ecf0f1;
+}
+
+/* Center VBox */
+.users-vbox {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #2c3e50;
+    -fx-border-width: 2;
+    -fx-padding: 20;
+}
+
+/* Header Section */
+.users-header {
+    -fx-padding: 10 0 20 0;
+    -fx-alignment: center-left;
+}
+
+/* Title */
+.users-title {
+    -fx-font-family: "Verdana";
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Controls Container */
+.users-controls-container {
+    -fx-spacing: 10;
+    -fx-padding: 10;
+}
+
+/* Text Field */
+.users-text-field {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #2c3e50;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 8;
+    -fx-font-family: "Verdana";
+    -fx-font-size: 14px;
+    -fx-text-fill: #2c3e50;
+    -fx-pref-width: 300;
+}
+
+.users-text-field:hover, .users-text-field:focused {
+    -fx-border-color: #1abc9c;
+}
+
+/* Buttons */
+.users-button {
+    -fx-background-color: #34495e;
+    -fx-text-fill: #ecf0f1;
+    -fx-font-family: "Verdana";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-padding: 8 15;
+    -fx-cursor: hand;
+}
+
+.users-button:hover {
+    -fx-background-color: #1abc9c;
+}
+
+/* List View */
+.users-list-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #2c3e50;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+}
+
+/* Placeholder Label */
+.users-placeholder-label {
+    -fx-font-family: "Verdana";
+    -fx-font-size: 14px;
+    -fx-text-fill: #7f8c8d;
+}

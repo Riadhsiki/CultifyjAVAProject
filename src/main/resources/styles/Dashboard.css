@@ -1,0 +1,26 @@
+
+.dashboard-main {
+    -fx-background-color: #ecf0f1; /* Light background to contrast sidebar/topbar */
+}
+
+.content-container {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #2c3e50;
+    -fx-border-width: 2;
+    -fx-padding: 20;
+}
+
+.welcome-label {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-alignment: center;
+}
+
+.info-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #2c3e50;
+    -fx-alignment: center;
+}

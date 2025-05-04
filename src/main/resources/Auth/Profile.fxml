@@ -1,33 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<?import java.net.URL?>
+        <?import javafx.geometry.Insets?>
+        <?import javafx.scene.control.*?>
+        <?import javafx.scene.image.*?>
+        <?import javafx.scene.layout.*?>
+        <?import javafx.scene.text.*?>
+        <?import java.net.URL?>
 
-<BorderPane prefHeight="700.0" prefWidth="600.0" styleClass="root-pane"
-            xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane fx:id="mainBorderPane" prefHeight="600.0" prefWidth="900.0" styleClass="profile-pane"
+            xmlns="http://javafx.com/javafx/21.0.2" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controllers.auth.ProfileController">
     <stylesheets>
         <URL value="@/styles/profile.css" />
     </stylesheets>
     <left>
-        <fx:include source="/sidebar/Sidebar.fxml" />
+        <fx:include source="/sidebar/SideBar.fxml" />
     </left>
     <center>
-        <VBox styleClass="form-vbox" prefHeight="600.0" prefWidth="550.0" BorderPane.alignment="CENTER">
+        <VBox styleClass="profile-vbox" prefWidth="650.0" BorderPane.alignment="CENTER">
             <children>
-                <Label text="Your Profile" styleClass="form-title">
-                    <font>
-                        <Font name="Verdana" size="24.0" />
-                    </font>
-                </Label>
-
-                <VBox styleClass="form-fields-container" spacing="15.0">
+                <!-- Header Section -->
+                <HBox styleClass="profile-header" alignment="CENTER_LEFT" spacing="15.0">
                     <children>
-                        <!-- Profile Picture with ImageView -->
+                        <Label text="Your Profile" styleClass="profile-title">
+                            <font>
+                                <Font name="Verdana" size="30.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </HBox>
+
+                <!-- Form Fields -->
+                <VBox styleClass="profile-fields-container" spacing="10.0" VBox.vgrow="ALWAYS">
+                    <children>
+                        <!-- Profile Picture -->
                         <HBox alignment="CENTER" spacing="10.0">
                             <children>
                                 <ImageView fx:id="profilePicView" styleClass="profile-pic" fitWidth="100.0" fitHeight="100.0" preserveRatio="true" />
@@ -35,96 +41,109 @@
                         </HBox>
                         <HBox alignment="CENTER" spacing="10.0">
                             <children>
-                                <TextField fx:id="imagePathField" styleClass="form-textfield" editable="false" promptText="Select an image..." prefWidth="300.0" />
-                                <Button fx:id="browseButton" onAction="#handleBrowse" text="Browse..." styleClass="browse-button" />
-                                <Label fx:id="imageErrorLabel" styleClass="error-label" />
+                                <TextField fx:id="imagePathField" styleClass="profile-text-field" editable="false" promptText="Select an image..." prefWidth="300.0" />
+                                <Button fx:id="browseButton" onAction="#handleBrowse" text="Browse..." styleClass="profile-button" />
+                                <Label fx:id="imageErrorLabel" styleClass="profile-error-label" />
                             </children>
                         </HBox>
-                        <Label fx:id="imagePreviewLabel" styleClass="image-preview-label" />
+                        <Label fx:id="imagePreviewLabel" styleClass="profile-preview-label" text="" />
 
+                        <!-- Username -->
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
-                                <Label text="Username:" styleClass="form-label" />
-                                <TextField fx:id="usernameField" styleClass="form-textfield" editable="false" promptText="Your username" />
-                                <Label fx:id="usernameErrorLabel" styleClass="error-label" />
-                            </children>
-                        </HBox>
-
-                        <HBox alignment="CENTER_LEFT" spacing="10.0">
-                            <children>
-                                <Label text="First Name:" styleClass="form-label" />
-                                <TextField fx:id="firstNameField" styleClass="form-textfield" promptText="Enter first name" />
-                                <Label fx:id="firstNameErrorLabel" styleClass="error-label" />
+                                <Label text="Username" styleClass="profile-label" prefWidth="120.0" />
+                                <TextField fx:id="usernameField" styleClass="profile-text-field" editable="false" promptText="Your username" prefWidth="300.0" />
+                                <Label fx:id="usernameErrorLabel" styleClass="profile-error-label" />
                             </children>
                         </HBox>
 
+                        <!-- First Name -->
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
-                                <Label text="Last Name:" styleClass="form-label" />
-                                <TextField fx:id="lastNameField" styleClass="form-textfield" promptText="Enter last name" />
-                                <Label fx:id="lastNameErrorLabel" styleClass="error-label" />
+                                <Label text="First Name" styleClass="profile-label" prefWidth="120.0" />
+                                <TextField fx:id="firstNameField" styleClass="profile-text-field" promptText="Enter first name" prefWidth="300.0" />
+                                <Label fx:id="firstNameErrorLabel" styleClass="profile-error-label" />
                             </children>
                         </HBox>
 
+                        <!-- Last Name -->
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
-                                <Label text="Email:" styleClass="form-label" />
-                                <TextField fx:id="emailField" styleClass="form-textfield" promptText="Enter your email" />
-                                <Label fx:id="emailErrorLabel" styleClass="error-label" />
+                                <Label text="Last Name" styleClass="profile-label" prefWidth="120.0" />
+                                <TextField fx:id="lastNameField" styleClass="profile-text-field" promptText="Enter last name" prefWidth="300.0" />
+                                <Label fx:id="lastNameErrorLabel" styleClass="profile-error-label" />
                             </children>
                         </HBox>
 
+                        <!-- Email -->
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
-                                <Label text="Phone Number:" styleClass="form-label" />
-                                <TextField fx:id="phoneNumberField" styleClass="form-textfield" promptText="8 digits" />
-                                <Label fx:id="phoneNumberErrorLabel" styleClass="error-label" />
+                                <Label text="Email" styleClass="profile-label" prefWidth="120.0" />
+                                <TextField fx:id="emailField" styleClass="profile-text-field" promptText="Enter your email" prefWidth="300.0" />
+                                <Label fx:id="emailErrorLabel" styleClass="profile-error-label" />
                             </children>
                         </HBox>
 
+                        <!-- Phone Number -->
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
-                                <Label text="Gender:" styleClass="form-label" />
-                                <TextField fx:id="genderField" styleClass="form-textfield" editable="false" promptText="Gender" />
-                                <Label fx:id="genderErrorLabel" styleClass="error-label" />
+                                <Label text="Phone Number" styleClass="profile-label" prefWidth="120.0" />
+                                <TextField fx:id="phoneNumberField" styleClass="profile-text-field" promptText="8 digits" prefWidth="300.0" />
+                                <Label fx:id="phoneNumberErrorLabel" styleClass="profile-error-label" />
                             </children>
                         </HBox>
 
+                        <!-- Gender -->
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
-                                <Label text="Age:" styleClass="form-label" />
-                                <TextField fx:id="ageField" styleClass="form-textfield" editable="false" promptText="Age" />
-                                <Label fx:id="ageErrorLabel" styleClass="error-label" />
+                                <Label text="Gender" styleClass="profile-label" prefWidth="120.0" />
+                                <TextField fx:id="genderField" styleClass="profile-text-field" editable="false" promptText="Gender" prefWidth="300.0" />
+                                <Label fx:id="genderErrorLabel" styleClass="profile-error-label" />
                             </children>
                         </HBox>
 
+                        <!-- Age -->
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
-                                <Label text="Role:" styleClass="form-label" />
-                                <TextField fx:id="roleField" styleClass="form-textfield" editable="false" promptText="Role" />
-                                <Label fx:id="roleErrorLabel" styleClass="error-label" />
+                                <Label text="Age" styleClass="profile-label" prefWidth="120.0" />
+                                <TextField fx:id="ageField" styleClass="profile-text-field" editable="false" promptText="Age" prefWidth="300.0" />
+                                <Label fx:id="ageErrorLabel" styleClass="profile-error-label" />
                             </children>
                         </HBox>
 
+                        <!-- Role -->
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
-                                <Label text="Amount Due:" styleClass="form-label" />
-                                <TextField fx:id="montantAPayerField" styleClass="form-textfield" editable="false" promptText="Amount due" />
-                                <Label fx:id="montantAPayerErrorLabel" styleClass="error-label" />
+                                <Label text="Role" styleClass="profile-label" prefWidth="120.0" />
+                                <TextField fx:id="roleField" styleClass="profile-text-field" editable="false" promptText="Role" prefWidth="300.0" />
+                                <Label fx:id="roleErrorLabel" styleClass="profile-error-label" />
+                            </children>
+                        </HBox>
+
+                        <!-- Amount Due -->
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                            <children>
+                                <Label text="Amount Due" styleClass="profile-label" prefWidth="120.0" />
+                                <TextField fx:id="montantAPayerField" styleClass="profile-text-field" editable="false" promptText="Amount due" prefWidth="300.0" />
+                                <Label fx:id="montantAPayerErrorLabel" styleClass="profile-error-label" />
                             </children>
                         </HBox>
                     </children>
                 </VBox>
 
-                <HBox alignment="CENTER" spacing="20.0" styleClass="form-buttons-container">
+                <!-- Buttons -->
+                <HBox styleClass="profile-buttons-container" alignment="CENTER" spacing="20.0">
                     <children>
-                        <Button fx:id="saveButton" onAction="#handleSaveProfile" text="Save Changes" styleClass="form-submit-button" />
-                        <Button fx:id="changePasswordButton" onAction="#handleChangePassword" text="Change Password" styleClass="form-cancel-button" />
-                        <Button fx:id="backButton" onAction="#handleBack" text="Back" styleClass="form-cancel-button" />
-                        <Button fx:id="logoutButton" onAction="#handleLogout" text="Logout" styleClass="form-cancel-button" />
+                        <Button fx:id="saveButton" onAction="#handleSaveProfile" text="Save Changes" styleClass="profile-submit-button" />
+                        <Button fx:id="changePasswordButton" onAction="#handleChangePassword" text="Change Password" styleClass="profile-button" />
+                        <Button fx:id="backButton" onAction="#handleBack" text="Back" styleClass="profile-button" />
+                        <Button fx:id="logoutButton" onAction="#handleLogout" text="Logout" styleClass="profile-button" />
                     </children>
                 </HBox>
             </children>
+            <padding>
+                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+            </padding>
         </VBox>
     </center>
 </BorderPane>

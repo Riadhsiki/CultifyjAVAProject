@@ -10,7 +10,7 @@
         <URL value="@/Association/styles.css" />
     </stylesheets>
     <left>
-        <fx:include source="/SideBar/SideBar.fxml" />
+        <fx:include source="/sidebar/SideBar.fxml" />
     </left>
     <center>
         <VBox styleClass="don-vbox" prefWidth="650.0" BorderPane.alignment="CENTER">

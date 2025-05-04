@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.shape.SVGPath?>
+<?import java.net.URL?>
+
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controllers.event.DetailEvent"
+            prefWidth="1200" prefHeight="700" styleClass="main-container">
+
+    <stylesheets>
+        <URL value="@/style/style.css" />
+    </stylesheets>
+
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="art-scroll-pane"
+                AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+                AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+        <VBox spacing="15" styleClass="content-container">
+            <HBox spacing="15" alignment="CENTER_LEFT" styleClass="header-container">
+                <!-- Logo et titre -->
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <ImageView fx:id="logoImageView" fitWidth="40" fitHeight="40" preserveRatio="true"/>
+                    <Label text="Événements Artistiques" styleClass="main-title"/>
+                </HBox>
+
+                <!-- Barre de recherche avec icône -->
+                <HBox alignment="CENTER_LEFT" styleClass="search-box">
+                    <TextField fx:id="searchField" promptText="Rechercher par titre..." styleClass="search-field"
+                               onAction="#searchByTitle"/>
+                    <Button onAction="#searchByTitle" styleClass="search-button">
+                        <graphic>
+                            <SVGPath content="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                                     styleClass="search-icon"/>
+                        </graphic>
+                    </Button>
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_RIGHT">
+                    <Button text="Ajouter un événement" onAction="#redirectToAddForm" styleClass="btn-primary, add-btn">
+                        <graphic>
+                            <SVGPath content="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" styleClass="button-icon-white"/>
+                        </graphic>
+                    </Button>
+                    <Button text="Ajouter réservation" onAction="#redirectToAddReservation" styleClass="btn-primary, reserve-btn">
+                        <graphic>
+                            <SVGPath content="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z" styleClass="button-icon-white"/>
+                        </graphic>
+                    </Button>
+                    <Button fx:id="btnShowStats" text="Statistiques" onAction="#toggleStatistics" styleClass="btn-secondary, stats-btn">
+                        <graphic>
+                            <SVGPath content="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" styleClass="button-icon-primary"/>
+                        </graphic>
+                    </Button>
+                    <MenuButton text="Trier par" styleClass="sort-menu">
+                        <items>
+                            <MenuItem text="Date" onAction="#sortByDate">
+                                <graphic>
+                                    <SVGPath content="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z" styleClass="menu-icon"/>
+                                </graphic>
+                            </MenuItem>
+                            <MenuItem text="Prix" onAction="#sortByPrice">
+                                <graphic>
+                                    <SVGPath content="M11 8h2v3h3v2h-3v3h-2v-3H8v-2h3V8zM20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V6h16v12z" styleClass="menu-icon"/>
+                                </graphic>
+                            </MenuItem>
+                            <MenuItem text="Popularité" onAction="#sortByPopularity">
+                                <graphic>
+                                    <SVGPath content="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z" styleClass="menu-icon"/>
+                                </graphic>
+                            </MenuItem>
+                            <MenuItem text="Effacer le tri" onAction="#clearSorting">
+                                <graphic>
+                                    <SVGPath content="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" styleClass="menu-icon-clear"/>
+                                </graphic>
+                            </MenuItem>
+                        </items>
+                        <graphic>
+                            <SVGPath content="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z" styleClass="menu-icon"/>
+                        </graphic>
+                    </MenuButton>
+                </HBox>
+            </HBox>
+
+            <TableView fx:id="tableView" prefHeight="350" styleClass="art-table">
+                <columns>
+                    <TableColumn fx:id="titreCol" text="Titre" prefWidth="150"/>
+                    <TableColumn fx:id="dateCol" text="Date" prefWidth="100"/>
+                    <TableColumn fx:id="organisationCol" text="Organisation" prefWidth="120"/>
+                    <TableColumn fx:id="capaciteCol" text="Capacité" prefWidth="80"/>
+                    <TableColumn fx:id="nbplacesCol" text="Places dispo" prefWidth="80"/>
+                    <TableColumn fx:id="categorieCol" text="Catégorie" prefWidth="100"/>
+                    <TableColumn fx:id="prixCol" text="Prix (€)" prefWidth="80"/>
+                    <TableColumn fx:id="imageCol" text="Image" prefWidth="200"/>
+                    <TableColumn fx:id="actionCol" text="Actions" prefWidth="150"/>
+                </columns>
+            </TableView>
+
+            <VBox fx:id="statsContainer" spacing="15" styleClass="stats-container" visible="false">
+                <Label text="Statistiques des événements artistiques" styleClass="stats-title"/>
+                <HBox spacing="20">
+                    <PieChart fx:id="categoryPieChart" title="Événements par catégorie" legendVisible="true"
+                              prefWidth="400" prefHeight="300" styleClass="art-chart"/>
+                    <VBox spacing="10" prefWidth="600">
+                        <Label text="Analyse des événements:" styleClass="stats-subtitle"/>
+                        <TextArea fx:id="statsTextArea" editable="false" wrapText="true"
+                                  prefHeight="300" styleClass="stats-text"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </VBox>
+    </ScrollPane>
+
+    <StackPane fx:id="detailsPane" visible="false" styleClass="details-overlay">
+        <VBox spacing="15" alignment="CENTER" maxWidth="800" styleClass="details-container">
+            <HBox alignment="TOP_RIGHT" spacing="10">
+                <Button text="×" onAction="#hideDetails" styleClass="close-button"/>
+            </HBox>
+
+            <ImageView fx:id="detailImageView" fitWidth="500" fitHeight="300" preserveRatio="true" styleClass="detail-image"/>
+            <!-- Boutons Ajouter et Retour -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button text="Ajouter" onAction="#ajouterReservationAction" maxWidth="150" styleClass="btn-primary"/>
+                <Button text="Retour" onAction="#retourVersDetails" maxWidth="150" styleClass="btn-secondary"/>
+            </HBox>
+
+            <Label fx:id="detailTitle" styleClass="detail-title"/>
+
+            <ScrollPane fitToWidth="true" maxHeight="100" styleClass="detail-scroll">
+                <Label fx:id="detailDescription" wrapText="true" styleClass="detail-description"/>
+            </ScrollPane>
+
+            <HBox spacing="30" alignment="CENTER">
+                <VBox spacing="5" alignment="CENTER_LEFT">
+                    <Label text="Date:" styleClass="detail-label-header"/>
+                    <Label fx:id="detailDate" styleClass="detail-label"/>
+                    <Label text="Organisation:" styleClass="detail-label-header"/>
+                    <Label fx:id="detailOrganisation" styleClass="detail-label"/>
+                </VBox>
+
+                <VBox spacing="5" alignment="CENTER_LEFT">
+                    <Label text="Capacité:" styleClass="detail-label-header"/>
+                    <Label fx:id="detailCapacite" styleClass="detail-label"/>
+                    <Label text="Places disponibles:" styleClass="detail-label-header"/>
+                    <Label fx:id="detailNbPlaces" styleClass="detail-label"/>
+                </VBox>
+
+                <VBox spacing="5" alignment="CENTER_LEFT">
+                    <Label text="Catégorie:" styleClass="detail-label-header"/>
+                    <Label fx:id="detailCategorie" styleClass="detail-label"/>
+                    <Label text="Prix:" styleClass="detail-label-header"/>
+                    <Label fx:id="detailPrix" styleClass="detail-label"/>
+                </VBox>
+            </HBox>
+
+            <Button fx:id="reserveButton" text="Réserver" onAction="#handleReservation" styleClass="reserve-button"/>
+        </VBox>
+    </StackPane>
+</AnchorPane>

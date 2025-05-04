@@ -62,10 +62,7 @@
                 </GridPane>
 
                 <HBox spacing="15" alignment="CENTER_RIGHT">
-                    <children>
-                        <Button fx:id="annulerButton" text="Annuler" onAction="#handleAnnuler" prefWidth="100" />
-                        <Button fx:id="ajouterButton" text="Ajouter" onAction="#handleAjouter" prefWidth="100" styleClass="primary-button" />
-                    </children>
+
                     <padding>
                         <Insets top="20.0" />
                     </padding>

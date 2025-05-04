@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.payment.PaymentController" spacing="10" style="-fx-padding: 20;">
+
+    <Label text="Paiement en ligne" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+    <GridPane hgap="10" vgap="10">
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" minWidth="100"/>
+            <ColumnConstraints halignment="LEFT" minWidth="200"/>
+        </columnConstraints>
+
+        <Label text="Événement:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Label fx:id="eventTitleLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Prix:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <Label fx:id="eventPriceLabel" style="-fx-font-weight: bold;" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Date:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <Label fx:id="eventDateLabel" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="Organisation:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <Label fx:id="eventOrganisationLabel" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+    </GridPane>
+
+    <Separator/>
+
+    <TabPane fx:id="paymentMethodTabPane">
+        <tabs>
+            <Tab text="Carte Bancaire">
+                <VBox fx:id="cardPaymentForm" spacing="10" style="-fx-padding: 10;">
+                    <Label text="Numéro de carte:"/>
+                    <TextField fx:id="cardNumberField" promptText="1234 5678 9012 3456"/>
+
+                    <HBox spacing="10">
+                        <VBox spacing="5">
+                            <Label text="Date d'expiration (MM/AA)"/>
+                            <TextField fx:id="cardExpiryField" promptText="MM/AA"/>
+                        </VBox>
+                        <VBox spacing="5">
+                            <Label text="CVV"/>
+                            <TextField fx:id="cardCvvField"/>
+                        </VBox>
+                    </HBox>
+
+                    <Label text="Titulaire de la carte"/>
+                    <TextField fx:id="cardHolderField"/>
+
+                    <Button text="Payer" onAction="#handleCardPayment" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+                </VBox>
+            </Tab>
+
+            <Tab text="PayPal">
+                <VBox fx:id="paypalPaymentForm" spacing="10" style="-fx-padding: 10;">
+                    <Label text="Email PayPal"/>
+                    <TextField fx:id="paypalEmailField"/>
+
+                    <Label text="Mot de passe PayPal"/>
+                    <PasswordField fx:id="paypalPasswordField"/>
+
+                    <Button text="Payer avec PayPal" onAction="#handlePaypalPayment" style="-fx-background-color: #003087; -fx-text-fill: white;"/>
+                </VBox>
+            </Tab>
+        </tabs>
+    </TabPane>
+
+    <Button text="Annuler" onAction="#handleCancel" style="-fx-background-color: #f44336; -fx-text-fill: white;"/>
+</VBox>

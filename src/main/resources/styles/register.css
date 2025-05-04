@@ -1,125 +1,83 @@
-.root-pane {
-    -fx-background-color: #f5f5f5;
-}
-
 .register-container {
-    -fx-alignment: center;
-    -fx-max-width: 500px;
-}
-
-.welcome-label {
-    -fx-text-fill: #333333;
-    -fx-font-weight: bold;
-}
-
-.register-card {
     -fx-background-color: #ffffff;
-    -fx-border-radius: 10px;
-    -fx-background-radius: 10px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
-    -fx-padding: 25px;
 }
 
-.input-label {
-    -fx-text-fill: #555555;
-    -fx-font-size: 14px;
-}
-
-.input-field {
-    -fx-pref-height: 40px;
-    -fx-border-color: #cccccc;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-    -fx-background-color: #ffffff;
-    -fx-padding: 0 10px;
-}
-
-.input-field:focused {
-    -fx-border-color: #007bff;
-}
-
-.radio-button {
-    -fx-text-fill: #555555;
-    -fx-font-size: 14px;
-}
-
-.primary-button {
-    -fx-background-color: #007bff;
-    -fx-text-fill: #ffffff;
-    -fx-font-size: 16px;
+.title-label {
+    -fx-font-size: 28px;
     -fx-font-weight: bold;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-    -fx-cursor: hand;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 0 0 20 0;
 }
 
-.primary-button:hover {
-    -fx-background-color: #0056b3;
+Label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #34495e;
+    -fx-padding: 5 0 2 0;
 }
 
-.secondary-button {
-    -fx-background-color: #6c757d;
+TextField, PasswordField, ComboBox, DatePicker {
+    -fx-pref-height: 35;
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: #dcdcdc;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 5;
+    -fx-font-size: 14px;
+}
+
+TextField:focused, PasswordField:focused, ComboBox:focused, DatePicker:focused {
+    -fx-border-color: #3498db;
+    -fx-border-width: 2;
+}
+
+RadioButton {
+    -fx-font-size: 14px;
+    -fx-text-fill: #34495e;
+}
+
+ImageView {
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.error-text {
+    -fx-fill: #e74c3c;
+    -fx-font-size: 12px;
+    -fx-padding: 5 0;
+}
+
+.success-text {
+    -fx-fill: #2ecc71;
+    -fx-font-size: 12px;
+    -fx-padding: 5 0;
+}
+
+.register-button, .login-button {
+    -fx-background-color: #3498db;
     -fx-text-fill: #ffffff;
     -fx-font-size: 14px;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
     -fx-cursor: hand;
 }
 
-.secondary-button:hover {
-    -fx-background-color: #5a6268;
+.register-button:hover, .login-button:hover {
+    -fx-background-color: #2980b9;
 }
 
-.error-message {
-    -fx-fill: #dc3545;
-    -fx-font-size: 14px;
+.register-button:pressed, .login-button:pressed {
+    -fx-background-color: #1f618d;
 }
 
-.success-message {
-    -fx-fill: #28a745;
-    -fx-font-size: 14px;
-}
-
-.link-label {
-    -fx-text-fill: #555555;
-    -fx-font-size: 14px;
-}
-
-.hyperlink {
-    -fx-text-fill: #007bff;
-    -fx-font-size: 14px;
-    -fx-cursor: hand;
-    -fx-underline: false;
-}
-
-.hyperlink:hover {
-    -fx-text-fill: #0056b3;
-    -fx-underline: true;
-}
-
-.scroll-pane {
+Button#togglePasswordButton {
     -fx-background-color: transparent;
-    -fx-border-color: transparent;
-}
-
-.scroll-pane .viewport {
-    -fx-background-color: transparent;
-}
-
-.scroll-pane .scroll-bar:vertical {
-    -fx-pref-width: 10px;
-    -fx-background-color: transparent;
-}
-
-.scroll-pane .scroll-bar:vertical .track {
-    -fx-background-color: #f5f5f5;
-}
-
-.scroll-pane .scroll-bar:vertical .thumb {
-    -fx-background-color: #cccccc;
-    -fx-background-radius: 5px;
-}
-
-.scroll-pane .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: #aaaaaa;
+    -fx-padding: 5;
 }

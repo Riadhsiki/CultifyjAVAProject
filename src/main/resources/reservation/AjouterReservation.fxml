@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<?import java.net.URL?>
+<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.reservation.AjouterReservation"
+            prefWidth="800" prefHeight="600">
+
+    <VBox alignment="TOP_LEFT" spacing="10" layoutX="50" layoutY="30" prefWidth="700" fx:id="mainContainer">
+        <children>
+            <Label text="Ajouter une Réservation" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+
+            <GridPane hgap="10" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints halignment="RIGHT" />
+                    <ColumnConstraints hgrow="ALWAYS" />
+                </columnConstraints>
+
+                <rowConstraints>
+                    <RowConstraints valignment="CENTER" />
+                </rowConstraints>
+
+                <!-- Ligne 1 - ComboBox pour État -->
+                <Label text="État :" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <ComboBox fx:id="etat" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <!-- Ligne 2 -->
+                <Label text="Date :" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <DatePicker fx:id="dateR" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <!-- Ligne 3 -->
+                <Label text="Thème :" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextField fx:id="theme" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <!-- Ligne 4 -->
+                <Label text="URL :" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <TextField fx:id="url" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                <!-- Ligne 5 - RadioButtons pour Nombre de tickets -->
+                <Label text="Nombre de tickets :" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                <HBox spacing="10" GridPane.rowIndex="4" GridPane.columnIndex="1">
+                    <RadioButton fx:id="ticket1" text="1" toggleGroup="$ticketGroup" styleClass="custom-radio"/>
+                    <RadioButton fx:id="ticket2" text="2" toggleGroup="$ticketGroup" styleClass="custom-radio"/>
+                    <RadioButton fx:id="ticket3" text="3" toggleGroup="$ticketGroup" styleClass="custom-radio"/>
+                    <RadioButton fx:id="ticket4" text="4" toggleGroup="$ticketGroup" styleClass="custom-radio"/>
+                    <RadioButton fx:id="ticket5" text="5" toggleGroup="$ticketGroup" styleClass="custom-radio"/>
+                </HBox>
+            </GridPane>
+
+            <!-- Boutons Ajouter, Retour, et Paiement en ligne -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button text="Ajouter" onAction="#ajouterReservationAction" maxWidth="150" styleClass="btn-primary"/>
+                <Button text="Paiement en ligne" onAction="#handlePaymentAction" maxWidth="150" styleClass="btn-primary"/>
+                <Button text="Retour" onAction="#retourAction" maxWidth="150" styleClass="btn-secondary"/>
+            </HBox>
+
+            <!-- Placeholder for Payment Interface -->
+            <VBox fx:id="paymentContainer" spacing="10" visible="false" managed="false">
+                <!-- Payment.fxml will be loaded here -->
+            </VBox>
+        </children>
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+    </VBox>
+
+    <!-- Ajouter le CSS -->
+    <stylesheets>
+        <URL value="@/styles/style.css"/>
+    </stylesheets>
+</AnchorPane>

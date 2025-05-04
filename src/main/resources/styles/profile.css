@@ -1,116 +1,129 @@
-/* Root pane with background image */
-.root-pane {
-    -fx-background-image: url("../images/LogoCultify.png");
-    -fx-background-size: cover;
-    -fx-background-position: center;
+css
+    /* /profile/styles.css */
+
+    /* Main Pane */
+.profile-pane {
+    -fx-background-color: #ecf0f1;
 }
 
-/* Form container */
-.form-vbox {
-    -fx-background-color: rgba(255, 255, 255, 0.9);
+/* Center VBox */
+.profile-vbox {
+    -fx-background-color: #ffffff;
     -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #2c3e50;
+    -fx-border-width: 2;
     -fx-padding: 20;
-    -fx-alignment: CENTER;
 }
 
-/* Form title */
-.form-title {
-    -fx-font-size: 24px;
+/* Header Section */
+.profile-header {
+    -fx-padding: 10 0 20 0;
+    -fx-alignment: center-left;
+}
+
+/* Title */
+.profile-title {
+    -fx-font-family: "Verdana";
+    -fx-font-size: 30px;
     -fx-font-weight: bold;
-    -fx-text-fill: #333333;
-    -fx-padding: 0 0 20 0;
+    -fx-text-fill: #2c3e50;
 }
 
-/* Form fields container */
-.form-fields-container {
-    -fx-alignment: CENTER;
+/* Fields Container */
+.profile-fields-container {
+    -fx-spacing: 10;
+    -fx-padding: 10;
 }
 
-/* Profile picture styling */
-.profile-pic {
-    -fx-background-radius: 50%;
-    -fx-clip: new Circle(50, 50, 50); /* Makes the image circular */
-}
-
-/* Form labels */
-.form-label {
+/* Labels */
+.profile-label {
+    -fx-font-family: "Verdana";
     -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-text-fill: #333333;
-    -fx-pref-width: 120px;
+    -fx-text-fill: #2c3e50;
+    -fx-min-width: 120;
+    -fx-alignment: center-left;
 }
 
-/* Text fields */
-.form-textfield {
-    -fx-background-color: #F5F5F5;
+/* Text Fields */
+.profile-text-field {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #2c3e50;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 8;
+    -fx-font-family: "Verdana";
+    -fx-font-size: 14px;
+    -fx-text-fill: #2c3e50;
+    -fx-pref-width: 300;
+}
+
+.profile-text-field:hover, .profile-text-field:focused {
+    -fx-border-color: #1abc9c;
+}
+
+/* Profile Picture */
+.profile-pic {
+    -fx-border-color: #2c3e50;
+    -fx-border-width: 2;
+    -fx-border-radius: 50;
+    -fx-background-radius: 50;
+}
+
+/* Error Labels */
+.profile-error-label {
+    -fx-font-family: "Verdana";
+    -fx-font-size: 12px;
+    -fx-text-fill: #e74c3c;
+}
+
+/* Preview Label */
+.profile-preview-label {
+    -fx-font-family: "Verdana";
+    -fx-font-size: 12px;
+    -fx-text-fill: #2c3e50;
+    -fx-alignment: center;
+    -fx-padding: 5 0 0 0;
+}
+
+/* Buttons */
+.profile-button {
+    -fx-background-color: #34495e;
+    -fx-text-fill: #ecf0f1;
+    -fx-font-family: "Verdana";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
     -fx-background-radius: 5;
     -fx-border-radius: 5;
-    -fx-border-color: #E0E0E0;
-    -fx-border-width: 1;
-    -fx-padding: 8;
-    -fx-font-size: 14px;
-    -fx-pref-width: 250px;
-}
-
-/* Error labels */
-.error-label {
-    -fx-text-fill: #FF0000;
-    -fx-font-size: 12px;
-    -fx-padding: 0 0 0 10;
-}
-
-/* Image preview label */
-.image-preview-label {
-    -fx-font-size: 12px;
-    -fx-text-fill: #666666;
-    -fx-padding: 5 0 0 130;
-    -fx-alignment: CENTER;
-}
-
-/* Browse button */
-.browse-button {
-    -fx-background-color: #6C757D;
-    -fx-background-radius: 5;
-    -fx-text-fill: #FFFFFF;
-    -fx-font-size: 12px;
-    -fx-padding: 5 10;
+    -fx-padding: 8 15;
     -fx-cursor: hand;
 }
 
-.browse-button:hover {
-    -fx-background-color: #5A6268;
+.profile-button:hover {
+    -fx-background-color: #1abc9c;
 }
 
-/* Buttons container */
-.form-buttons-container {
-    -fx-padding: 20 0 0 0;
-}
-
-/* Submit button */
-.form-submit-button {
-    -fx-background-color: #28A745;
-    -fx-background-radius: 5;
-    -fx-text-fill: #FFFFFF;
+.profile-submit-button {
+    -fx-background-color: #1abc9c;
+    -fx-text-fill: #ecf0f1;
+    -fx-font-family: "Verdana";
     -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-padding: 10 20;
-    -fx-cursor: hand;
-}
-
-.form-submit-button:hover {
-    -fx-background-color: #218838;
-}
-
-/* Cancel button (used for Change Password, Back, Logout) */
-.form-cancel-button {
-    -fx-background-color: #6C757D;
     -fx-background-radius: 5;
-    -fx-text-fill: #FFFFFF;
-    -fx-font-size: 14px;
-    -fx-padding: 10 20;
+    -fx-border-radius: 5;
+    -fx-padding: 8 15;
     -fx-cursor: hand;
 }
 
-.form-cancel-button:hover {
-    -fx-background-color: #5A6268;
+.profile-submit-button:hover {
+    -fx-background-color: #16a085;
+}
+
+/* Buttons Container */
+.profile-buttons-container {
+    -fx-padding: 20 0 0 0;
+    -fx-alignment: center;
+    -fx-spacing: 20;
 }
