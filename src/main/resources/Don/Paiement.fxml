@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.geometry.Insets?>
+<?import java.net.URL?>
+
+<BorderPane prefHeight="600.0" prefWidth="600.0" styleClass="payment-anchor-pane" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.DonControllers.PaymentWindowController">
+    <stylesheets>
+        <URL value="@/Don/styles.css" />
+        <URL value="@/Association/styles.css" />
+    </stylesheets>
+    <left>
+        <fx:include source="/SideBar/SideBar.fxml" />
+    </left>
+    <center>
+        <VBox spacing="20.0" prefWidth="350.0" BorderPane.alignment="CENTER">
+            <children>
+                <HBox alignment="CENTER">
+                    <children>
+                        <Label styleClass="payment-title" text="Finaliser votre don">
+                            <font>
+                                <Font name="System Bold" size="24.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </HBox>
+                <GridPane hgap="10.0" vgap="10.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="150.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <Label styleClass="payment-label" text="Association:" />
+                        <Label styleClass="payment-label" text="Montant:" GridPane.rowIndex="1" />
+                        <Label styleClass="payment-label" text="Référence:" GridPane.rowIndex="2" />
+                        <Label fx:id="associationLabel" styleClass="payment-value" text="Nom de l'association" GridPane.columnIndex="1" />
+                        <Label fx:id="montantLabel" styleClass="payment-value" text="0.00 TND" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label fx:id="referenceLabel" styleClass="payment-value" text="DON-12345" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                    </children>
+                    <padding>
+                        <Insets top="10.0" right="10.0" bottom="10.0" left="10.0" />
+                    </padding>
+                </GridPane>
+                <Separator />
+                <Label styleClass="payment-section-title" text="Informations de paiement">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Label>
+                <GridPane hgap="10.0" vgap="5.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="150.0" prefWidth="150.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="15.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="15.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="15.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <Label styleClass="payment-label" text="Numéro de carte:" />
+                        <TextField fx:id="cardNumberField" promptText="1212121212121212" GridPane.columnIndex="1" />
+                        <Label fx:id="cardErrorLabel" styleClass="error-label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label styleClass="payment-label" text="Date d'expiration:" GridPane.rowIndex="2" />
+                        <HBox spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                            <children>
+                                <TextField fx:id="expiryMonthField" prefWidth="50.0" promptText="MM" />
+                                <TextField fx:id="expiryYearField" prefWidth="50.0" promptText="AA" />
+                            </children>
+                        </HBox>
+                        <Label fx:id="expiryErrorLabel" styleClass="error-label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label styleClass="payment-label" text="Code CVC:" GridPane.rowIndex="4" />
+                        <TextField fx:id="cvcField" prefWidth="50.0" promptText="123" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <Label fx:id="cvcErrorLabel" styleClass="error-label" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                    </children>
+                    <padding>
+                        <Insets top="10.0" right="10.0" bottom="10.0" left="10.0" />
+                    </padding>
+                </GridPane>
+                <Label fx:id="testModeLabel" styleClass="payment-test-mode" text="Mode test activé: Aucune carte réelle ne sera débitée">
+                    <font>
+                        <Font name="System Italic" size="12.0" />
+                    </font>
+                </Label>
+                <HBox alignment="CENTER" spacing="20.0">
+                    <children>
+                        <Button fx:id="cancelButton" styleClass="payment-cancel-button" text="Annuler" />
+                        <Button fx:id="payButton" defaultButton="true" styleClass="payment-pay-button" text="Payer maintenant" />
+                    </children>
+                    <padding>
+                        <Insets top="20.0" />
+                    </padding>
+                </HBox>
+                <ProgressIndicator fx:id="progressIndicator" visible="false" />
+            </children>
+        </VBox>
+    </center>
+</BorderPane>
