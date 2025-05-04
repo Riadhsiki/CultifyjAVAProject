@@ -1,22 +1,18 @@
-package controllers.AssociationControllers;
+package controllers.associationcontrollers;
 
-import entities.Association;
+import models.Association;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
-import services.AssociationServices;
-import services.AssociationDescriptionIA;
-import javafx.concurrent.Task;
+import services.associationDon.AssociationDescriptionIA;
+import services.associationDon.AssociationServices;
 
 import java.io.File;
 import java.io.IOException;

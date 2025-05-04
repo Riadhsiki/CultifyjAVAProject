@@ -2,18 +2,29 @@ package controllers.DonControllers;
 
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
-import entities.Don;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import services.DonServices;
+import models.Association;
+import models.Don;
+import models.User;
+import services.associationDon.AssociationServices;
+import services.associationDon.DonServices;
+import services.user.UserService;
+import utils.WebhookUtil;
 
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PaymentWindowController {
+    private static final Logger LOGGER = Logger.getLogger(PaymentWindowController.class.getName());
 
     @FXML private Label associationLabel;
     @FXML private Label montantLabel;
@@ -51,168 +62,90 @@ public class PaymentWindowController {
             }
         });
 
-
         cardNumberField.setText(validCardNumber);
         expiryMonthField.setText("12");
         expiryYearField.setText("25");
         cvcField.setText("123");
 
-
         setupInputValidation();
         clearErrorMessages();
-
-
         setupFocusListeners();
-
 
         testModeLabel.setText("Mode test activé: Pour tester une carte qui échoue, utilisez: " + declineCardNumber);
     }
 
-    /**
-     * Initialise les écouteurs de perte de focus pour validation en temps réel
-     */
     private void setupFocusListeners() {
         cardNumberField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal) {
-                validateCardNumber();
-            }
+            if (!newVal) validateCardNumber();
         });
-
         expiryMonthField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal) {
-                validateExpiryDate();
-            }
+            if (!newVal) validateExpiryDate();
         });
-
         expiryYearField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal) {
-                validateExpiryDate();
-            }
+            if (!newVal) validateExpiryDate();
         });
-
         cvcField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal) {
-                validateCVC();
-            }
+            if (!newVal) validateCVC();
         });
     }
-
 
     private void clearErrorMessages() {
         cardErrorLabel.setText("");
         expiryErrorLabel.setText("");
         cvcErrorLabel.setText("");
-
         cardNumberField.getStyleClass().remove("invalid-field");
         expiryMonthField.getStyleClass().remove("invalid-field");
         expiryYearField.getStyleClass().remove("invalid-field");
         cvcField.getStyleClass().remove("invalid-field");
     }
 
-
     private void setupInputValidation() {
-        // Validation du numéro de carte (exactement 16 chiffres)
-        cardNumberField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-
-                String filtered = newValue.replaceAll("[^0-9]", "");
-
-
-                if (filtered.length() > 16) {
-                    filtered = filtered.substring(0, 16);
-                }
-
-
-                if (!filtered.equals(newValue)) {
-                    cardNumberField.setText(filtered);
-                }
+        cardNumberField.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                String filtered = newVal.replaceAll("[^0-9]", "");
+                if (filtered.length() > 16) filtered = filtered.substring(0, 16);
+                if (!filtered.equals(newVal)) cardNumberField.setText(filtered);
             }
         });
 
-        // Validation du mois (1-12)
-        expiryMonthField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                // Ne garder que les chiffres
-                String filtered = newValue.replaceAll("[^0-9]", "");
-
-                // Limiter à 2 caractères
-                if (filtered.length() > 2) {
-                    filtered = filtered.substring(0, 2);
-                }
-
-                // Vérifier si le mois est valide (1-12)
+        expiryMonthField.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                String filtered = newVal.replaceAll("[^0-9]", "");
+                if (filtered.length() > 2) filtered = filtered.substring(0, 2);
                 try {
                     if (!filtered.isEmpty()) {
                         int month = Integer.parseInt(filtered);
-                        if (month > 12) {
-                            filtered = "12"; // Limiter à 12
-                        } else if (month < 1 && filtered.length() >= 2) {
-                            filtered = "01"; // Minimum 1
-                        }
+                        if (month > 12) filtered = "12";
+                        else if (month < 1 && filtered.length() >= 2) filtered = "01";
                     }
-                } catch (NumberFormatException e) {
-
-                }
-
-
-                if (!filtered.equals(newValue)) {
-                    expiryMonthField.setText(filtered);
-                }
+                } catch (NumberFormatException ignored) {}
+                if (!filtered.equals(newVal)) expiryMonthField.setText(filtered);
             }
         });
 
-        expiryYearField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-
-                String filtered = newValue.replaceAll("[^0-9]", "");
-
-
-                if (filtered.length() > 2) {
-                    filtered = filtered.substring(0, 2);
-                }
-
-                // Vérifier si l'année est valide (>= 25)
+        expiryYearField.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                String filtered = newVal.replaceAll("[^0-9]", "");
+                if (filtered.length() > 2) filtered = filtered.substring(0, 2);
                 try {
                     if (!filtered.isEmpty() && filtered.length() >= 2) {
                         int year = Integer.parseInt(filtered);
-                        if (year < 25) {
-                            filtered = "25"; // Minimum 25
-                        }
+                        if (year < 25) filtered = "25";
                     }
-                } catch (NumberFormatException e) {
-                    // Ignorer, car on a déjà filtré pour ne garder que les chiffres
-                }
-
-                // Mettre à jour le champ si la valeur a changé
-                if (!filtered.equals(newValue)) {
-                    expiryYearField.setText(filtered);
-                }
+                } catch (NumberFormatException ignored) {}
+                if (!filtered.equals(newVal)) expiryYearField.setText(filtered);
             }
         });
 
-
-        cvcField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-
-                String filtered = newValue.replaceAll("[^0-9]", "");
-
-
-                if (filtered.length() > 3) {
-                    filtered = filtered.substring(0, 3);
-                }
-
-
-                if (!filtered.equals(newValue)) {
-                    cvcField.setText(filtered);
-                }
+        cvcField.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                String filtered = newVal.replaceAll("[^0-9]", "");
+                if (filtered.length() > 3) filtered = filtered.substring(0, 3);
+                if (!filtered.equals(newVal)) cvcField.setText(filtered);
             }
         });
     }
 
-    /**
-     * Valide le numéro de carte et affiche l'erreur si nécessaire
-     * @return true si le numéro de carte est valide, false sinon
-     */
     private boolean validateCardNumber() {
         String cardNumber = cardNumberField.getText().trim();
         if (cardNumber.isEmpty()) {
@@ -222,36 +155,26 @@ public class PaymentWindowController {
             setFieldError(cardNumberField, cardErrorLabel, "Le numéro de carte doit contenir exactement 16 chiffres");
             return false;
         }
-
-        // Si tout est correct, effacer l'erreur
         clearFieldError(cardNumberField, cardErrorLabel);
         return true;
     }
 
-    /**
-     * Valide la date d'expiration et affiche l'erreur si nécessaire
-     * @return true si la date d'expiration est valide, false sinon
-     */
     private boolean validateExpiryDate() {
         String expiryMonth = expiryMonthField.getText().trim();
         String expiryYear = expiryYearField.getText().trim();
-
         if (expiryMonth.isEmpty() || expiryYear.isEmpty()) {
             setFieldError(expiryMonthField, expiryErrorLabel, "La date d'expiration est requise");
             setFieldError(expiryYearField, expiryErrorLabel, "");
             return false;
         }
-
         try {
             int month = Integer.parseInt(expiryMonth);
             int year = Integer.parseInt(expiryYear);
-
             if (month < 1 || month > 12) {
                 setFieldError(expiryMonthField, expiryErrorLabel, "Le mois d'expiration doit être entre 1 et 12");
                 setFieldError(expiryYearField, expiryErrorLabel, "");
                 return false;
             }
-
             if (year < 25) {
                 setFieldError(expiryYearField, expiryErrorLabel, "L'année d'expiration doit être 25 ou plus");
                 clearFieldError(expiryMonthField, null);
@@ -262,17 +185,11 @@ public class PaymentWindowController {
             setFieldError(expiryYearField, expiryErrorLabel, "");
             return false;
         }
-
-        // Si tout est correct, effacer l'erreur
         clearFieldError(expiryMonthField, expiryErrorLabel);
         clearFieldError(expiryYearField, null);
         return true;
     }
 
-    /**
-     * Valide le code CVC et affiche l'erreur si nécessaire
-     * @return true si le code CVC est valide, false sinon
-     */
     private boolean validateCVC() {
         String cvc = cvcField.getText().trim();
         if (cvc.isEmpty()) {
@@ -282,92 +199,49 @@ public class PaymentWindowController {
             setFieldError(cvcField, cvcErrorLabel, "Le code CVC doit contenir exactement 3 chiffres");
             return false;
         }
-
-        // Si tout est correct, effacer l'erreur
         clearFieldError(cvcField, cvcErrorLabel);
         return true;
     }
 
-    /**
-     * Ajoute une classe d'erreur au champ et définit le message d'erreur
-     * @param field Le champ à marquer comme invalide
-     * @param errorLabel Le label d'erreur à mettre à jour
-     * @param errorMessage Le message d'erreur à afficher
-     */
     private void setFieldError(TextField field, Label errorLabel, String errorMessage) {
         if (!field.getStyleClass().contains("invalid-field")) {
             field.getStyleClass().add("invalid-field");
         }
-
-        if (errorLabel != null) {
-            errorLabel.setText(errorMessage);
-        }
+        if (errorLabel != null) errorLabel.setText(errorMessage);
     }
 
-    /**
-     * Supprime la classe d'erreur du champ et efface le message d'erreur
-     * @param field Le champ à marquer comme valide
-     * @param errorLabel Le label d'erreur à effacer (peut être null)
-     */
     private void clearFieldError(TextField field, Label errorLabel) {
         field.getStyleClass().remove("invalid-field");
-
-        if (errorLabel != null) {
-            errorLabel.setText("");
-        }
+        if (errorLabel != null) errorLabel.setText("");
     }
 
-    /**
-     * Valide tous les champs du formulaire de paiement
-     */
     private void validateAllFields() {
         validateCardNumber();
         validateExpiryDate();
         validateCVC();
     }
 
-    /**
-     * Vérifie si tous les champs sont valides
-     * @return true si tous les champs sont valides, false sinon
-     */
     private boolean isFormValid() {
         return validateCardNumber() && validateExpiryDate() && validateCVC();
     }
 
-    /**
-     * Indique si le paiement a été confirmé
-     * @return true si le paiement est confirmé, false sinon
-     */
     public boolean isPaymentConfirmed() {
         return paymentConfirmed;
     }
 
-    /**
-     * Configure la fenêtre avec les détails du don
-     * @param don Le don à traiter
-     */
     public void setDon(Don don) {
         this.don = don;
-
-        // Mettre à jour l'interface utilisateur avec les détails du don
         associationLabel.setText(don.getAssociation().getNom());
         montantLabel.setText(String.format("%.2f TND", don.getMontant()));
         referenceLabel.setText("DON-" + don.getId());
     }
 
-    /**
-     * Ferme la fenêtre actuelle
-     */
     private void fermerFenetre() {
         Stage stage = (Stage) cancelButton.getScene().getWindow();
         stage.close();
     }
 
-    /**
-     * Traite le paiement en utilisant Stripe
-     */
     private void processPayment() {
-        // Désactiver les boutons et afficher l'indicateur de progression
         toggleControls(false);
         progressIndicator.setVisible(true);
 
@@ -375,21 +249,10 @@ public class PaymentWindowController {
             @Override
             protected Boolean call() throws Exception {
                 try {
-                    // Conversion du montant en centimes pour Stripe (1 TND = 100 centimes)
                     long amountInCents = Math.round(don.getMontant() * 100);
                     String cardNumber = cardNumberField.getText().trim();
-
-                    // Utiliser la méthode de test avec le numéro de carte fourni
                     String description = "Don pour " + don.getAssociation().getNom() + " (ID: " + don.getId() + ")";
-
-                    Charge charge = StripePaymentService.createTestCharge(
-                            amountInCents,
-                            description,
-                            "tnd",
-                            cardNumber
-                    );
-
-                    // Vérifier le statut du paiement
+                    Charge charge = StripePaymentService.createTestCharge(amountInCents, description, "tnd", cardNumber);
                     return charge != null && "succeeded".equals(charge.getStatus());
                 } catch (StripeException e) {
                     e.printStackTrace();
@@ -404,14 +267,87 @@ public class PaymentWindowController {
                     progressIndicator.setVisible(false);
 
                     if (Boolean.TRUE.equals(success)) {
-                        paymentConfirmed = true;  // Définir le paiement comme confirmé
-                        showAlert(Alert.AlertType.INFORMATION, "Paiement réussi",
-                                "Votre don de " + String.format("%.2f TND", don.getMontant()) +
-                                        " à " + don.getAssociation().getNom() + " a été confirmé. Merci !");
-                        fermerFenetre();
+                        paymentConfirmed = true;
+                        try {
+                            // Update donation status
+                            don.setStatus("confirme");
+                            donService.update(don, don.getAssociation().getId());
+
+                            // Webhook notification
+                            try {
+                                AssociationServices associationServices = new AssociationServices();
+                                Association fullAssociation = associationServices.getById(don.getAssociation().getId());
+                                new Thread(() -> {
+                                    boolean notified = WebhookUtil.notifyDonationProgress(fullAssociation);
+                                    Platform.runLater(() -> {
+                                        if (notified) {
+                                            LOGGER.log(Level.INFO, "Association progress notification sent successfully");
+                                        } else {
+                                            LOGGER.log(Level.WARNING, "Failed to notify association progress");
+                                        }
+                                    });
+                                }).start();
+                            } catch (SQLException ex) {
+                                LOGGER.log(Level.WARNING, "Could not load association details for webhook", ex);
+                            }
+
+                            // Send confirmation email
+                            // Inside the succeeded() block of processPayment()
+                            try {
+                                Don updatedDon = donService.getDonDetails(don.getId());
+                                String donorEmail = getUserEmail(updatedDon.getUser().getId());
+                                String donorName = getUserName(updatedDon.getUser().getId());
+                                if (donorEmail != null && !donorEmail.isEmpty()) {
+                                    new Thread(() -> {
+                                        try {
+                                            MailApi.sendConfirmationEmailWithPDF(
+                                                    donorEmail,
+                                                    donorName != null ? donorName : "Donateur",
+                                                    updatedDon.getId(),
+                                                    updatedDon.getMontant(),
+                                                    updatedDon.getAssociation().getNom()
+                                            );
+                                            Platform.runLater(() -> showAlert(Alert.AlertType.INFORMATION, "Envoi d'email", "Un email de confirmation avec reçu PDF a été envoyé au donateur"));
+                                        } catch (Exception ex) {
+                                            Platform.runLater(() -> showAlert(Alert.AlertType.WARNING, "Avertissement", "Le don a été confirmé, mais l'envoi de l'email de confirmation a échoué: " + ex.getMessage()));
+                                        }
+                                    }).start();
+                                } else {
+                                    showAlert(Alert.AlertType.WARNING, "Avertissement", "Le don a été confirmé, mais aucun email n'a été envoyé car l'adresse email est manquante.");
+                                }
+                            } catch (SQLException ex) {
+                                showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la récupération des détails du don: " + ex.getMessage());
+                            }
+
+                            // Show success message
+                            showAlert(Alert.AlertType.INFORMATION, "Paiement réussi",
+                                    "Votre don de " + String.format("%.2f TND", don.getMontant()) +
+                                            " à " + don.getAssociation().getNom() + " a été confirmé. Merci !");
+
+                            // Navigate to ListDon.fxml
+                            try {
+                                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Don/ListDon.fxml"));
+                                Parent root = loader.load();
+                                Stage stage = (Stage) payButton.getScene().getWindow();
+                                double currentWidth = stage.getWidth();
+                                double currentHeight = stage.getHeight();
+                                Scene newScene = new Scene(root);
+                                stage.setScene(newScene);
+                                stage.setWidth(currentWidth);
+                                stage.setHeight(currentHeight);
+                                stage.setTitle("Donations");
+                                stage.centerOnScreen();
+                                stage.show();
+                                System.out.println("Navigated to ListDon with size: " + currentWidth + "x" + currentHeight);
+                            } catch (IOException e) {
+                                showAlert(Alert.AlertType.ERROR, "Erreur de navigation", "Impossible de charger la page des dons: " + e.getMessage());
+                            }
+                        } catch (SQLException e) {
+                            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la mise à jour du don: " + e.getMessage());
+                            toggleControls(true);
+                        }
                     } else {
-                        showAlert(Alert.AlertType.ERROR, "Erreur de paiement",
-                                "Le paiement a été refusé. Veuillez vérifier vos informations et réessayer.");
+                        showAlert(Alert.AlertType.ERROR, "Erreur de paiement", "Le paiement a été refusé. Veuillez vérifier vos informations et réessayer.");
                         toggleControls(true);
                     }
                 });
@@ -421,21 +357,52 @@ public class PaymentWindowController {
             protected void failed() {
                 Platform.runLater(() -> {
                     progressIndicator.setVisible(false);
-                    showAlert(Alert.AlertType.ERROR, "Erreur de paiement",
-                            "Une erreur s'est produite: " + getException().getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Erreur de paiement", "Une erreur s'est produite: " + getException().getMessage());
                     toggleControls(true);
                 });
             }
         };
 
-        // Démarrer la tâche dans un thread séparé
         new Thread(paymentTask).start();
     }
 
-    /**
-     * Active ou désactive les contrôles de l'interface utilisateur
-     * @param enabled true pour activer, false pour désactiver
-     */
+    private String getUserEmail(int userId) {
+        try {
+            UserService userService = new UserService();
+            User user = userService.getById(userId);
+            if (user != null && user.getEmail() != null && !user.getEmail().isEmpty()) {
+                System.out.println("Retrieved user email: " + user.getEmail() + " for userId: " + userId);
+                return user.getEmail();
+            } else {
+                System.err.println("User email not found or empty for userId: " + userId);
+                return null;
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération de l'email de l'utilisateur: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String getUserName(int userId) {
+        try {
+            UserService userService = new UserService();
+            User user = userService.getById(userId);
+            if (user != null) {
+                String name = user.getNom() + " " + user.getPrenom();
+                System.out.println("Retrieved user name: " + name + " for userId: " + userId);
+                return name;
+            } else {
+                System.err.println("User not found for userId: " + userId);
+                return "Donateur";
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération du nom de l'utilisateur: " + e.getMessage());
+            e.printStackTrace();
+            return "Donateur";
+        }
+    }
+
     private void toggleControls(boolean enabled) {
         payButton.setDisable(!enabled);
         cancelButton.setDisable(!enabled);
@@ -445,30 +412,16 @@ public class PaymentWindowController {
         cvcField.setDisable(!enabled);
     }
 
-    /**
-     * Affiche une alerte
-     * @param type Type d'alerte
-     * @param title Titre de l'alerte
-     * @param message Message de l'alerte
-     */
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
-
-        // Appliquer le style CSS
         DialogPane dialogPane = alert.getDialogPane();
-        Scene scene = dialogPane.getScene();
-
-        // Essayer d'appliquer le CSS si disponible
         try {
-            scene.getStylesheets().add(getClass().getResource("/Don/styles.css").toExternalForm());
+            dialogPane.getStylesheets().add(getClass().getResource("/Don/styles.css").toExternalForm());
             dialogPane.getStyleClass().add("custom-alert");
-        } catch (Exception e) {
-            // Ignorer si le CSS n'est pas disponible
-        }
-
+        } catch (Exception ignored) {}
         alert.showAndWait();
     }
 }

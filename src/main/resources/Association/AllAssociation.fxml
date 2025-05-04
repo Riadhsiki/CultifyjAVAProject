@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="mainAnchorPane" prefHeight="600.0" prefWidth="900.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.AssociationControllers.AllAssociation">
+<BorderPane fx:id="mainAnchorPane" prefHeight="600.0" prefWidth="900.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.associationcontrollers.AllAssociation">
     <stylesheets>
         <URL value="@/Association/styles.css" />
     </stylesheets>

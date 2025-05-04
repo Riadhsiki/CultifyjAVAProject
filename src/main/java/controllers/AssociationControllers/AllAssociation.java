@@ -1,7 +1,7 @@
-package controllers.AssociationControllers;
+package controllers.associationcontrollers;
 
-import controllers.MainLayoutController;
-import entities.Association;
+
+import models.Association;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -13,15 +13,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
-import services.AssociationServices;
+import services.associationDon.AssociationServices;
 import utils.PaginationUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -132,12 +132,7 @@ public class AllAssociation {
         }
     }
 
-    private MainLayoutController mainLayoutController;
 
-    // Ajoutez cette méthode pour permettre l'injection du contrôleur principal
-    public void setMainLayoutController(MainLayoutController controller) {
-        this.mainLayoutController = controller;
-    }
 
     private void setupSortHandlers() {
         // Configurer les gestionnaires d'événements pour les en-têtes (Supprimé headerID)

@@ -1,6 +1,6 @@
-package interfaces;
+package Interfaces;
 
-import entities.Don;
+import models.Don;
 
 import java.sql.SQLException;
 import java.util.List;

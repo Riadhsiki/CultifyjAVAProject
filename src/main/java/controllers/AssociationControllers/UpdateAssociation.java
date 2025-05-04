@@ -1,6 +1,6 @@
-package controllers.AssociationControllers;
+package controllers.associationcontrollers;
 
-import entities.Association;
+import models.Association;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,7 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import services.AssociationServices;
+import services.associationDon.AssociationServices;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,7 +90,7 @@ public class UpdateAssociation implements Initializable {
     @FXML
     private Label imageErrorLabel;
 
-    private Association association;
+    private models.Association association;
     private AssociationServices associationServices = new AssociationServices();
     private File selectedImageFile;
 
@@ -382,4 +382,5 @@ public class UpdateAssociation implements Initializable {
                     "Impossible de retourner à la liste des associations: " + e.getMessage());
         }
     }
+
 }

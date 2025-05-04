@@ -1,30 +1,35 @@
-package controllers.AssociationControllers;
+package controllers.associationcontrollers;
 
 import controllers.DonControllers.FaireDon;
-import entities.Association;
+import models.Association;
+import models.User;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.collections.FXCollections;
-import services.AssociationServices;
+import services.associationDon.AssociationServices;
+import services.user.UserService;
 import utils.PaginationUtils;
+import utils.SessionManager;
 
-import java.awt.Desktop;
-import java.io.File;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import javafx.scene.control.ProgressBar;
+import java.util.stream.Collectors;
 
 public class AssociationUserController {
 
@@ -46,7 +51,11 @@ public class AssociationUserController {
     @FXML
     private Label pageInfoLabel;
 
+    @FXML
+    private Label montantAPayerLabel;
+
     private final AssociationServices associationService = new AssociationServices();
+    private final UserService userService = new UserService();
     private static final String IMAGE_DIR = "http://127.0.0.1/cultify/public/uploads/images/";
     private PaginationUtils<Association> paginationUtils;
     private List<Association> allAssociations;
@@ -64,8 +73,10 @@ public class AssociationUserController {
             itemsPerPageComboBox.getItems().addAll(5, 10, 15, 20, 25);
             itemsPerPageComboBox.setValue(10); // Default value
 
-            // Load associations and set up pagination
-            allAssociations = associationService.getAll();
+            // Load associations and filter out those with progress >= 100%
+            allAssociations = associationService.getAll().stream()
+                    .filter(assoc -> assoc.getPourcentageProgression() < 100)
+                    .collect(Collectors.toList());
             paginationUtils = new PaginationUtils<>(allAssociations, 10);
 
             // Configure pagination control
@@ -77,6 +88,9 @@ public class AssociationUserController {
             // Setup listeners
             setupEventListeners();
 
+            // Handle montantAPayer for the current user
+            handleMontantAPayer();
+
         } catch (SQLException e) {
             e.printStackTrace();
             showAlert("Erreur", "Erreur lors du chargement des associations: " + e.getMessage());
@@ -84,7 +98,6 @@ public class AssociationUserController {
     }
 
     private void initSearchCriteria() {
-        // Initialiser la Map des critères
         searchCriteriaMap.put("Nom", "nom");
         searchCriteriaMap.put("Description", "description");
         searchCriteriaMap.put("But", "but");
@@ -93,19 +106,16 @@ public class AssociationUserController {
         searchCriteriaMap.put("Montant", "montant");
         searchCriteriaMap.put("Tous les champs", "tous");
 
-        // Remplir le ComboBox avec les clés de la Map
         searchCriteriaComboBox.setItems(FXCollections.observableArrayList(searchCriteriaMap.keySet()));
         searchCriteriaComboBox.setValue("Nom"); // Valeur par défaut
     }
 
     private void setupEventListeners() {
-        // Pagination change listener
         pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
-            paginationUtils.goToPage(newIndex.intValue() + 1); // +1 because JavaFX pagination is 0-based
+            paginationUtils.goToPage(newIndex.intValue() + 1);
             loadCurrentPage();
         });
 
-        // Items per page change listener
         itemsPerPageComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 paginationUtils.setPageSize(newVal);
@@ -114,7 +124,6 @@ public class AssociationUserController {
             }
         });
 
-        // Search field listener with debounce
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 performSearch(newValue);
@@ -124,7 +133,6 @@ public class AssociationUserController {
             }
         });
 
-        // Search criteria change listener
         searchCriteriaComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 if (searchField.getText() != null && !searchField.getText().isEmpty()) {
@@ -141,9 +149,13 @@ public class AssociationUserController {
         String selectedCriteria = searchCriteriaMap.get(searchCriteriaComboBox.getValue());
 
         if (searchText == null || searchText.isEmpty()) {
-            allAssociations = associationService.getAll();
+            allAssociations = associationService.getAll().stream()
+                    .filter(assoc -> assoc.getPourcentageProgression() < 100)
+                    .collect(Collectors.toList());
         } else {
-            allAssociations = associationService.searchAssociations(searchText, selectedCriteria);
+            allAssociations = associationService.searchAssociations(searchText, selectedCriteria).stream()
+                    .filter(assoc -> assoc.getPourcentageProgression() < 100)
+                    .collect(Collectors.toList());
         }
 
         paginationUtils.updateFullList(allAssociations);
@@ -154,7 +166,7 @@ public class AssociationUserController {
     private void updatePaginationControl() {
         int totalPages = paginationUtils.getTotalPages();
         pagination.setPageCount(totalPages > 0 ? totalPages : 1);
-        pagination.setCurrentPageIndex(paginationUtils.getCurrentPage() - 1); // -1 because JavaFX pagination is 0-based
+        pagination.setCurrentPageIndex(paginationUtils.getCurrentPage() - 1);
 
         updatePageInfoLabel();
     }
@@ -171,8 +183,7 @@ public class AssociationUserController {
         if (totalItems == 0) {
             pageInfoLabel.setText("Aucun résultat");
         } else {
-            pageInfoLabel.setText(String.format("Affichage %d à %d sur %d associations",
-                    startItem, endItem, totalItems));
+            pageInfoLabel.setText(String.format("Affichage %d à %d sur %d associations", startItem, endItem, totalItems));
         }
     }
 
@@ -215,7 +226,6 @@ public class AssociationUserController {
         cardPane.setMinSize(250, 180);
         cardPane.setMaxSize(250, 180);
 
-        // Image
         ImageView imageView = new ImageView();
         String imagePath = association.getImage() != null && !association.getImage().isEmpty()
                 ? IMAGE_DIR + association.getImage()
@@ -242,7 +252,6 @@ public class AssociationUserController {
         title.getStyleClass().add("card-title");
         title.setWrapText(true);
 
-
         VBox scrollContent = new VBox(5);
         scrollContent.setFillWidth(true);
 
@@ -254,7 +263,6 @@ public class AssociationUserController {
         descriptionText.getStyleClass().add("card-description");
         descriptionText.setWrapText(true);
 
-        // But avec texte complet
         Label butLabel = new Label("But:");
         butLabel.getStyleClass().add("card-description");
         butLabel.setStyle("-fx-font-weight: bold;");
@@ -263,7 +271,6 @@ public class AssociationUserController {
         butText.getStyleClass().add("card-description");
         butText.setWrapText(true);
 
-        // Contact avec texte complet
         Label contactLabel = new Label("Contact:");
         contactLabel.getStyleClass().add("card-description");
         contactLabel.setStyle("-fx-font-weight: bold;");
@@ -276,14 +283,8 @@ public class AssociationUserController {
         montant.getStyleClass().add("card-description");
         montant.setWrapText(true);
 
-        // Ajouter tous les labels au contenu scrollable
-        scrollContent.getChildren().addAll(
-                descriptionLabel, descriptionText,
-                butLabel, butText,
-                contactLabel, contactText
-        );
+        scrollContent.getChildren().addAll(descriptionLabel, descriptionText, butLabel, butText, contactLabel, contactText);
 
-        // Créer ScrollPane pour le contenu scrollable
         ScrollPane scrollPane = new ScrollPane(scrollContent);
         scrollPane.setFitToWidth(true);
         scrollPane.setPrefHeight(120);
@@ -291,17 +292,14 @@ public class AssociationUserController {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.getStyleClass().add("card-content-scroll");
 
-        // Use HBox for montant and QR code
         HBox bottomBox = new HBox(10);
         bottomBox.setAlignment(javafx.geometry.Pos.CENTER);
 
-        // Ajout du code QR
         HBox qrCodeContainer = new HBox();
         qrCodeContainer.getStyleClass().add("qr-container");
         qrCodeContainer.setAlignment(javafx.geometry.Pos.CENTER);
 
         if (association.getSiteWeb() != null && !association.getSiteWeb().isEmpty()) {
-            // Générer le code QR avec la taille appropriée
             Image qrCodeImage = QRCodeGenerator.generateQRCodeImage(association.getSiteWeb(), 100, 100);
 
             if (qrCodeImage != null) {
@@ -310,11 +308,10 @@ public class AssociationUserController {
                 qrCodeView.setFitWidth(40);
                 qrCodeView.getStyleClass().add("qr-code");
 
-                // Gérer le clic sur le code QR
                 qrCodeView.setOnMouseClicked(event -> {
                     try {
                         Desktop.getDesktop().browse(new URI(association.getSiteWeb()));
-                        event.consume(); // Pour éviter que l'événement se propage au cardPane
+                        event.consume();
                     } catch (IOException | URISyntaxException e) {
                         e.printStackTrace();
                         showAlert("Erreur", "Impossible d'ouvrir le site web: " + e.getMessage());
@@ -323,7 +320,6 @@ public class AssociationUserController {
 
                 qrCodeContainer.getChildren().add(qrCodeView);
 
-                // Ajouter une petite info sur le code QR
                 Label qrInfo = new Label("Visiter");
                 qrInfo.getStyleClass().add("qr-info");
                 qrCodeContainer.getChildren().add(qrInfo);
@@ -332,23 +328,18 @@ public class AssociationUserController {
 
         bottomBox.getChildren().addAll(montant, qrCodeContainer);
 
-        // Ajouter les éléments dans l'ordre souhaité
         content.getChildren().addAll(title, scrollPane, bottomBox);
 
-        // Calculer le pourcentage de progression
         double pourcentageProgression = association.getPourcentageProgression();
 
-        // Créer la barre de progression qui sera au fond absolu
         StackPane progressContainer = new StackPane();
         progressContainer.getStyleClass().add("progress-container");
 
-        // Créer la barre de progression
         ProgressBar progressBar = new ProgressBar(pourcentageProgression / 100);
         progressBar.setPrefWidth(250);
         progressBar.setPrefHeight(20);
         progressBar.getStyleClass().add("progress");
 
-        // Ajouter une classe CSS basée sur le pourcentage
         if (pourcentageProgression <= 25) {
             progressBar.getStyleClass().add("progress-bar-danger");
         } else if (pourcentageProgression <= 50) {
@@ -359,34 +350,25 @@ public class AssociationUserController {
             progressBar.getStyleClass().add("progress-bar-success");
         }
 
-        // Créer le label pour le pourcentage et le mettre sur la barre de progression
         Label progressLabel = new Label(String.format("%.1f%%", pourcentageProgression));
         progressLabel.getStyleClass().add("progress-label");
 
-        // Ajouter la barre et le label au conteneur
         progressContainer.getChildren().addAll(progressBar, progressLabel);
 
-        // Ajouter les éléments principaux à la carte
         cardPane.getChildren().addAll(imageView, content);
 
-        // Ajouter la barre de progression en dernier pour qu'elle soit au-dessus
-        // et la positionner explicitement en bas
         StackPane.setAlignment(progressContainer, javafx.geometry.Pos.BOTTOM_CENTER);
         cardPane.getChildren().add(progressContainer);
 
-        // Gestion du clic sur la carte (pour faire un don)
         cardPane.setOnMouseClicked(event -> {
             try {
-                // Charger la vue FaireDon.fxml
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/Don/FaireDon.fxml"));
                 Parent root = loader.load();
 
-                // Passer l'association au contrôleur FaireDon
                 FaireDon controller = loader.getController();
                 controller.setAssociationId(association.getId());
                 Scene currentScene = associationsGrid.getScene();
                 Stage currentStage = (Stage) currentScene.getWindow();
-                // Créer une nouvelle scène
                 currentStage.setScene(new Scene(root));
                 currentStage.setTitle("Faire un don à " + association.getNom());
 
@@ -404,11 +386,44 @@ public class AssociationUserController {
         alert.setTitle(title);
         alert.setContentText(message);
 
-        // Appliquer le style CSS
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("/Association/styles.css").toExternalForm());
         dialogPane.getStyleClass().add("custom-alert");
 
         alert.showAndWait();
+    }
+
+    private void handleMontantAPayer() {
+        SessionManager session = SessionManager.getInstance();
+        if (!session.isLoggedIn()) {
+            montantAPayerLabel.setVisible(false);
+            return;
+        }
+
+        String username = session.getCurrentUsername();
+        if (username == null) {
+            montantAPayerLabel.setVisible(false);
+            return;
+        }
+
+        try {
+            String role = userService.getRoleByUsername(username);
+            if (role != null && "Organizer".equals(role)) {
+                User currentUser = userService.getUserByUsername(username);
+                if (currentUser != null) {
+                    userService.calculateMontantAPayer(currentUser);
+                    montantAPayerLabel.setText("Montant à payer: " + String.format("%.2f TND", currentUser.getMontantAPayer()));
+                    montantAPayerLabel.setVisible(true);
+                } else {
+                    montantAPayerLabel.setVisible(false);
+                }
+            } else {
+                montantAPayerLabel.setVisible(false);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Erreur", "Erreur lors du calcul du montant à payer: " + e.getMessage());
+            montantAPayerLabel.setVisible(false);
+        }
     }
 }

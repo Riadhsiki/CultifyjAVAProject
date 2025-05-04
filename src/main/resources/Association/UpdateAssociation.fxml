@@ -11,7 +11,7 @@
 <?import javafx.scene.text.Font?>
 <?import java.net.URL?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21.0.2" xmlns:fx="http://javafx.com/fxml/1" styleClass="anchor-pane"  fx:controller="controllers.AssociationControllers.UpdateAssociation">
+<BorderPane xmlns="http://javafx.com/javafx/21.0.2" xmlns:fx="http://javafx.com/fxml/1" styleClass="anchor-pane"  fx:controller="controllers.associationcontrollers.UpdateAssociation">
     <stylesheets>
         <URL value="@/Association/styles.css" />
     </stylesheets>

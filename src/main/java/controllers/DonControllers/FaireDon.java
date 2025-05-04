@@ -1,15 +1,20 @@
 package controllers.DonControllers;
 
-import entities.Association;
-import entities.Don;
-import entities.User;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import models.Association;
+import models.Don;
+import models.User;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import services.AssociationServices;
-import services.DonServices;
+import services.associationDon.AssociationServices;
+import services.associationDon.DonServices;
+import services.user.UserService;
 import utils.SessionManager;
 
 import java.net.URL;
@@ -25,43 +30,37 @@ public class FaireDon implements Initializable {
     private TextField montantField;
 
     @FXML
-    private Label montantErrorLabel; // Ajout du label d'erreur pour le montant
+    private Label montantErrorLabel;
 
     @FXML
     private Button validerButton;
 
     @FXML
-    private VBox donFormFields; // Référence à la VBox contenant les champs
+    private VBox donFormFields;
 
     private int associationId;
     private Association association;
     private AssociationServices associationServices = new AssociationServices();
     private DonServices donServices = new DonServices();
-    private User currentUser;
+    private UserService userService = new UserService();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        currentUser = new User();
-        currentUser.setId(2);
-        currentUser.setName("user");
-        currentUser.setEmail("codedon10@gmail.com");
-        currentUser.setRole("user");
-
-        // Créer et configurer le label d'erreur s'il n'existe pas dans le FXML
+        // Initialize the error label if it doesn't exist
         if (montantErrorLabel == null) {
             montantErrorLabel = new Label();
             montantErrorLabel.getStyleClass().add("error-label");
             montantErrorLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-size: 12px;");
 
-            // Ajout du label d'erreur après le champ de montant dans la VBox
-            // Nous devons trouver la HBox contenant le champ montantField
-            for (int i = 0; i < donFormFields.getChildren().size(); i++) {
-                if (donFormFields.getChildren().get(i) instanceof HBox) {
-                    HBox hbox = (HBox) donFormFields.getChildren().get(i);
-                    if (hbox.getChildren().contains(montantField)) {
-                        // Insérer le label d'erreur après la HBox
-                        donFormFields.getChildren().add(i + 1, montantErrorLabel);
-                        break;
+            // Add the error label after the amount field
+            if (donFormFields != null) {
+                for (int i = 0; i < donFormFields.getChildren().size(); i++) {
+                    if (donFormFields.getChildren().get(i) instanceof HBox) {
+                        HBox hbox = (HBox) donFormFields.getChildren().get(i);
+                        if (hbox.getChildren().contains(montantField)) {
+                            donFormFields.getChildren().add(i + 1, montantErrorLabel);
+                            break;
+                        }
                     }
                 }
             }
@@ -70,12 +69,29 @@ public class FaireDon implements Initializable {
         // Clear error label initially
         montantErrorLabel.setText("");
 
-        // Ajouter un écouteur pour effacer le message d'erreur lorsque l'utilisateur commence à taper
-        montantField.textProperty().addListener((observable, oldValue, newValue) -> {
-            montantErrorLabel.setText("");
-        });
+        // Add a listener to clear the error message when the user types
+        if (montantField != null) {
+            montantField.textProperty().addListener((observable, oldValue, newValue) -> {
+                montantErrorLabel.setText("");
+            });
+        }
 
-        validerButton.setOnAction(event -> handleDonation());
+        // Set the action for the validation button
+        if (validerButton != null) {
+            validerButton.setOnAction(event -> handleDonation());
+        }
+
+        // Check if the user is logged in
+        checkUserLoggedIn();
+    }
+
+    private void checkUserLoggedIn() {
+        if (!SessionManager.getInstance().isLoggedIn()) {
+            showAlert("Erreur", "Vous devez être connecté pour faire un don.", Alert.AlertType.ERROR);
+            if (validerButton != null) {
+                validerButton.setDisable(true);
+            }
+        }
     }
 
     public void setAssociationId(int associationId) {
@@ -86,29 +102,28 @@ public class FaireDon implements Initializable {
     private void loadAssociationDetails() {
         try {
             this.association = associationServices.getById(associationId);
-            if (association != null) {
-                // Mettre à jour le label avec le nom de l'association
+            if (association != null && associationNameLabel != null) {
                 associationNameLabel.setText("Faire un don à l'association : " + association.getNom());
             }
         } catch (SQLException e) {
-            showAlert("Erreur", "Impossible de récupérer les informations de l'association.", Alert.AlertType.ERROR);
+            showAlert("Erreur", "Impossible de récupérer les informations de l'association: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
     private boolean validateMontant() {
         String montantText = montantField.getText().trim();
 
-        // Vérifier si le champ est vide
+        // Check if the field is empty
         if (montantText.isEmpty()) {
             montantErrorLabel.setText("Le montant du don ne peut pas être vide.");
             return false;
         }
 
-        // Vérifier si le montant est un nombre valide
+        // Check if the amount is a valid number
         try {
             double montant = Double.parseDouble(montantText);
 
-            // Vérifier si le montant est positif
+            // Check if the amount is positive
             if (montant <= 0) {
                 montantErrorLabel.setText("Le montant du don doit être un nombre positif.");
                 return false;
@@ -118,41 +133,63 @@ public class FaireDon implements Initializable {
             return false;
         }
 
-        // Si toutes les validations passent
+        // If all validations pass
         return true;
     }
 
     private void handleDonation() {
         try {
-            if (currentUser == null) {
-                showAlert("Erreur", "Aucun utilisateur connecté", Alert.AlertType.ERROR);
+            // Check session state
+            if (!SessionManager.getInstance().isLoggedIn()) {
+                showAlert("Erreur", "Vous devez être connecté pour faire un don.", Alert.AlertType.ERROR);
                 return;
             }
 
-            // Valider le montant
+            // Get current user from session
+            String currentUsername = SessionManager.getInstance().getCurrentUsername();
+            if (currentUsername == null || currentUsername.isEmpty()) {
+                showAlert("Erreur", "Impossible de récupérer les informations de l'utilisateur de la session.", Alert.AlertType.ERROR);
+                return;
+            }
+
+            User currentUser = userService.getUserByUsername(currentUsername);
+            if (currentUser == null) {
+                showAlert("Erreur", "Utilisateur introuvable: " + currentUsername, Alert.AlertType.ERROR);
+                return;
+            }
+
+            // Validate the amount
             if (!validateMontant()) {
                 return;
             }
 
             double montant = Double.parseDouble(montantField.getText().trim());
 
-            // Créer un nouveau don
+            // Create a new donation
             Don don = new Don();
             don.setMontant(montant);
-            don.setDonorType(currentUser.getRole());
+            don.setDonorType(currentUser.getRoles());
             don.setStatus("en_attente");
             don.setType("don");
             don.setAssociation(association);
             don.setUser(currentUser);
 
-            // Enregistrer le don
-            donServices.Add(currentUser.getId(), don);
+            // Save the donation
+            donServices.Add(don);
 
             showAlert("Succès", "Votre don a été enregistré avec succès.", Alert.AlertType.INFORMATION);
-            validerButton.getScene().getWindow().hide();
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Don/ListDon.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) validerButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
 
         } catch (SQLException e) {
             showAlert("Erreur", "Une erreur est survenue lors de l'enregistrement du don: " + e.getMessage(), Alert.AlertType.ERROR);
+        } catch (Exception e) {
+            showAlert("Erreur", "Une erreur inattendue est survenue: " + e.getMessage(), Alert.AlertType.ERROR);
+            e.printStackTrace();
         }
     }
 
@@ -162,10 +199,17 @@ public class FaireDon implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(content);
 
-        // Appliquer le style CSS
+        // Apply CSS style
         DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/Association/styles.css").toExternalForm());
-        dialogPane.getStyleClass().add("custom-alert");
+        try {
+            String cssUrl = getClass().getResource("/Association/styles.css").toExternalForm();
+            if (cssUrl != null) {
+                dialogPane.getStylesheets().add(cssUrl);
+                dialogPane.getStyleClass().add("custom-alert");
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to load CSS: " + e.getMessage());
+        }
 
         alert.showAndWait();
     }

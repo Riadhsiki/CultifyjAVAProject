@@ -1,6 +1,7 @@
-package entities;
+package models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
 
 import java.util.ArrayList;
 import java.util.List;

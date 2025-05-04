@@ -14,7 +14,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Pagination?>
 
-<BorderPane fx:id="mainAnchorPane" prefHeight="600.0" prefWidth="900.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.AssociationControllers.AssociationUserController">
+<BorderPane fx:id="mainAnchorPane" prefHeight="600.0" prefWidth="900.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.associationcontrollers.AssociationUserController">
     <stylesheets>
         <URL value="@/Association/styles.css" />
         <URL value="@/Association/carte.css" />

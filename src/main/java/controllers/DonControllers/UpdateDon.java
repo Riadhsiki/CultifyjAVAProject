@@ -1,15 +1,15 @@
-package controllers.DonControllers;
+package controllers.donControllers;
 
-import entities.Association;
-import entities.Don;
+import models.Association;
+import models.Don;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import services.AssociationServices;
-import services.DonServices;
+import services.associationDon.AssociationServices;
+import services.associationDon.DonServices;
 
 import java.net.URL;
 import java.util.ResourceBundle;

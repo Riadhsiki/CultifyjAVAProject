@@ -1,7 +1,7 @@
 package controllers.ReclamationController;
 
 import models.Reclamation;
-import services.ReclamationService;
+import services.reclamation.ReclamationService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;

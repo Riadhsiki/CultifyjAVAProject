@@ -1,7 +1,7 @@
 package utils;
 
-import entities.Association;
-import entities.Don;
+import models.Association;
+import models.Don;
 
 import java.io.IOException;
 import java.io.OutputStream;

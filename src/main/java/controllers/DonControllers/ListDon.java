@@ -1,8 +1,8 @@
 package controllers.DonControllers;
 
-import entities.Association;
-import entities.Don;
-import entities.User;
+import models.Association;
+import models.Don;
+import models.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,47 +14,30 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import services.AssociationServices;
-import services.DonServices;
-import services.UserServices;
+import services.associationDon.AssociationServices;
+import services.associationDon.DonServices;
+import services.user.UserService;
 import utils.PaginationUtils;
+import utils.SessionManager;
 import utils.WebhookUtil;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class ListDon {
 
-    @FXML
-    private ListView<Don> listView;
-
-    @FXML
-    private TextField searchField;
-
-    @FXML
-    private ComboBox<String> searchCriteriaComboBox;
-
-    @FXML
-    private ComboBox<Integer> itemsPerPageComboBox;
-
-    @FXML
-    private Pagination pagination;
-
-    @FXML
-    private Label pageInfoLabel;
-
-    // Les labels d'en-tête
-
+    @FXML private ListView<Don> listView;
+    @FXML private TextField searchField;
+    @FXML private ComboBox<String> searchCriteriaComboBox;
+    @FXML private ComboBox<Integer> itemsPerPageComboBox;
+    @FXML private Pagination pagination;
+    @FXML private Label pageInfoLabel;
     @FXML private Label headerAssociation;
     @FXML private Label headerMontant;
     @FXML private Label headerStatus;
@@ -65,76 +48,93 @@ public class ListDon {
     private PaginationUtils<Don> paginationUtils;
     private List<Don> allDons;
     private List<Don> filteredDons;
-    private final int CURRENT_USER_ID = 2; // Définir l'ID utilisateur comme constante
-
-    // Pour le tri
+    private Integer currentUserId = null;
     private enum SortColumn { ID, ASSOCIATION, MONTANT, STATUS }
     private enum SortOrder { ASC, DESC }
     private SortColumn currentSortColumn = SortColumn.ID;
     private SortOrder currentSortOrder = SortOrder.ASC;
-
-    // Pourcentages de largeur des colonnes
     private static final double[] COLUMN_WIDTHS = {0.1, 0.3, 0.15, 0.15, 0.3};
     private static final Logger LOGGER = Logger.getLogger(ListDon.class.getName());
+
+    private Integer getCurrentUserId() {
+        String currentUsername = SessionManager.getInstance().getCurrentUsername();
+        if (currentUsername == null || currentUsername.isEmpty()) {
+            showAlert("Erreur", "Aucun utilisateur connecté");
+            return null;
+        }
+        UserService userService = new UserService();
+        User currentUser = userService.getUserByUsername(currentUsername);
+        if (currentUser == null) {
+            showAlert("Erreur", "Impossible de récupérer les informations de l'utilisateur");
+            return null;
+        }
+        System.out.println("CurrentUser ID: " + currentUser.getId() + ", Username: " + currentUser.getUsername());
+        return currentUser.getId();
+    }
+
     @FXML
     public void initialize() {
+        System.out.println("Initializing ListDon controller");
+        SessionManager.getInstance().dumpPreferences();
+
+        if (!SessionManager.getInstance().isLoggedIn()) {
+            showAlert("Erreur", "Veuillez vous connecter pour voir vos dons");
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/auth/Login.fxml"));
+                Parent root = loader.load();
+                Stage stage = (Stage) listView.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.show();
+            } catch (IOException e) {
+                System.err.println("Error navigating to login: " + e.getMessage());
+            }
+            return;
+        }
+
         try {
-            // Désactiver la sélection
+            this.currentUserId = getCurrentUserId();
+            if (this.currentUserId == null) {
+                showAlert("Erreur", "Veuillez vous connecter pour voir vos dons");
+                return;
+            }
+            System.out.println("Current user ID retrieved: " + this.currentUserId);
+
             listView.setSelectionModel(null);
-
-            // Initialiser le ComboBox des critères de recherche
-            ObservableList<String> searchCriteria = FXCollections.observableArrayList(
-                    "association", "montant", "status"
-            );
+            ObservableList<String> searchCriteria = FXCollections.observableArrayList("association", "montant", "status");
             searchCriteriaComboBox.setItems(searchCriteria);
-            searchCriteriaComboBox.setValue("association"); // Valeur par défaut
-
-            // Initialize pagination combo box with options
+            searchCriteriaComboBox.setValue("association");
             itemsPerPageComboBox.getItems().addAll(5, 10, 15, 20, 25);
-            itemsPerPageComboBox.setValue(10); // Default value
+            itemsPerPageComboBox.setValue(10);
 
-            // Charger les données
-            allDons = donService.getDonsByUser(CURRENT_USER_ID);
-            filteredDons = allDons; // Au début, les données filtrées sont les mêmes que toutes les données
+            allDons = donService.getDonsByUser(this.currentUserId);
+            System.out.println("Loaded " + (allDons != null ? allDons.size() : 0) + " donations for user ID: " + this.currentUserId);
+            filteredDons = allDons;
             paginationUtils = new PaginationUtils<>(filteredDons, 10);
 
-            // Configure pagination control
             updatePaginationControl();
-
-            // Load first page
             loadCurrentPage();
-
-            // Configurer la ListView
             listView.setCellFactory(param -> new DonListCell());
-
-            // Initialiser les largeurs des colonnes
             updateColumnWidths();
 
-            // Mettre à jour les largeurs quand la fenêtre est redimensionnée
             listView.widthProperty().addListener((obs, oldVal, newVal) -> {
                 updateColumnWidths();
                 listView.refresh();
             });
 
-            // Setup event listeners for pagination, search, etc.
             setupEventListeners();
-
-            // Setup sort listeners for column headers
             setupSortListeners();
-
-        } catch (SQLException e) {
-            showAlert("Erreur", "Erreur de base de données: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error in ListDon initialization: " + e.getMessage());
+            e.printStackTrace();
+            showAlert("Erreur", "Erreur d'initialisation: " + e.getMessage());
         }
     }
 
     private void setupEventListeners() {
-        // Pagination change listener
         pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
-            paginationUtils.goToPage(newIndex.intValue() + 1); // +1 because JavaFX pagination is 0-based
+            paginationUtils.goToPage(newIndex.intValue() + 1);
             loadCurrentPage();
         });
-
-        // Items per page change listener
         itemsPerPageComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 paginationUtils.setPageSize(newVal);
@@ -142,8 +142,6 @@ public class ListDon {
                 loadCurrentPage();
             }
         });
-
-        // Search field listener
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 performSearch(newValue);
@@ -151,11 +149,8 @@ public class ListDon {
                 showAlert("Erreur", "Erreur lors de la recherche: " + e.getMessage());
             }
         });
-
-        // SearchCriteria change listener
         searchCriteriaComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             try {
-                // Relancer la recherche avec le nouveau critère
                 performSearch(searchField.getText());
             } catch (Exception e) {
                 showAlert("Erreur", "Erreur lors du changement de critère: " + e.getMessage());
@@ -164,15 +159,16 @@ public class ListDon {
     }
 
     private void performSearch(String searchText) throws SQLException {
+        if (this.currentUserId == null) {
+            showAlert("Erreur", "Aucun utilisateur connecté");
+            return;
+        }
         String criteria = searchCriteriaComboBox.getValue();
         if (searchText == null || searchText.isEmpty()) {
             filteredDons = allDons;
         } else {
-            // Utiliser la méthode searchDons du service qui prend en compte le critère
-            filteredDons = donService.searchDons(searchText, criteria, CURRENT_USER_ID);
+            filteredDons = donService.searchDons(searchText, criteria, this.currentUserId);
         }
-
-        // Appliquer le tri actuel sur les données filtrées
         applySorting();
         paginationUtils.updateFullList(filteredDons);
         updatePaginationControl();
@@ -180,25 +176,17 @@ public class ListDon {
     }
 
     private void setupSortListeners() {
-        // Ajouter la classe CSS pour le style du curseur pointer
-
         headerAssociation.getStyleClass().add("clickable-header");
         headerMontant.getStyleClass().add("clickable-header");
         headerStatus.getStyleClass().add("clickable-header");
-
-        // Configurer les écouteurs de clics
-
-
         headerAssociation.setOnMouseClicked(event -> {
             updateSortOrder(SortColumn.ASSOCIATION);
             applySorting();
         });
-
         headerMontant.setOnMouseClicked(event -> {
             updateSortOrder(SortColumn.MONTANT);
             applySorting();
         });
-
         headerStatus.setOnMouseClicked(event -> {
             updateSortOrder(SortColumn.STATUS);
             applySorting();
@@ -207,30 +195,20 @@ public class ListDon {
 
     private void updateSortOrder(SortColumn column) {
         if (currentSortColumn == column) {
-            // Inverser l'ordre de tri si on clique sur la même colonne
             currentSortOrder = currentSortOrder == SortOrder.ASC ? SortOrder.DESC : SortOrder.ASC;
         } else {
-            // Nouvelle colonne de tri, initialiser à ASC
             currentSortColumn = column;
             currentSortOrder = SortOrder.ASC;
         }
-
-        // Mettre à jour les labels pour montrer l'ordre de tri
         updateSortIndicators();
     }
 
     private void updateSortIndicators() {
-        // Réinitialiser tous les labels d'en-tête
-
         headerAssociation.setText("Association");
         headerMontant.setText("Montant");
         headerStatus.setText("Statut");
-
-        // Ajouter l'indicateur de tri à la colonne active
         String indicator = currentSortOrder == SortOrder.ASC ? " ↑" : " ↓";
-
         switch (currentSortColumn) {
-
             case ASSOCIATION:
                 headerAssociation.setText("Association" + indicator);
                 break;
@@ -244,9 +222,7 @@ public class ListDon {
     }
 
     private void applySorting() {
-        // Créer le comparateur principal selon la colonne sélectionnée
         Comparator<Don> comparator = null;
-
         switch (currentSortColumn) {
             case ID:
                 comparator = Comparator.comparing(Don::getId);
@@ -269,34 +245,28 @@ public class ListDon {
                 );
                 break;
         }
-
-        // Ajouter l'ID comme critère secondaire pour garantir un ordre stable
-        if (currentSortColumn != SortColumn.ID) {
+        if (currentSortColumn != SortColumn.ID && comparator != null) {
             comparator = comparator.thenComparing(Don::getId);
         }
-
-        // Inverser le comparateur si l'ordre est descendant
-        if (currentSortOrder == SortOrder.DESC) {
+        if (comparator != null && currentSortOrder == SortOrder.DESC) {
             comparator = comparator.reversed();
         }
-
-        // Trier la liste filtrée
-        filteredDons = filteredDons.stream()
-                .sorted(comparator)
-                .collect(Collectors.toList());
-
-        // Mettre à jour la pagination et recharger la page
-        paginationUtils.updateFullList(filteredDons);
-        updatePaginationControl();
-        loadCurrentPage();
+        if (comparator != null && filteredDons != null) {
+            filteredDons = filteredDons.stream()
+                    .sorted(comparator)
+                    .collect(Collectors.toList());
+            paginationUtils.updateFullList(filteredDons);
+            updatePaginationControl();
+            loadCurrentPage();
+        }
     }
 
     private void updatePaginationControl() {
         int totalPages = paginationUtils.getTotalPages();
         pagination.setPageCount(totalPages > 0 ? totalPages : 1);
-        pagination.setCurrentPageIndex(paginationUtils.getCurrentPage() - 1); // -1 because JavaFX pagination is 0-based
-
+        pagination.setCurrentPageIndex(paginationUtils.getCurrentPage() - 1);
         updatePageInfoLabel();
+        System.out.println("Pagination updated: Total Pages = " + totalPages + ", Current Page = " + paginationUtils.getCurrentPage());
     }
 
     private void updatePageInfoLabel() {
@@ -304,39 +274,37 @@ public class ListDon {
         int totalPages = paginationUtils.getTotalPages();
         int totalItems = paginationUtils.getTotalItems();
         int pageSize = paginationUtils.getPageSize();
-
         int startItem = (currentPage - 1) * pageSize + 1;
         int endItem = Math.min(startItem + pageSize - 1, totalItems);
-
         if (totalItems == 0) {
             pageInfoLabel.setText("Aucun résultat");
         } else {
-            pageInfoLabel.setText(String.format("Affichage %d à %d sur %d dons",
-                    startItem, endItem, totalItems));
+            pageInfoLabel.setText(String.format("Affichage %d à %d sur %d dons", startItem, endItem, totalItems));
         }
+        System.out.println("Page Info Updated: " + pageInfoLabel.getText());
     }
 
     private void loadCurrentPage() {
         List<Don> pageDons = paginationUtils.getCurrentPageItems();
         observableList = FXCollections.observableArrayList(pageDons);
         listView.setItems(observableList);
+        listView.refresh();
+        System.out.println("Loaded page with " + pageDons.size() + " items");
     }
 
     private void updateColumnWidths() {
         double totalWidth = listView.getWidth();
-        if (totalWidth <= 0) totalWidth = 800; // Valeur par défaut
-
+        if (totalWidth <= 0) totalWidth = 800;
         Label[] headers = {headerAssociation, headerMontant, headerStatus, headerAction};
-
         for (int i = 0; i < headers.length; i++) {
-            headers[i].setPrefWidth(totalWidth * COLUMN_WIDTHS[i]);
+            headers[i].setPrefWidth(totalWidth * COLUMN_WIDTHS[i+1]);
             headers[i].setPadding(new Insets(0, 0, 0, 10));
         }
     }
 
     private class DonListCell extends ListCell<Don> {
         private final HBox row = new HBox();
-        private final Label[] labels = new Label[4]; // Pour les 4 premières colonnes
+        private final Label[] labels = new Label[4];
         private final HBox actionBox = new HBox(5);
         private final Button editBtn = new Button("Modifier");
         private final Button deleteBtn = new Button("Supprimer");
@@ -344,48 +312,30 @@ public class ListDon {
 
         public DonListCell() {
             super();
-
-            // Configurer les labels
             for (int i = 0; i < labels.length; i++) {
                 labels[i] = new Label();
                 labels[i].setStyle("-fx-padding: 8 0 8 10; -fx-wrap-text: false;");
                 labels[i].setMaxWidth(Double.MAX_VALUE);
                 HBox.setHgrow(labels[i], Priority.ALWAYS);
             }
-
-            // Configurer les boutons avec les classes CSS
             editBtn.getStyleClass().add("edit-button");
             deleteBtn.getStyleClass().add("delete-button");
             confirmBtn.getStyleClass().add("confirm-button");
-
-            // Ajouter les actions aux boutons
             editBtn.setOnAction(event -> {
                 Don don = getItem();
-                if (don != null) {
-                    editDon(don);
-                }
+                if (don != null) editDon(don);
             });
-
             deleteBtn.setOnAction(event -> {
                 Don don = getItem();
-                if (don != null) {
-                    deleteDon(don);
-                }
+                if (don != null) deleteDon(don);
             });
-
             confirmBtn.setOnAction(event -> {
                 Don don = getItem();
-                if (don != null) {
-                    confirmDon(don);
-                }
+                if (don != null) confirmDon(don);
             });
-
-            // Configurer la HBox d'actions
             actionBox.setAlignment(Pos.CENTER);
             actionBox.setMaxWidth(Double.MAX_VALUE);
             HBox.setHgrow(actionBox, Priority.ALWAYS);
-
-            // Configurer la ligne
             row.getChildren().addAll(labels);
             row.getChildren().add(actionBox);
         }
@@ -393,23 +343,17 @@ public class ListDon {
         @Override
         protected void updateItem(Don don, boolean empty) {
             super.updateItem(don, empty);
-
             if (empty || don == null) {
                 setGraphic(null);
             } else {
-                // Mettre à jour les labels
-                labels[0].setText(String.valueOf(don.getId()));
-                labels[1].setText(don.getAssociation() != null ? don.getAssociation().getNom() : "N/A");
-                labels[2].setText(String.format("%.2f TND", don.getMontant()));
-                labels[3].setText(don.getStatus());
-
-                // Gérer les boutons selon le status
+                labels[0].setText(don.getAssociation() != null ? don.getAssociation().getNom() : "N/A");
+                labels[1].setText(String.format("%.2f TND", don.getMontant()));
+                labels[2].setText(don.getStatus());
+                labels[3].setText("");
                 actionBox.getChildren().clear();
                 if ("en_attente".equals(don.getStatus())) {
                     actionBox.getChildren().addAll(editBtn, deleteBtn, confirmBtn);
                 }
-
-                // Ajuster les largeurs
                 updateLabelWidths();
                 setGraphic(row);
             }
@@ -418,9 +362,8 @@ public class ListDon {
         private void updateLabelWidths() {
             double totalWidth = getListView().getWidth();
             if (totalWidth <= 0) totalWidth = 800;
-
             for (int i = 0; i < labels.length; i++) {
-                labels[i].setPrefWidth(totalWidth * COLUMN_WIDTHS[i]);
+                labels[i].setPrefWidth(totalWidth * COLUMN_WIDTHS[i+1]);
             }
             actionBox.setPrefWidth(totalWidth * COLUMN_WIDTHS[COLUMN_WIDTHS.length - 1]);
         }
@@ -430,14 +373,11 @@ public class ListDon {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Don/UpdateDon.fxml"));
             Parent root = loader.load();
-
-            UpdateDon controller = loader.getController();
+            controllers.donControllers.UpdateDon controller = loader.getController();
             controller.setDon(don);
             Stage stage = (Stage) listView.getScene().getWindow();
             stage.setScene(new Scene(root));
-            stage.show(); // Utiliser showAndWait pour bloquer jusqu'à ce que la fenêtre soit fermée
-
-            // Après la fermeture de la fenêtre, rafraîchir la liste
+            stage.show();
             refreshList();
         } catch (IOException e) {
             showAlert("Erreur", "Impossible d'ouvrir la page de modification: " + e.getMessage());
@@ -449,12 +389,10 @@ public class ListDon {
         confirm.setTitle("Confirmation");
         confirm.setHeaderText("Supprimer le don");
         confirm.setContentText("Êtes-vous sûr de vouloir supprimer ce don?");
-
         confirm.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 try {
                     donService.delete(don);
-                    // Refresh the list
                     refreshList();
                     showAlert("Succès", "Don supprimé avec succès");
                 } catch (SQLException e) {
@@ -469,88 +407,58 @@ public class ListDon {
         confirm.setTitle("Confirmation");
         confirm.setHeaderText("Confirmer le don");
         confirm.setContentText("Êtes-vous sûr de vouloir confirmer ce don?");
-
         confirm.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 try {
-                    // Charger la fenêtre de paiement
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/Don/Paiement.fxml"));
                     Parent root = loader.load();
-
-                    // Configurer le contrôleur
                     PaymentWindowController controller = loader.getController();
                     controller.setDon(don);
-
-                    // Configurer et afficher la fenêtre
                     Stage stage = (Stage) listView.getScene().getWindow();
                     stage.setScene(new Scene(root));
-                    stage.show();
-
-                    // Ajouter un écouteur pour détecter quand la fenêtre est fermée
                     stage.setOnHidden(e -> {
-                        // Vérifier si le paiement a été confirmé dans le contrôleur
                         if (controller.isPaymentConfirmed()) {
                             try {
-                                // Changer d'abord le statut du don
                                 don.setStatus("confirme");
                                 donService.update(don, don.getAssociation().getId());
-
-                                // Refresh la liste et montrer un succès même si l'email échoue
                                 refreshList();
                                 showAlert("Succès", "Don confirmé avec succès");
-                                // automation n8n
-                                // Récupérer les informations complètes de l'association
                                 try {
                                     AssociationServices associationServices = new AssociationServices();
                                     Association fullAssociation = associationServices.getById(don.getAssociation().getId());
-
-                                    // Notifier N8N via webhook (dans un thread séparé pour ne pas bloquer l'UI)
                                     new Thread(() -> {
                                         boolean notified = WebhookUtil.notifyDonationProgress(fullAssociation);
                                         if (notified) {
                                             javafx.application.Platform.runLater(() -> {
-                                                // Ne pas afficher d'alerte pour ne pas submerger l'utilisateur
                                                 LOGGER.log(Level.INFO, "Association progress notification sent successfully");
                                             });
                                         } else {
                                             javafx.application.Platform.runLater(() -> {
                                                 LOGGER.log(Level.WARNING, "Failed to notify association progress");
-                                                // Ne pas afficher d'erreur à l'utilisateur pour cette fonctionnalité non essentielle
                                             });
                                         }
                                     }).start();
                                 } catch (SQLException ex) {
                                     LOGGER.log(Level.WARNING, "Could not load association details for webhook notification", ex);
-                                    // Ne pas bloquer le processus principal si la récupération des infos a échoué
                                 }
-                                //mail avec pdf
-                                // Essayer d'envoyer l'email, mais ne pas bloquer le flux principal
                                 new Thread(() -> {
                                     try {
-                                        // Récupérer les informations complètes de l'utilisateur et du don
                                         Don updatedDon = donService.getDonDetails(don.getId());
-
-                                        // Récupérer l'email et le nom du donateur
                                         String donorEmail = getUserEmail(updatedDon.getUser().getId());
                                         String donorName = getUserName(updatedDon.getUser().getId());
-
                                         if (donorEmail != null && !donorEmail.isEmpty()) {
-                                            // Envoyer l'email de confirmation avec PDF
                                             MailApi.sendConfirmationEmailWithPDF(
                                                     donorEmail,
                                                     donorName != null ? donorName : "Donateur",
-                                                    updatedDon.getId(),
+                                                    updatedDon.getUser().getId(),
                                                     updatedDon.getMontant(),
                                                     updatedDon.getAssociation().getNom()
                                             );
-
-                                            // Mise à jour de l'interface utilisateur dans le thread JavaFX
                                             javafx.application.Platform.runLater(() -> {
                                                 showAlert("Envoi d'email", "Un email de confirmation avec reçu PDF a été envoyé au donateur");
                                             });
                                         }
                                     } catch (Exception ex) {
-                                        // Gestion des erreurs dans le thread séparé
                                         javafx.application.Platform.runLater(() -> {
                                             showAlert("Erreur", "Erreur lors de l'envoi de l'email ou de la génération du PDF: " + ex.getMessage());
                                         });
@@ -561,9 +469,7 @@ public class ListDon {
                             }
                         }
                     });
-
                     stage.show();
-
                 } catch (IOException e) {
                     showAlert("Erreur", "Impossible d'ouvrir la fenêtre de paiement: " + e.getMessage());
                 }
@@ -571,50 +477,58 @@ public class ListDon {
         });
     }
 
-    // Méthode pour récupérer l'email de l'utilisateur
     private String getUserEmail(int userId) {
         try {
-            UserServices userService = new UserServices();
-            User user = userService.getUserById(userId);
-            return user != null ? user.getEmail() : null;
+            UserService userService = new UserService();
+            User user = userService.getById(userId);
+            if (user != null && user.getEmail() != null && !user.getEmail().isEmpty()) {
+                System.out.println("Retrieved user email: " + user.getEmail() + " for userId: " + userId);
+                return user.getEmail();
+            } else {
+                System.err.println("User email not found or empty for userId: " + userId);
+                return null;
+            }
         } catch (SQLException e) {
             System.err.println("Erreur lors de la récupération de l'email de l'utilisateur: " + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }
 
-    // Méthode pour récupérer le nom de l'utilisateur
     private String getUserName(int userId) {
         try {
-            UserServices userService = new UserServices();
-            User user = userService.getUserById(userId);
-            return user != null ? user.getName() : "Donateur";
+            UserService userService = new UserService();
+            User user = userService.getById(userId);
+            if (user != null) {
+                String name = user.getNom() + " " + user.getPrenom();
+                System.out.println("Retrieved user name: " + name + " for userId: " + userId);
+                return name;
+            } else {
+                System.err.println("User not found for userId: " + userId);
+                return "Donateur";
+            }
         } catch (SQLException e) {
             System.err.println("Erreur lors de la récupération du nom de l'utilisateur: " + e.getMessage());
+            e.printStackTrace();
             return "Donateur";
         }
     }
 
     private void refreshList() {
         try {
-            // Recharger les données
-            allDons = donService.getDonsByUser(CURRENT_USER_ID);
-
-            // Appliquer le filtre de recherche actuel
+            if (this.currentUserId == null) {
+                showAlert("Erreur", "Aucun utilisateur connecté");
+                return;
+            }
+            allDons = donService.getDonsByUser(this.currentUserId);
             String searchText = searchField.getText();
             String criteria = searchCriteriaComboBox.getValue();
-
             if (searchText != null && !searchText.isEmpty()) {
-                // Utiliser la méthode searchDons du service avec le critère sélectionné
-                filteredDons = donService.searchDons(searchText, criteria, CURRENT_USER_ID);
+                filteredDons = donService.searchDons(searchText, criteria, this.currentUserId);
             } else {
                 filteredDons = allDons;
             }
-
-            // Réappliquer le tri actuel
             applySorting();
-
-            // Mettre à jour la pagination
             paginationUtils.updateFullList(filteredDons);
             updatePaginationControl();
             loadCurrentPage();
@@ -627,13 +541,9 @@ public class ListDon {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setContentText(message);
-
-        // Appliquer le style CSS
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("/Don/styles.css").toExternalForm());
         dialogPane.getStyleClass().add("custom-alert");
-
         alert.showAndWait();
     }
-
 }

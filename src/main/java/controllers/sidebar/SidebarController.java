@@ -1,123 +1,241 @@
-package controllers.SideBar;
+package controllers.sidebar;
 
-import controllers.MainLayoutController;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.event.ActionEvent;
-
+import services.auth.AuthenticationService;
+import utils.SessionManager;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
-public class SideBarController {
+public class SidebarController {
 
-    private MainLayoutController mainController;
+    @FXML private ImageView logoImageView;
+    @FXML private Button btnUserManagement;
+    @FXML private VBox userManagementSubmenu;
+    @FXML private Button btnProfile;
+    @FXML private Button btnBrowseArt;
+    @FXML private Button btnCreateArt;
+    @FXML private Button btnMyPortfolio;
+    @FXML private Button btnEventAdmin;
+    @FXML private Button btnEventUser;
+    @FXML private Button btnManageReservations;
+    @FXML private Button btnAddEvent;
+    @FXML private Button btnReclamations;
+    @FXML private VBox reclamationSubmenu;
+    @FXML private Button btnLogout;
+    @FXML private Button btnQuit;
 
-    @FXML
-    private ImageView logoImageView;
-
-    @FXML
-    private Button btnAssociations;
-
-    @FXML
-    private VBox associationSubmenu;
-
-    @FXML
-    private Button btnLogout;
-
-    private boolean isAssociationSubmenuVisible = false;
+    private AuthenticationService authService;
+    private boolean isReclamationSubmenuVisible = false;
+    private static final String LOGIN_FXML = "/auth/Login.fxml";
 
     @FXML
     public void initialize() {
-        // Initialize the sidebar components
+        authService = AuthenticationService.getInstance();
+        // Initialize User Management submenu
+        userManagementSubmenu.setVisible(false);
+        userManagementSubmenu.setManaged(false);
+        userManagementSubmenu.setPrefHeight(0);
+        // Initialize Reclamation submenu
+        reclamationSubmenu.setVisible(false);
+        reclamationSubmenu.setManaged(false);
+        reclamationSubmenu.setPrefHeight(0);
+        SessionManager.getInstance().dumpPreferences();
+        System.out.println("SidebarController initialized");
     }
 
     @FXML
     private void navigateToHome(MouseEvent event) {
-        try {
-            loadNewScene("/Association/AllAssociation.fxml", event);
-        } catch (IOException e) {
-            e.printStackTrace();
+        navigateTo("/home/Home.fxml", "Home");
+    }
+
+    @FXML
+    private void toggleUserManagementSubmenu(ActionEvent event) {
+        String sessionToken = SessionManager.getInstance().getSessionToken();
+        System.out.println("Toggling User Management - Session Token: " + (sessionToken != null ? sessionToken : "null"));
+        if (!SessionManager.getInstance().isLoggedIn()) {
+            System.out.println("User not authenticated, redirecting to login.");
+            showLoginAlertAndRedirect();
+            return;
         }
+
+        boolean isVisible = userManagementSubmenu.isVisible();
+        userManagementSubmenu.setVisible(!isVisible);
+        userManagementSubmenu.setManaged(!isVisible);
+        userManagementSubmenu.setPrefHeight(isVisible ? 0 : 80);
+        System.out.println("User Management submenu visibility toggled to: " + !isVisible);
     }
 
     @FXML
-    private void toggleAssociationSubmenu(ActionEvent event) {
-        isAssociationSubmenuVisible = !isAssociationSubmenuVisible;
-        associationSubmenu.setVisible(isAssociationSubmenuVisible);
-        associationSubmenu.setManaged(isAssociationSubmenuVisible);
+    private void navigateToAddUser(ActionEvent event) {
+        checkAuthAndNavigate("/userinterfaces/AjouterUser.fxml", "Add User");
+    }
 
-        // Animation pour le sous-menu
-        if (isAssociationSubmenuVisible) {
-            associationSubmenu.setPrefHeight(80); // Hauteur pour 2 boutons
-        } else {
-            associationSubmenu.setPrefHeight(0);
+    @FXML
+    private void navigateToUserList(ActionEvent event) {
+        checkAuthAndNavigate("/userinterfaces/AfficherUsers.fxml", "User List");
+    }
+
+    @FXML
+    private void navigateToProfile(ActionEvent event) {
+        checkAuthAndNavigate("/auth/Profile.fxml", "My Profile");
+    }
+
+    @FXML
+    private void navigateToBrowseArt(ActionEvent event) {
+        checkAuthAndNavigate("/sketch/AfficherSketch.fxml", "Browse Art");
+    }
+
+    @FXML
+    private void navigateToCreateArt(ActionEvent event) {
+        checkAuthAndNavigate("/sketch/CultureSketch.fxml", "Create Art");
+    }
+
+    @FXML
+    private void navigateToMyPortfolio(ActionEvent event) {
+        checkAuthAndNavigate("/sketch/ArtView.fxml", "My Portfolio");
+    }
+
+    @FXML
+    private void navigateToEventAdmin(ActionEvent event) {
+        navigateTo("/event/TableView.fxml", "Event Admin");
+    }
+
+    @FXML
+    private void navigateToEventUser(ActionEvent event) {
+        navigateTo("/event/CardView.fxml", "Event User");
+    }
+
+    @FXML
+    private void navigateToAdminReservations(ActionEvent event) {
+        navigateTo("/reservation/DetailReservation.fxml", "Manage Reservations");
+    }
+
+    @FXML
+    private void navigateToAddEvent(ActionEvent event) {
+        navigateTo("/event/AjouterEvent.fxml", "Add Event");
+    }
+
+    @FXML
+    private void toggleReclamationSubmenu(ActionEvent event) {
+        String sessionToken = SessionManager.getInstance().getSessionToken();
+        System.out.println("Toggling Reclamation Submenu - Session Token: " + (sessionToken != null ? sessionToken : "null"));
+        if (!SessionManager.getInstance().isLoggedIn()) {
+            System.out.println("User not authenticated, redirecting to login.");
+            showLoginAlertAndRedirect();
+            return;
         }
-    }
-    public void setMainController(MainLayoutController mainController) {
-        this.mainController = mainController;
-    }
 
-    @FXML
-    private void navigateToAssociationUser(ActionEvent event) {
-        mainController.loadView("/Association/AssociationUserView.fxml");
+        isReclamationSubmenuVisible = !isReclamationSubmenuVisible;
+        reclamationSubmenu.setVisible(isReclamationSubmenuVisible);
+        reclamationSubmenu.setManaged(isReclamationSubmenuVisible);
+        reclamationSubmenu.setPrefHeight(isReclamationSubmenuVisible ? 80 : 0);
+        System.out.println("Reclamation submenu visibility toggled to: " + isReclamationSubmenuVisible);
     }
 
     @FXML
-    private void navigateToAssociationAdmin(ActionEvent event) {
-
-            mainController.loadView("/Association/AllAssociation.fxml");
-
+    private void navigateToReclamationList(ActionEvent event) {
+        checkAuthAndNavigate("/Reclamation/ReclamationListAdmin.fxml", "Reclamation List");
     }
 
     @FXML
-    private void navigateToDons(ActionEvent event) {
-            mainController.loadView("/Don/ListDon.fxml");
-    }
-
-    @FXML
-    private void navigateToReclamations(ActionEvent event) {
-
-    }
-
-    @FXML
-    private void navigateToEncyclopedie(ActionEvent event) {
-
-    }
-
-    @FXML
-    private void navigateToUsers(ActionEvent event) {
-
+    private void navigateToReponseList(ActionEvent event) {
+        checkAuthAndNavigate("/Reponse/ReponseListAdmin.fxml", "Response List");
     }
 
     @FXML
     private void logOut(ActionEvent event) {
-
+        String sessionToken = SessionManager.getInstance().getSessionToken();
+        System.out.println("Logging out - Session Token: " + (sessionToken != null ? sessionToken : "null"));
+        if (sessionToken != null) {
+            authService.logout(sessionToken);
+            SessionManager.getInstance().clearSession();
+            System.out.println("Session cleared and logged out.");
+        }
+        navigateTo(LOGIN_FXML, "Login");
     }
 
-    private void loadNewScene(String fxmlPath, Object event) throws IOException {
-        // Charger la nouvelle interface
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-        Parent root = loader.load();
+    @FXML
+    private void quit(ActionEvent event) {
+        System.exit(0);
+    }
 
-        // Récupérer la scène actuelle
-        Stage stage;
-        if (event instanceof ActionEvent) {
-            stage = (Stage) ((Node) ((ActionEvent) event).getSource()).getScene().getWindow();
-        } else {
-            stage = (Stage) ((Node) ((MouseEvent) event).getSource()).getScene().getWindow();
+    private void checkAuthAndNavigate(String fxmlPath, String title) {
+        String sessionToken = SessionManager.getInstance().getSessionToken();
+        String username = SessionManager.getInstance().getCurrentUsername();
+        boolean isLoggedIn = SessionManager.getInstance().isLoggedIn();
+        System.out.println("Checking authentication for navigation to " + title +
+                " - Session Token: " + (sessionToken != null ? sessionToken : "null") +
+                ", Username: " + (username != null ? username : "null") +
+                ", isLoggedIn: " + isLoggedIn);
+        if (sessionToken == null || username == null || !isLoggedIn) {
+            System.out.println("Authentication failed, redirecting to login.");
+            showLoginAlertAndRedirect();
+            return;
         }
+        try {
+            System.out.println("Validating user with authService");
+            if (authService.getCurrentUser(sessionToken) == null) {
+                System.out.println("authService.getCurrentUser returned null");
+                showLoginAlertAndRedirect();
+                return;
+            }
+        } catch (SQLException e) {
+            System.out.println("SQLException in authService: " + e.getMessage());
+            showAlert("Error", "Database error during authentication: " + e.getMessage());
+            return;
+        }
+        System.out.println("Authentication successful, navigating to " + title);
+        navigateTo(fxmlPath, title);
+    }
 
-        // Créer une nouvelle scène et la définir
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+    private void navigateTo(String fxmlPath, String title) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            if (loader.getLocation() == null) {
+                System.out.println("FXML resource not found: " + fxmlPath);
+                showAlert("Navigation Error", "Failed to load view: " + fxmlPath);
+                return;
+            }
+            Parent root = loader.load();
+            Stage stage = (Stage) btnLogout.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle(title);
+            stage.centerOnScreen();
+            stage.show();
+            System.out.println("Navigated to " + title);
+            SessionManager.getInstance().dumpPreferences();
+        } catch (IOException e) {
+            System.out.println("IOException during navigation to " + fxmlPath + ": " + e.getMessage());
+            showAlert("Navigation Error", "Failed to load view: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void showLoginAlertAndRedirect() {
+        showAlert("Not Logged In", "You must be logged in to access this page.");
+        navigateTo(LOGIN_FXML, "Login");
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private String getClientIp() {
+        return "127.0.0.1";
     }
 }

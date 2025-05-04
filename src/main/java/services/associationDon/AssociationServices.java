@@ -1,11 +1,14 @@
-package services;
+package services.associationDon;
 
-import entities.Association;
-import entities.Don;
-import interfaces.IServiceAssociation;
-import utils.MyDataBase;
+import Interfaces.IServiceAssociation;
+import models.Association;
+import models.Don;
+import utils.DataSource;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +18,7 @@ public class AssociationServices implements IServiceAssociation<Association> {
     private Connection con;
 
     public AssociationServices() {
-        this.con = MyDataBase.getInstance().getConn();
+        this.con = DataSource.getInstance().getConnection();;
     }
 
     @Override

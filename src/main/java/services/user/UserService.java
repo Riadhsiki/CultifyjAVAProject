@@ -1,6 +1,8 @@
 package services.user;
 
-
+import services.eventreservation.EventService;
+import models.Don;
+import models.Event;
 import models.User;
 import utils.DataSource;
 import utils.PasswordHasher;
@@ -11,9 +13,10 @@ import java.util.List;
 
 public class UserService implements Service<User> {
     private Connection con;
-
+    private EventService eventService;
     public UserService() {
         con = DataSource.getInstance().getConnection();
+        eventService = new EventService();
     }
 
     @Override
@@ -238,5 +241,39 @@ public class UserService implements Service<User> {
         }
     }
 
+    public void calculateMontantAPayer(User user) throws SQLException {
+        // Step 1: Fetch events where organisation matches the user's username
+        List<Event> events = eventService.getEventsByOrganisation(user.getUsername());
 
+        // Step 2: Calculate total event cost (prix * nbplaces)
+        double totalEventCost = 0.0;
+        for (Event event : events) {
+            totalEventCost += event.getPrix() * event.getNbplaces();
+        }
+
+        // Step 3: Calculate total confirmed contributions from dons
+        double totalContributions = 0.0;
+        for (Don don : user.getDons()) {
+            totalContributions += don.calculateTotalContributions();
+        }
+
+        // Step 4: Compute montantAPayer
+        double montantAPayer = totalEventCost - totalContributions;
+        user.setMontantAPayer(montantAPayer > 0 ? (float) montantAPayer : 0.0f);
+
+        // Step 5: Update the user in the database
+        update(user);
+    }
+    public String getRoleByUsername(String username) throws SQLException {
+        String query = "SELECT roles FROM user WHERE username = ?";
+        try (PreparedStatement pst = con.prepareStatement(query)) {
+            pst.setString(1, username);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("roles");
+                }
+            }
+        }
+        return null;
+    }
 }

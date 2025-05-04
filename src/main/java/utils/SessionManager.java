@@ -1,74 +1,73 @@
 package utils;
 
-import entities.User;
 import java.time.Instant;
 import java.util.prefs.Preferences;
 
 public class SessionManager {
     private static final SessionManager instance = new SessionManager();
 
-    // Preference keys
     private static final String PREF_SESSION_TOKEN = "sessionToken";
     private static final String PREF_REMEMBER_ME = "rememberMe";
     private static final String PREF_USERNAME = "username";
     private static final String PREF_TIMEOUT = "sessionTimeout";
+    private static final String PREF_USER_ROLE = "userRole";
     private static final String TEMP_MESSAGE = "tempMessage";
 
     private final Preferences prefs;
-    private User currentUser; // From donassociationManagement
 
     private SessionManager() {
         prefs = Preferences.userNodeForPackage(SessionManager.class);
-        currentUser = null; // Initialize to null
     }
 
     public static SessionManager getInstance() {
         return instance;
     }
 
-    // Session token management (from main)
     public void setSessionToken(String token, boolean rememberMe) {
         if (token != null && !token.isEmpty()) {
             prefs.put(PREF_SESSION_TOKEN, token);
             prefs.putBoolean(PREF_REMEMBER_ME, rememberMe);
-            System.out.println("Session token set: " + token);
         } else {
             prefs.remove(PREF_SESSION_TOKEN);
             prefs.remove(PREF_REMEMBER_ME);
-            System.out.println("Session token cleared");
         }
         flushPrefs();
     }
 
     public String getSessionToken() {
-        String token = prefs.get(PREF_SESSION_TOKEN, null);
-        System.out.println("Retrieved session token: " + (token != null ? token : "null"));
-        return token;
+        return prefs.get(PREF_SESSION_TOKEN, null);
     }
 
     public boolean isRememberMeEnabled() {
         return prefs.getBoolean(PREF_REMEMBER_ME, false);
     }
 
-    // Username management (from main)
     public void setCurrentUsername(String username) {
         if (username != null && !username.isEmpty()) {
             prefs.put(PREF_USERNAME, username);
-            System.out.println("Username set: " + username);
         } else {
             prefs.remove(PREF_USERNAME);
-            System.out.println("Username cleared");
         }
         flushPrefs();
     }
 
     public String getCurrentUsername() {
-        String username = prefs.get(PREF_USERNAME, null);
-        System.out.println("Retrieved username: " + (username != null ? username : "null"));
-        return username;
+        return prefs.get(PREF_USERNAME, null);
     }
 
-    // Temporary message management (from main)
+    public void setUserRole(String role) {
+        if (role != null && !role.isEmpty()) {
+            prefs.put(PREF_USER_ROLE, role);
+        } else {
+            prefs.remove(PREF_USER_ROLE);
+        }
+        flushPrefs();
+    }
+
+    public String getUserRole() {
+        return prefs.get(PREF_USER_ROLE, null);
+    }
+
     public void setTemporaryMessage(String message) {
         if (message != null) {
             prefs.put(TEMP_MESSAGE, message);
@@ -79,7 +78,9 @@ public class SessionManager {
     }
 
     public String getTemporaryMessage() {
-        return prefs.get(TEMP_MESSAGE, null);
+        String message = prefs.get(TEMP_MESSAGE, null);
+        clearTemporaryMessage(); // Auto-clear after reading
+        return message;
     }
 
     public void clearTemporaryMessage() {
@@ -87,78 +88,51 @@ public class SessionManager {
         flushPrefs();
     }
 
-    // Session timeout management (from main)
     public void setSessionTimeout(int minutes) {
         if (minutes > 0) {
-            long expirationTime = Instant.now().plusSeconds(minutes * 60L).toEpochMilli();
+            long expirationTime = Instant.now().plusSeconds(minutes * 60L).getEpochSecond();
             prefs.putLong(PREF_TIMEOUT, expirationTime);
-            System.out.println("Session timeout set to: " + minutes + " minutes (expires at: " + expirationTime + ")");
         } else {
             prefs.remove(PREF_TIMEOUT);
-            System.out.println("Session timeout cleared");
         }
         flushPrefs();
     }
 
-    // User management (from donassociationManagement)
-    public User getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(User user) {
-        this.currentUser = user;
-        // Synchronize username with preferences
-        if (user != null) {
-            setCurrentUsername(user.getUsername()); // Assuming User has getUsername()
-        } else {
-            setCurrentUsername(null);
-        }
-    }
-
-    public int getCurrentUserId() {
-        return currentUser != null ? currentUser.getId() : 0;
-    }
-
-    public String getCurrentUserRole() {
-        return currentUser != null ? currentUser.getRole() : "";
-    }
-
-    // Session validation (from main)
     public boolean isLoggedIn() {
         String token = getSessionToken();
         String username = getCurrentUsername();
         long expirationTime = prefs.getLong(PREF_TIMEOUT, 0);
-        boolean hasSession = token != null && !token.isEmpty();
+        boolean hasValidToken = token != null && !token.isEmpty();
         boolean hasUsername = username != null && !username.isEmpty();
-        boolean isValidSession = hasSession && hasUsername && (expirationTime == 0 || Instant.now().toEpochMilli() < expirationTime);
+        boolean sessionNotExpired = expirationTime == 0 ||
+                Instant.now().getEpochSecond() < expirationTime;
 
-        System.out.println("Session check - Has token: " + hasSession + ", Has username: " + hasUsername +
-                ", Valid session: " + isValidSession + ", Expiration: " + expirationTime);
-
-        return isValidSession;
+        return hasValidToken && hasUsername && sessionNotExpired;
     }
 
-    // Clear session (combined from both)
     public void clearSession() {
-        System.out.println("Clearing session at: " + new java.util.Date());
         prefs.remove(PREF_SESSION_TOKEN);
         prefs.remove(PREF_REMEMBER_ME);
         prefs.remove(PREF_USERNAME);
         prefs.remove(PREF_TIMEOUT);
-        prefs.remove(TEMP_MESSAGE);
-        this.currentUser = null; // Clear User from donassociationManagement
+        prefs.remove(PREF_USER_ROLE);
         flushPrefs();
     }
 
-    // Debug utility (from main)
+    public void refreshSession(int minutesToExtend) {
+        if (isLoggedIn() && minutesToExtend > 0) {
+            setSessionTimeout(minutesToExtend);
+        }
+    }
+
     public void dumpPreferences() {
         System.out.println("--- Session Manager Preferences ---");
         System.out.println("Session Token: " + prefs.get(PREF_SESSION_TOKEN, "null"));
         System.out.println("Remember Me: " + prefs.getBoolean(PREF_REMEMBER_ME, false));
         System.out.println("Username: " + prefs.get(PREF_USERNAME, "null"));
+        System.out.println("User Role: " + prefs.get(PREF_USER_ROLE, "null"));
         System.out.println("Timeout: " + prefs.getLong(PREF_TIMEOUT, 0));
         System.out.println("Temporary Message: " + prefs.get(TEMP_MESSAGE, "null"));
-        System.out.println("Current User: " + (currentUser != null ? currentUser.toString() : "null"));
         System.out.println("----------------------------------");
     }
 
@@ -167,7 +141,6 @@ public class SessionManager {
             prefs.flush();
         } catch (Exception e) {
             System.err.println("Error flushing preferences: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 }

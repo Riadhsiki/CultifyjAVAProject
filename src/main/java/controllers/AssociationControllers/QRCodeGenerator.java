@@ -1,4 +1,4 @@
-package controllers.AssociationControllers;
+package controllers.associationcontrollers;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;

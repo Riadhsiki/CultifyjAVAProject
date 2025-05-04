@@ -1,5 +1,8 @@
-package entities;
-import jakarta.persistence.*;
+package models;
+
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 
 
@@ -11,7 +14,6 @@ public class Don {
     private String donorType;
     private String status;
     private String type;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "association_id")
     private Association association;
@@ -111,5 +113,11 @@ public class Don {
                 ", type='" + type + '\'' +
                 ", association=" + association +
                 '}';
+    }
+    public double calculateTotalContributions() {
+        if (this.type != null && this.type.equals("contribution") && this.status != null && this.status.equals("confirme")) {
+            return this.montant;
+        }
+        return 0.0;
     }
 }
