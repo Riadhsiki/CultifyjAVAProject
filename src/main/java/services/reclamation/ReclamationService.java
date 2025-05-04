@@ -2,8 +2,9 @@ package services.reclamation;
 
 import models.Reclamation;
 import models.Reponse;
+import services.reclamation.IServiceReclamation;
 import services.reponse.ReponseService;
-import utils.MyDataBase;
+import utils.DataSource;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,12 +18,12 @@ public class ReclamationService implements IServiceReclamation<Reclamation> {
     private ReponseService reponseService;
 
     public ReclamationService() {
-        this.con = MyDataBase.getInstance().getConn();
-        // Initialiser le ReponseService ici pour éviter NullPointerException
+        this.con = DataSource.getInstance().getConnection();
+        // Initialize ReponseService with DataSource
         this.reponseService = new ReponseService();
     }
 
-    // Méthode pour définir le ReponseService manuellement (si nécessaire)
+    // Method to set ReponseService manually (if needed)
     public void setReponseService(ReponseService reponseService) {
         this.reponseService = reponseService;
     }
@@ -39,13 +40,13 @@ public class ReclamationService implements IServiceReclamation<Reclamation> {
         ps.setString(6, reclamation.getEmail());
         ps.executeUpdate();
 
-        // Récupérer l'ID généré
+        // Retrieve generated ID
         ResultSet generatedKeys = ps.getGeneratedKeys();
         if (generatedKeys.next()) {
             reclamation.setId_reclamation(generatedKeys.getInt(1));
         }
 
-        // Si la réclamation a une réponse associée, l'ajouter
+        // Add associated response if present
         if (reclamation.getReponse() != null && reponseService != null) {
             reclamation.getReponse().setReclamation(reclamation);
             reponseService.add(reclamation.getReponse());
@@ -67,20 +68,15 @@ public class ReclamationService implements IServiceReclamation<Reclamation> {
         ps.setInt(7, reclamation.getId_reclamation());
         ps.executeUpdate();
 
-        // Mettre à jour la réponse associée si elle existe
+        // Update associated response if present
         if (reclamation.getReponse() != null && reponseService != null) {
-            // S'assurer que la réponse est correctement liée à la réclamation
             reclamation.getReponse().setReclamation(reclamation);
-
-            // Vérifier si la réponse existe déjà dans la base de données
             Reponse existingReponse = reponseService.getByReclamationId(reclamation.getId_reclamation());
 
             if (existingReponse != null) {
-                // Si elle existe, mettre à jour son ID pour que la mise à jour fonctionne
                 reclamation.getReponse().setId_reponse(existingReponse.getId_reponse());
                 reponseService.update(reclamation.getReponse());
             } else {
-                // Si elle n'existe pas, l'ajouter
                 reponseService.add(reclamation.getReponse());
             }
         }
@@ -90,20 +86,18 @@ public class ReclamationService implements IServiceReclamation<Reclamation> {
 
     @Override
     public void delete(Reclamation reclamation) throws SQLException {
-        // Vérifier si reponseService est initialisé
+        // Initialize reponseService if null
         if (reponseService == null) {
             reponseService = new ReponseService();
         }
 
-        // Vérifier d'abord si la réclamation a une réponse associée
+        // Delete associated response if present
         Reponse existingReponse = reponseService.getByReclamationId(reclamation.getId_reclamation());
-
-        // Si une réponse existe, la supprimer avant de supprimer la réclamation
         if (existingReponse != null) {
             reponseService.delete(existingReponse);
         }
 
-        // Ensuite supprimer la réclamation
+        // Delete reclamation
         String query = "DELETE FROM `reclamation` WHERE `id_reclamation` = ?";
         PreparedStatement ps = con.prepareStatement(query);
         ps.setInt(1, reclamation.getId_reclamation());
@@ -129,7 +123,7 @@ public class ReclamationService implements IServiceReclamation<Reclamation> {
             reclamation.setPriorite(rs.getString("priorite"));
             reclamation.setEmail(rs.getString("email"));
 
-            // Si une réponse existe, la créer et l'associer
+            // Associate response if present
             if (rs.getObject("id_reponse") != null) {
                 Reponse reponse = new Reponse();
                 reponse.setId_reponse(rs.getInt("id_reponse"));
@@ -181,7 +175,6 @@ public class ReclamationService implements IServiceReclamation<Reclamation> {
         return null;
     }
 
-    // Méthode pour récupérer toutes les réclamations non traitées
     public List<Reclamation> getAllNonTraitees() throws SQLException {
         List<Reclamation> reclamationsNonTraitees = new ArrayList<>();
         String query = "SELECT r.*, p.id_reponse, p.reponsedate, p.titre as reponse_titre, p.contenu, p.offre " +
@@ -200,7 +193,6 @@ public class ReclamationService implements IServiceReclamation<Reclamation> {
             reclamation.setPriorite(rs.getString("priorite"));
             reclamation.setEmail(rs.getString("email"));
 
-            // Si une réponse existe, la créer et l'associer
             if (rs.getObject("id_reponse") != null) {
                 Reponse reponse = new Reponse();
                 reponse.setId_reponse(rs.getInt("id_reponse"));

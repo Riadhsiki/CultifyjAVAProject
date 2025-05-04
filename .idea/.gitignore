@@ -1,19 +1,20 @@
-IntelliJ IDEA
+# IntelliJ IDEA
+.idea/
+*.iml
+/shelf/
+/workspace.xml
+/httpRequests/
+/dataSources/
+/dataSources.local.xml
 
-.idea/ *.iml
-
-Maven
-
+# Maven
 target/
 
-Logs
-
+# Logs
 *.log
 
-Dependency directories
-
+# Dependency directories
 node_modules/
 
-Optional: Uploads directory (if it contains temporary or user-generated files)
-
-uploads/
+# Uploads directory (if temporary or user-generated)
+Uploads/

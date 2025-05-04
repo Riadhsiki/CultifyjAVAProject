@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import java.net.URL?>
+
+<HBox fx:id="mainContainer" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.DonControllers.FaireDon">
+   <stylesheets>
+      <URL value="@/Don/styles.css" />
+      <URL value="@/Association/styles.css" />
+   </stylesheets>
+
+   <fx:include source="/SideBar/SideBar.fxml" />
+
+   <AnchorPane fx:id="contentPane" HBox.hgrow="ALWAYS">
+      <VBox styleClass="don-form-vbox" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+         <children>
+            <Label text="Faire un don" styleClass="don-form-title">
+               <font>
+                  <Font name="Verdana" size="24.0" />
+               </font>
+            </Label>
+
+            <VBox fx:id="donFormFields" styleClass="don-form-fields" spacing="20.0">
+               <children>
+                  <Label fx:id="associationNameLabel" styleClass="don-form-label" text="Faire un don à l'association :" />
+
+                  <HBox alignment="CENTER_LEFT" spacing="10.0">
+                     <children>
+                        <Label styleClass="don-form-label" text="Montant (TND):" />
+                        <TextField fx:id="montantField" styleClass="don-form-textfield" />
+                     </children>
+                  </HBox>
+
+                  <Label fx:id="montantErrorLabel" styleClass="error-label" text=""
+                         style="-fx-text-fill: #e74c3c; -fx-font-size: 12px; -fx-wrap-text: true; -fx-max-width: 350px;" />
+               </children>
+            </VBox>
+
+            <Button fx:id="validerButton" styleClass="don-form-submit-button" text="Valider" />
+         </children>
+      </VBox>
+   </AnchorPane>
+</HBox>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<HBox fx:id="mainContainer" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainLayoutController">
+    <children>
+        <!-- Sidebar will be loaded dynamically, but we define a placeholder -->
+        <AnchorPane fx:id="sidebar" prefWidth="200.0" style="-fx-background-color: #222222;" />
+
+        <!-- Content pane that will be filled with different views -->
+        <AnchorPane fx:id="contentPane" HBox.hgrow="ALWAYS" />
+    </children>
+</HBox>

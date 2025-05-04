@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import java.net.URL?>
+
+<BorderPane fx:id="mainAnchorPane" prefHeight="600.0" prefWidth="900.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.DonControllers.ListDon">
+    <stylesheets>
+        <URL value="@/Don/styles.css" />
+        <URL value="@/Association/styles.css" />
+    </stylesheets>
+    <left>
+        <fx:include source="/SideBar/SideBar.fxml" />
+    </left>
+    <center>
+        <VBox styleClass="don-vbox" prefWidth="650.0" BorderPane.alignment="CENTER">
+            <children>
+                <HBox styleClass="don-header" alignment="CENTER_LEFT" spacing="15.0">
+                    <children>
+                        <Label text="Liste des Dons" styleClass="don-title">
+                            <font>
+                                <Font name="Verdana" size="30.0" />
+                            </font>
+                        </Label>
+                        <ComboBox fx:id="searchCriteriaComboBox" promptText="Critère" prefWidth="120.0" styleClass="don-combo-field" />
+                        <TextField fx:id="searchField" promptText="🔍 Rechercher..." prefWidth="200.0" styleClass="don-search-field" />
+                    </children>
+                </HBox>
+                <HBox styleClass="don-column-headers">
+                    <children>
+
+                        <Label fx:id="headerAssociation" styleClass="don-header-label" text="Association" />
+                        <Label fx:id="headerMontant" styleClass="don-header-label" text="Montant" />
+                        <Label fx:id="headerStatus" styleClass="don-header-label" text="Statut" />
+                        <Label fx:id="headerAction" styleClass="don-header-label" text="Actions" />
+                    </children>
+                </HBox>
+                <ListView fx:id="listView" styleClass="don-list-view" VBox.vgrow="ALWAYS" />
+                <HBox styleClass="don-pagination-container" alignment="CENTER" spacing="20.0">
+                    <children>
+                        <Label fx:id="pageInfoLabel" text="Affichage 1 à 10 sur 0 dons" styleClass="don-page-info" />
+                        <HBox alignment="CENTER" spacing="5.0">
+                            <Label text="Éléments par page:" styleClass="don-elements-label" />
+                            <ComboBox fx:id="itemsPerPageComboBox" prefWidth="70.0" styleClass="don-items-combo" />
+                        </HBox>
+                        <Pagination fx:id="pagination" maxPageIndicatorCount="5" styleClass="don-pagination" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

@@ -1,0 +1,648 @@
+/* Styles modernes pour la liste des associations
+   Utilisant la palette de couleurs naturelles */
+
+/* Couleurs de la palette */
+* {
+    -primary-color: #EFD093;       /* Sunset - Couleur principale/accentuation */
+    -secondary-color: #BAC6C0;     /* Ash gray - Éléments secondaires */
+    -background-color: #F4EFE4;    /* Alabaster - Fond principal */
+    -alt-background: #F3EDE2;      /* Alabaster variant - Fond alternatif */
+    -border-color: #DCDACF;        /* Timberwolf - Bordures */
+    -text-color: #4A4A4A;          /* Texte principal */
+    -light-text: #6B6B6B;          /* Texte secondaire */
+    -hover-color: #E5B451;         /* Version plus foncée de Sunset */
+    -delete-color: #D97762;        /* Couleur rouge pour supprimer */
+    -header-color: #ADBBB7;        /* En-têtes */
+}
+
+/* Fond principal avec image de fond */
+.anchor-pane {
+    -fx-background-image: url("/images/background.png");
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+/* Overlay semi-transparent pour améliorer la lisibilité */
+.vbox {
+    -fx-background-color: rgba(244, 239, 228, 0.65); /* Réduit l'opacité à 65% */
+    -fx-background-radius: 20;
+    -fx-padding: 15;
+    -fx-spacing: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 5);
+}
+
+/* Ajout de transparence pour le header-hbox */
+.header-hbox {
+    -fx-padding: 15 20 15 20;
+    -fx-background-color: rgba(243, 237, 226, 0.7); /* Alt-background avec 70% d'opacité */
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+    -fx-alignment: center-left;
+    -fx-spacing: 15;
+}
+
+/* Titre élégant */
+.title-label {
+    -fx-text-fill: -text-color;
+    -fx-font-family: "Verdana";
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 1, 0, 1, 1);
+}
+
+/* Champ de recherche stylisé */
+.search-field {
+    -fx-background-color: white;
+    -fx-background-radius: 30;
+    -fx-border-radius: 30;
+    -fx-border-color: -border-color;
+    -fx-padding: 8 15 8 15;
+    -fx-prompt-text-fill: -light-text;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);
+}
+
+.search-field:focused {
+    -fx-border-color: -primary-color;
+    -fx-effect: dropshadow(gaussian, rgba(239, 208, 147, 0.3), 5, 0, 0, 0);
+}
+
+/* Bouton Ajouter */
+.add-button {
+    -fx-background-color: -primary-color;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 30;
+    -fx-padding: 10 20 10 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.add-button:hover {
+    -fx-background-color: -hover-color;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+}
+
+.add-button:pressed {
+    -fx-background-color: derive(-primary-color, -10%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 1, 0, 0, 0);
+}
+
+/* En-têtes des colonnes */
+.column-headers {
+    -fx-background-color: rgba(173, 187, 183, 0.7); /* Header-color semi-transparent */
+    -fx-padding: 12 15 12 15;
+    -fx-background-radius: 10 10 0 0;
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.1), 1, 0, 0, 1);
+}
+
+/* Étiquettes d'en-tête */
+.header-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-padding: 0 0 0 10;
+    -fx-alignment: center-left;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 1, 0, 0, 1); /* Ombre pour meilleure lisibilité */
+}
+
+/* ListView principale */
+.list-view {
+    -fx-background-color: rgba(255, 255, 255, 0.4); /* Fond blanc très transparent */
+    -fx-background-radius: 0 0 10 10;
+    -fx-border-radius: 0 0 10 10;
+    -fx-border-color: rgba(220, 218, 207, 0.5); /* Bordure semi-transparente */
+    -fx-border-width: 1;
+    -fx-padding: 5;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+/* Cellules de liste */
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 5 0 5 0;
+}
+
+.list-cell:filled {
+    -fx-background-color: rgba(255, 255, 255, 0.3); /* Fond très transparent */
+    -fx-border-color: rgba(220, 218, 207, 0.5); /* Bordure semi-transparente */
+    -fx-border-width: 0 0 1 0;
+}
+
+.list-cell:filled:even {
+    -fx-background-color: rgba(243, 237, 226, 0.3); /* Fond alt très transparent */
+}
+
+.list-cell:filled:hover {
+    -fx-background-color: rgba(186, 198, 192, 0.5); /* Fond hover semi-transparent */
+}
+
+/* Boutons dans les cellules */
+.edit-button {
+    -fx-background-color: -secondary-color;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-padding: 5 15 5 15;
+    -fx-cursor: hand;
+    -fx-font-size: 11px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);
+}
+
+.edit-button:hover {
+    -fx-background-color: derive(-secondary-color, -10%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.delete-button {
+    -fx-background-color: -delete-color;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-padding: 5 15 5 15;
+    -fx-cursor: hand;
+    -fx-font-size: 11px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);
+}
+
+.delete-button:hover {
+    -fx-background-color: derive(-delete-color, -10%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+/* Zone de pagination */
+.pagination-container {
+    -fx-padding: 15;
+    -fx-background-color: rgba(243, 237, 226, 0.5); /* Alt-background très transparent */
+    -fx-background-radius: 10;
+    -fx-alignment: center;
+    -fx-spacing: 20;
+}
+
+/* Style pour les éléments de pagination qui doivent être légèrement visibles */
+.page-info-label {
+    -fx-text-fill: -text-color;
+    -fx-background-color: rgba(255, 255, 255, 0.4); /* Fond blanc plus transparent */
+    -fx-background-radius: 5;
+    -fx-padding: 5 10;
+}
+
+.elements-per-page-label {
+    -fx-text-fill: -text-color;
+    -fx-background-color: rgba(255, 255, 255, 0.4); /* Fond blanc plus transparent */
+    -fx-background-radius: 5;
+    -fx-padding: 5 10;
+}
+
+/* Style pour ComboBox */
+.items-per-page-combo {
+    -fx-background-color: rgba(255, 255, 255, 0.5); /* Remplacé par un fond semi-transparent */
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-color: -border-color;
+}
+
+.items-per-page-combo:focused {
+    -fx-border-color: -primary-color;
+}
+
+/* Style pour Pagination - RENDU TRANSPARENT */
+.pagination-control {
+    -fx-page-information-visible: false;
+    -fx-background-color: transparent; /* Fond transparent au lieu de blanc */
+    -fx-background-radius: 10;
+    -fx-padding: 5;
+}
+
+.pagination-control .button {
+    -fx-background-color: rgba(255, 255, 255, 0.5); /* Boutons semi-transparents */
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-color: -border-color;
+}
+
+.pagination-control .button:hover {
+    -fx-background-color: rgba(186, 198, 192, 0.7); /* Fond hover semi-transparent */
+}
+
+.pagination-control .button:selected {
+    -fx-background-color: -primary-color;
+    -fx-text-fill: white;
+}
+
+.pagination-control .page-indicator {
+    -fx-background-color: transparent;
+}
+
+/* Labels dans les lignes */
+.cell-label {
+    -fx-text-fill: -text-color;
+    -fx-padding: 0 0 0 10;
+    -fx-font-weight: bold; /* Rendre le texte plus visible avec le fond transparent */
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.7), 1, 0, 0, 1); /* Petit effet d'ombre pour améliorer la lisibilité */
+}
+
+/* Pour les tooltips */
+.tooltip {
+    -fx-background-color: -alt-background;
+    -fx-text-fill: -text-color;
+    -fx-font-size: 12px;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: -border-color;
+    -fx-padding: 5 10 5 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
+}
+
+/* Styles pour les formulaires d'ajout et de modification */
+.form-vbox {
+    -fx-background-color: rgba(244, 239, 228, 0.65);
+    -fx-background-radius: 20;
+    -fx-padding: 20;
+    -fx-spacing: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 5);
+}
+
+.form-title {
+    -fx-text-fill: -text-color;
+    -fx-font-family: "Verdana";
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 1, 0, 1, 1);
+    -fx-padding: 0 0 15 0;
+}
+
+.form-fields-container {
+    -fx-padding: 20;
+    -fx-background-color: rgba(255, 255, 255, 0.4);
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+    -fx-spacing: 15;
+}
+
+/* Nouveau conteneur pour l'image */
+.form-image-container {
+    -fx-padding: 15;
+    -fx-background-color: rgba(255, 255, 255, 0.4);
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+    -fx-alignment: center;
+    -fx-spacing: 10;
+}
+
+.form-label {
+    -fx-text-fill: -text-color;
+    -fx-font-weight: bold;
+    -fx-pref-width: 100; /* Réduit largeur du label pour éviter l'étirement */
+    -fx-alignment: center-right;
+}
+
+.form-textfield, .form-textarea {
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: -border-color;
+    -fx-padding: 8;
+    -fx-max-width: 300; /* Limite la largeur maximale */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);
+}
+
+.form-textfield:focused, .form-textarea:focused {
+    -fx-border-color: -primary-color;
+    -fx-effect: dropshadow(gaussian, rgba(239, 208, 147, 0.3), 5, 0, 0, 0);
+}
+
+.form-textarea {
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: -border-color;
+    -fx-padding: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);
+    -fx-pref-height: 80;
+}
+
+.form-buttons-container {
+    -fx-padding: 15 0 0 0;
+}
+
+.form-submit-button {
+    -fx-background-color: -primary-color;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 10 25;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.form-submit-button:hover {
+    -fx-background-color: -hover-color;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+}
+
+.form-cancel-button {
+    -fx-background-color: -secondary-color;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 10 25;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.form-cancel-button:hover {
+    -fx-background-color: derive(-secondary-color, -10%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+}
+
+.browse-button {
+    -fx-background-color: -secondary-color;
+    -fx-text-fill: white;
+    -fx-background-radius: 15;
+    -fx-padding: 5 15;
+    -fx-cursor: hand;
+    -fx-font-size: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);
+}
+
+.browse-button:hover {
+    -fx-background-color: derive(-secondary-color, -10%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.image-preview {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
+    -fx-border-color: -border-color;
+    -fx-border-radius: 5;
+    -fx-background-color: white; /* Ajoute un fond blanc pour l'image */
+    -fx-padding: 5;
+}
+
+.image-info-label {
+    -fx-text-fill: -text-color;
+    -fx-font-style: italic;
+    -fx-padding: 5 0;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+    -fx-max-width: 200;
+}
+
+/* Erreur labels */
+.error-label {
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 11px;
+    -fx-padding: 0 0 0 100px; /* Aligne avec le début du champ de texte */
+}
+
+.error-field {
+    -fx-border-color: #e74c3c;
+}
+
+/* Styles spécifiques pour l'interface utilisateur */
+.user-vbox {
+    -fx-background-color: rgba(244, 239, 228, 0.65);
+    -fx-background-radius: 20;
+    -fx-padding: 20;
+    -fx-spacing: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 5);
+}
+
+.user-header {
+    -fx-padding: 15 20;
+    -fx-background-color: rgba(243, 237, 226, 0.7);
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.user-title {
+    -fx-text-fill: -text-color;
+    -fx-font-family: "Verdana";
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 1, 0, 1, 1);
+}
+
+.user-search-field {
+    -fx-background-color: white;
+    -fx-background-radius: 30;
+    -fx-border-radius: 30;
+    -fx-border-color: -border-color;
+    -fx-padding: 8 15;
+    -fx-prompt-text-fill: -light-text;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);
+}
+
+.user-search-field:focused {
+    -fx-border-color: -primary-color;
+    -fx-effect: dropshadow(gaussian, rgba(239, 208, 147, 0.3), 5, 0, 0, 0);
+}
+
+.user-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.user-scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.user-grid-pane {
+    -fx-padding: 15;
+    -fx-hgap: 15;
+    -fx-vgap: 15;
+    -fx-background-color: transparent;
+}
+
+.user-pagination-container {
+    -fx-padding: 15;
+    -fx-background-color: rgba(243, 237, 226, 0.5);
+    -fx-background-radius: 10;
+}
+
+.user-page-info {
+    -fx-text-fill: -text-color;
+    -fx-background-color: rgba(255, 255, 255, 0.4); /* Rendu plus transparent */
+    -fx-background-radius: 5;
+    -fx-padding: 5 10;
+}
+
+.user-elements-label {
+    -fx-text-fill: -text-color;
+    -fx-background-color: rgba(255, 255, 255, 0.4); /* Rendu plus transparent */
+    -fx-background-radius: 5;
+    -fx-padding: 5 10;
+}
+
+.user-items-combo {
+    -fx-background-color: rgba(255, 255, 255, 0.5); /* Remplacé par un fond semi-transparent */
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-color: -border-color;
+}
+
+.user-items-combo:focused {
+    -fx-border-color: -primary-color;
+}
+
+.user-pagination {
+    -fx-page-information-visible: false;
+    -fx-background-color: transparent; /* Fond transparent au lieu de blanc */
+    -fx-background-radius: 10;
+    -fx-padding: 5;
+}
+
+.user-pagination .button {
+    -fx-background-color: rgba(255, 255, 255, 0.5); /* Boutons semi-transparents */
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-color: -border-color;
+}
+
+.user-pagination .button:hover {
+    -fx-background-color: rgba(186, 198, 192, 0.7); /* Fond hover semi-transparent */
+}
+
+.user-pagination .button:selected {
+    -fx-background-color: -primary-color;
+    -fx-text-fill: white;
+}
+
+.user-pagination .page-indicator {
+    -fx-background-color: transparent;
+}
+
+/* Styles pour l'interface des dons */
+.don-vbox {
+    -fx-background-color: rgba(244, 239, 228, 0.65);
+    -fx-background-radius: 20;
+    -fx-padding: 20;
+    -fx-spacing: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 5);
+}
+
+.don-header {
+    -fx-padding: 15 20;
+    -fx-background-color: rgba(243, 237, 226, 0.7);
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+    -fx-alignment: center-left;
+    -fx-spacing: 15;
+}
+
+.don-title {
+    -fx-text-fill: -text-color;
+    -fx-font-family: "Verdana";
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 1, 0, 1, 1);
+}
+
+.don-search-field {
+    -fx-background-color: white;
+    -fx-background-radius: 30;
+    -fx-border-radius: 30;
+    -fx-border-color: -border-color;
+    -fx-padding: 8 15;
+    -fx-prompt-text-fill: -light-text;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);
+}
+
+.don-search-field:focused {
+    -fx-border-color: -primary-color;
+    -fx-effect: dropshadow(gaussian, rgba(239, 208, 147, 0.3), 5, 0, 0, 0);
+}
+
+.don-column-headers {
+    -fx-background-color: rgba(173, 187, 183, 0.7);
+    -fx-padding: 12 15 12 15;
+    -fx-background-radius: 10 10 0 0;
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.1), 1, 0, 0, 1);
+}
+
+.don-header-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-padding: 0 0 0 10;
+    -fx-alignment: center-left;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 1, 0, 0, 1);
+}
+
+.don-list-view {
+    -fx-background-color: rgba(255, 255, 255, 0.4);
+    -fx-background-radius: 0 0 10 10;
+    -fx-border-radius: 0 0 10 10;
+    -fx-border-color: rgba(220, 218, 207, 0.5);
+    -fx-border-width: 1;
+    -fx-padding: 5;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.don-pagination-container {
+    -fx-padding: 15;
+    -fx-background-color: rgba(243, 237, 226, 0.5);
+    -fx-background-radius: 10;
+    -fx-alignment: center;
+    -fx-spacing: 20;
+}
+
+.don-page-info {
+    -fx-text-fill: -text-color;
+    -fx-background-color: rgba(255, 255, 255, 0.4); /* Rendu plus transparent */
+    -fx-background-radius: 5;
+    -fx-padding: 5 10;
+}
+
+.don-elements-label {
+    -fx-text-fill: -text-color;
+    -fx-background-color: rgba(255, 255, 255, 0.4); /* Rendu plus transparent */
+    -fx-background-radius: 5;
+    -fx-padding: 5 10;
+}
+
+.don-items-combo {
+    -fx-background-color: rgba(255, 255, 255, 0.5); /* Remplacé par un fond semi-transparent */
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-color: -border-color;
+}
+
+.don-pagination {
+    -fx-page-information-visible: false;
+    -fx-background-color: transparent; /* Fond transparent au lieu de blanc */
+    -fx-background-radius: 10;
+    -fx-padding: 5;
+}
+
+.don-pagination .button {
+    -fx-background-color: rgba(255, 255, 255, 0.5); /* Boutons semi-transparents */
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-color: -border-color;
+}
+
+.don-pagination .button:hover {
+    -fx-background-color: rgba(186, 198, 192, 0.7);
+}
+
+.don-pagination .button:selected {
+    -fx-background-color: -primary-color;
+    -fx-text-fill: white;
+}
+
+.don-pagination .page-indicator {
+    -fx-background-color: transparent;
+}
+/* Styles pour la sidebar */
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10 0;
+    -fx-alignment: center-left;
+    -fx-cursor: hand;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #333333;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
+}
