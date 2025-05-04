@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import java.net.URL?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controllers.ReclamationController.ReclamationListAdmin"
+            prefHeight="600.0" prefWidth="1050.0" styleClass="anchor-pane">
+    <stylesheets>
+        <URL value="@/styles/style.css" />
+    </stylesheets>
+    <left>
+        <fx:include source="/sidebar/Sidebar.fxml" />
+    </left>
+    <center>
+        <AnchorPane styleClass="anchor-pane">
+            <VBox styleClass="form-vbox" prefHeight="600.0" prefWidth="800.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                <children>
+                    <Label text="Liste des Réclamations" styleClass="form-title" />
+                    <HBox styleClass="header-hbox" spacing="10" alignment="CENTER_LEFT">
+                        <children>
+                            <ComboBox fx:id="filterComboBox" styleClass="form-textfield" promptText="Filtrer par statut" prefWidth="150.0" />
+                            <TextField fx:id="searchField" styleClass="search-field" promptText="Rechercher..." HBox.hgrow="ALWAYS" />
+                            <Button text="Rechercher" styleClass="form-submit-button" onAction="#handleSearch" />
+                        </children>
+                    </HBox>
+                    <ListView fx:id="reclamationListView" styleClass="list-view" VBox.vgrow="ALWAYS" />
+                    <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="form-buttons-container">
+                        <children>
+                            <Button text="Actualiser" styleClass="form-cancel-button" onAction="#refreshList" />
+                            <Button text="Nouvelle Réclamation" styleClass="form-submit-button" onAction="#newReclamation" />
+                            <Button text="Ajouter une réponse" styleClass="form-submit-button" onAction="#addResponse" />
+                        </children>
+                    </HBox>
+                </children>
+            </VBox>
+        </AnchorPane>
+    </center>
+</BorderPane>

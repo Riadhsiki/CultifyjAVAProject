@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -19,185 +20,229 @@
     </stylesheets>
 
     <center>
-        <VBox alignment="TOP_CENTER" prefHeight="800.0" prefWidth="250.0" spacing="10.0"
-              styleClass="sidebar-container">
+        <ScrollPane fitToWidth="true" pannable="true" prefHeight="800.0" prefWidth="250.0"
+                    vbarPolicy="AS_NEEDED" hbarPolicy="NEVER">
+            <content>
+                <VBox fx:id="sidebarContainer" alignment="TOP_CENTER" prefWidth="250.0" spacing="10.0"
+                      styleClass="sidebar-container" VBox.vgrow="ALWAYS">
+                    <!-- Logo section -->
+                    <VBox alignment="CENTER" prefHeight="150.0" prefWidth="250.0"
+                          styleClass="logo-container">
+                        <children>
+                            <ImageView fx:id="logoImageView"
+                                       fitHeight="100.0"
+                                       fitWidth="200.0"
+                                       onMouseClicked="#navigateToHome"
+                                       pickOnBounds="true"
+                                       preserveRatio="true">
+                                <image>
+                                    <Image url="@/images/LogoCultify.png" />
+                                </image>
+                            </ImageView>
+                        </children>
+                    </VBox>
 
-            <!-- Logo section -->
-            <VBox alignment="CENTER" prefHeight="150.0" prefWidth="250.0"
-                  styleClass="logo-container">
-                <children>
-                    <ImageView fx:id="logoImageView"
-                               fitHeight="100.0"
-                               fitWidth="200.0"
-                               onMouseClicked="#navigateToHome"
-                               pickOnBounds="true"
-                               preserveRatio="true">
-                        <image>
-                            <Image url="@/images/LogoCultify.png" />
-                        </image>
-                    </ImageView>
-                </children>
-            </VBox>
+                    <!-- User Management Section -->
+                    <Button fx:id="btnUserManagement"
+                            mnemonicParsing="false"
+                            onAction="#toggleUserManagementSubmenu"
+                            prefHeight="50.0"
+                            prefWidth="220.0"
+                            styleClass="sidebar-button"
+                            text="User Management" />
 
-            <!-- User Management Section -->
-            <Button fx:id="btnUserManagement"
-                    mnemonicParsing="false"
-                    onAction="#toggleUserManagementSubmenu"
-                    prefHeight="50.0"
-                    prefWidth="220.0"
-                    styleClass="sidebar-button"
-                    text="User Management" />
+                    <VBox fx:id="userManagementSubmenu"
+                          managed="false"
+                          prefHeight="0.0"
+                          prefWidth="220.0"
+                          styleClass="submenu-container"
+                          visible="false">
+                        <children>
+                            <Button mnemonicParsing="false"
+                                    onAction="#navigateToAddUser"
+                                    prefHeight="40.0"
+                                    prefWidth="200.0"
+                                    styleClass="submenu-button"
+                                    text="Add User" />
+                            <Button mnemonicParsing="false"
+                                    onAction="#navigateToUserList"
+                                    prefHeight="40.0"
+                                    prefWidth="200.0"
+                                    styleClass="submenu-button"
+                                    text="User List" />
+                        </children>
+                    </VBox>
 
-            <VBox fx:id="userManagementSubmenu"
-                  managed="false"
-                  prefHeight="0.0"
-                  prefWidth="220.0"
-                  styleClass="submenu-container"
-                  visible="false">
-                <children>
-                    <Button mnemonicParsing="false"
-                            onAction="#navigateToAddUser"
-                            prefHeight="40.0"
-                            prefWidth="200.0"
-                            styleClass="submenu-button"
-                            text="Add User" />
-                    <Button mnemonicParsing="false"
-                            onAction="#navigateToUserList"
-                            prefHeight="40.0"
-                            prefWidth="200.0"
-                            styleClass="submenu-button"
-                            text="User List" />
-                </children>
-            </VBox>
+                    <!-- Profile Button -->
+                    <Button fx:id="btnProfile"
+                            mnemonicParsing="false"
+                            onAction="#navigateToProfile"
+                            prefHeight="50.0"
+                            prefWidth="220.0"
+                            styleClass="sidebar-button"
+                            text="My Profile">
+                        <VBox.margin>
+                            <Insets top="20.0" bottom="20.0" />
+                        </VBox.margin>
+                    </Button>
 
-            <!-- Profile Button -->
-            <Button fx:id="btnProfile"
-                    mnemonicParsing="false"
-                    onAction="#navigateToProfile"
-                    prefHeight="50.0"
-                    prefWidth="220.0"
-                    styleClass="sidebar-button"
-                    text="My Profile">
-                <VBox.margin>
-                    <Insets top="20.0" bottom="20.0" />
-                </VBox.margin>
-            </Button>
+                    <!-- Art-Related Buttons -->
+                    <Button fx:id="btnBrowseArt"
+                            mnemonicParsing="false"
+                            onAction="#navigateToBrowseArt"
+                            prefHeight="50.0"
+                            prefWidth="220.0"
+                            styleClass="sidebar-button"
+                            text="Browse Art">
+                        <VBox.margin>
+                            <Insets bottom="10.0" />
+                        </VBox.margin>
+                    </Button>
 
-            <!-- Art-Related Buttons -->
-            <Button fx:id="btnBrowseArt"
-                    mnemonicParsing="false"
-                    onAction="#navigateToBrowseArt"
-                    prefHeight="50.0"
-                    prefWidth="220.0"
-                    styleClass="sidebar-button"
-                    text="Browse Art">
-                <VBox.margin>
-                    <Insets bottom="10.0" />
-                </VBox.margin>
-            </Button>
+                    <Button fx:id="btnCreateArt"
+                            mnemonicParsing="false"
+                            onAction="#navigateToCreateArt"
+                            prefHeight="50.0"
+                            prefWidth="220.0"
+                            styleClass="sidebar-button"
+                            text="Create Art">
+                        <VBox.margin>
+                            <Insets bottom="10.0" />
+                        </VBox.margin>
+                    </Button>
 
-            <Button fx:id="btnCreateArt"
-                    mnemonicParsing="false"
-                    onAction="#navigateToCreateArt"
-                    prefHeight="50.0"
-                    prefWidth="220.0"
-                    styleClass="sidebar-button"
-                    text="Create Art">
-                <VBox.margin>
-                    <Insets bottom="10.0" />
-                </VBox.margin>
-            </Button>
+                    <Button fx:id="btnMyPortfolio"
+                            mnemonicParsing="false"
+                            onAction="#navigateToMyPortfolio"
+                            prefHeight="50.0"
+                            prefWidth="220.0"
+                            styleClass="sidebar-button"
+                            text="My Portfolio">
+                        <VBox.margin>
+                            <Insets bottom="20.0" />
+                        </VBox.margin>
+                    </Button>
 
-            <Button fx:id="btnMyPortfolio"
-                    mnemonicParsing="false"
-                    onAction="#navigateToMyPortfolio"
-                    prefHeight="50.0"
-                    prefWidth="220.0"
-                    styleClass="sidebar-button"
-                    text="My Portfolio">
-                <VBox.margin>
-                    <Insets bottom="20.0" />
-                </VBox.margin>
-            </Button>
+                    <!-- Event Admin and Event User Buttons -->
+                    <Button fx:id="btnEventAdmin"
+                            mnemonicParsing="false"
+                            onAction="#navigateToEventAdmin"
+                            prefHeight="50.0"
+                            prefWidth="220.0"
+                            styleClass="sidebar-button"
+                            text="Event Admin">
+                        <VBox.margin>
+                            <Insets bottom="10.0" />
+                        </VBox.margin>
+                    </Button>
 
-            <!-- New Buttons for Event Admin and Event User -->
-            <Button fx:id="btnEventAdmin"
-                    mnemonicParsing="false"
-                    onAction="#navigateToEventAdmin"
-                    prefHeight="50.0"
-                    prefWidth="220.0"
-                    styleClass="sidebar-button"
-                    text="Event Admin">
-                <VBox.margin>
-                    <Insets bottom="10.0" />
-                </VBox.margin>
-            </Button>
+                    <Button fx:id="btnEventUser"
+                            mnemonicParsing="false"
+                            onAction="#navigateToEventUser"
+                            prefHeight="50.0"
+                            prefWidth="220.0"
+                            styleClass="sidebar-button"
+                            text="Event User">
+                        <VBox.margin>
+                            <Insets bottom="10.0" />
+                        </VBox.margin>
+                    </Button>
 
-            <Button fx:id="btnEventUser"
-                    mnemonicParsing="false"
-                    onAction="#navigateToEventUser"
-                    prefHeight="50.0"
-                    prefWidth="220.0"
-                    styleClass="sidebar-button"
-                    text="Event User">
-                <VBox.margin>
-                    <Insets bottom="10.0" />
-                </VBox.margin>
-            </Button>
+                    <!-- Manage Reservations Button -->
+                    <Button fx:id="btnManageReservations"
+                            mnemonicParsing="false"
+                            onAction="#navigateToAdminReservations"
+                            prefHeight="50.0"
+                            prefWidth="220.0"
+                            styleClass="sidebar-button"
+                            text="Manage Reservations">
+                        <VBox.margin>
+                            <Insets bottom="10.0" />
+                        </VBox.margin>
+                    </Button>
 
-            <!-- Existing Buttons -->
-            <Button fx:id="btnManageReservations"
-                    mnemonicParsing="false"
-                    onAction="#navigateToAdminReservations"
-                    prefHeight="50.0"
-                    prefWidth="220.0"
-                    styleClass="sidebar-button"
-                    text="Manage Reservations">
-                <VBox.margin>
-                    <Insets bottom="10.0" />
-                </VBox.margin>
-            </Button>
+                    <!-- Add Event Button -->
+                    <Button fx:id="btnAddEvent"
+                            mnemonicParsing="false"
+                            onAction="#navigateToAddEvent"
+                            prefHeight="50.0"
+                            prefWidth="220.0"
+                            styleClass="sidebar-button"
+                            text="Add Event">
+                        <VBox.margin>
+                            <Insets bottom="20.0" />
+                        </VBox.margin>
+                    </Button>
 
-            <Button fx:id="btnAddEvent"
-                    mnemonicParsing="false"
-                    onAction="#navigateToAddEvent"
-                    prefHeight="50.0"
-                    prefWidth="220.0"
-                    styleClass="sidebar-button"
-                    text="Add Event">
-                <VBox.margin>
-                    <Insets bottom="20.0" />
-                </VBox.margin>
-            </Button>
+                    <!-- Reclamations Button with Submenu -->
+                    <Button fx:id="btnReclamations"
+                            mnemonicParsing="false"
+                            onAction="#toggleReclamationSubmenu"
+                            prefHeight="50.0"
+                            prefWidth="220.0"
+                            styleClass="sidebar-button"
+                            text="Réclamations">
+                        <VBox.margin>
+                            <Insets bottom="10.0" />
+                        </VBox.margin>
+                    </Button>
 
-            <!-- Spacer -->
-            <VBox VBox.vgrow="ALWAYS" />
+                    <!-- Reclamation Submenu -->
+                    <VBox fx:id="reclamationSubmenu"
+                          managed="false"
+                          prefHeight="0.0"
+                          prefWidth="220.0"
+                          styleClass="submenu-container"
+                          visible="false">
+                        <children>
+                            <Button mnemonicParsing="false"
+                                    onAction="#navigateToReclamationList"
+                                    prefHeight="40.0"
+                                    prefWidth="200.0"
+                                    styleClass="submenu-button"
+                                    text="Liste des Réclamations" />
+                            <Button mnemonicParsing="false"
+                                    onAction="#navigateToReponseList"
+                                    prefHeight="40.0"
+                                    prefWidth="200.0"
+                                    styleClass="submenu-button"
+                                    text="Liste des Réponses" />
+                        </children>
+                        <padding>
+                            <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                        </padding>
+                    </VBox>
 
-            <!-- Logout Button -->
-            <Button fx:id="btnLogout"
-                    mnemonicParsing="false"
-                    onAction="#logOut"
-                    prefHeight="50.0"
-                    prefWidth="220.0"
-                    styleClass="logout-button"
-                    text="DÉCONNEXION">
-                <VBox.margin>
-                    <Insets bottom="20.0" />
-                </VBox.margin>
-            </Button>
+                    <!-- Spacer -->
+                    <VBox VBox.vgrow="ALWAYS" />
 
-            <!-- Quit Button -->
-            <Button fx:id="btnQuit"
-                    mnemonicParsing="false"
-                    onAction="#quit"
-                    prefHeight="50.0"
-                    prefWidth="220.0"
-                    styleClass="logout-button"
-                    text="Quit">
-                <VBox.margin>
-                    <Insets bottom="20.0" />
-                </VBox.margin>
-            </Button>
-        </VBox>
+                    <!-- Logout Button -->
+                    <Button fx:id="btnLogout"
+                            mnemonicParsing="false"
+                            onAction="#logOut"
+                            prefHeight="50.0"
+                            prefWidth="220.0"
+                            styleClass="logout-button"
+                            text="DÉCONNEXION">
+                        <VBox.margin>
+                            <Insets bottom="20.0" />
+                        </VBox.margin>
+                    </Button>
+
+                    <!-- Quit Button -->
+                    <Button fx:id="btnQuit"
+                            mnemonicParsing="false"
+                            onAction="#quit"
+                            prefHeight="50.0"
+                            prefWidth="220.0"
+                            styleClass="logout-button"
+                            text="Quit">
+                        <VBox.margin>
+                            <Insets bottom="20.0" />
+                        </VBox.margin>
+                    </Button>
+                </VBox>
+            </content>
+        </ScrollPane>
     </center>
 </BorderPane>

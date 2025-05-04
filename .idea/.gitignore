@@ -1,0 +1,19 @@
+IntelliJ IDEA
+
+.idea/ *.iml
+
+Maven
+
+target/
+
+Logs
+
+*.log
+
+Dependency directories
+
+node_modules/
+
+Optional: Uploads directory (if it contains temporary or user-generated files)
+
+uploads/
