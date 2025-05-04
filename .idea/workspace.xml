@@ -5,34 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2dae73f0-5630-42ea-89fd-a074e93d5679" name="Changes" comment="integration UserManagement avec module Reclamation complet et correct">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/controllers/ReclamationController/ReclamationListAdmin.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/controllers/ReponseController/ReponseListAdmin.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/services/reclamation/IServiceReclamation.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/services/reclamation/ReclamationService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/services/reponse/IServiceReponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/services/reponse/ReponseService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/Reclamation/ReclamationListAdmin.fxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/Reponse/ReponseListAdmin.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Entities/Reclamation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/models/Reclamation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Entities/Reponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/models/Reponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Main/Main.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/Menu/MainMenu.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/ReclamationController/ReclamationAdd.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/ReclamationController/ReclamationAdd.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/ReclamationController/ReclamationList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/ReclamationController/ReclamationList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/ReclamationController/ReclamationUpdate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/ReclamationController/ReclamationUpdate.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/ReponseController/ReponseAdd.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/ReponseController/ReponseAdd.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/ReponseController/ReponseList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/ReponseController/ReponseList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/ReponseController/ReponseUpdate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/ReponseController/ReponseUpdate.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/sidebar/SidebarController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/sidebar/SidebarController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/services/ReclamationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/services/ReclamationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/services/ReponseService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/services/ReponseService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/utils/MyDataBase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/utils/MyDataBase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Menu/MainMenu.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/sidebar/Sidebar.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/sidebar/Sidebar.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -230,7 +203,7 @@
       <workItem from="1746048401870" duration="9742000" />
       <workItem from="1746146176056" duration="1411000" />
       <workItem from="1746294442770" duration="10534000" />
-      <workItem from="1746326324784" duration="2168000" />
+      <workItem from="1746326324784" duration="2791000" />
     </task>
     <task id="LOCAL-00001" summary="Login Interface Registration and reset password with the logic">
       <option name="closed" value="true" />
@@ -304,7 +277,23 @@
       <option name="project" value="LOCAL" />
       <updated>1746327739548</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="integration UserManagement avec module Reclamation complet et correct">
+      <option name="closed" value="true" />
+      <created>1746328531570</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1746328531570</updated>
+    </task>
+    <task id="LOCAL-00011" summary="integration UserManagement avec module Reclamation complet et correct">
+      <option name="closed" value="true" />
+      <created>1746328550099</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1746328550100</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
