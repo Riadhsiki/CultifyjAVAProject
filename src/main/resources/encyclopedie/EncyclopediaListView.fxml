@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.encyclopedie.EncyclopediaListController"
+            prefHeight="800.0" prefWidth="1000.0"
+            stylesheets="@/styles.css"
+            styleClass="encyclopedia-container">
+
+    <top>
+        <HBox styleClass="header-box">
+            <Label text="Encyclopédie Cultify" styleClass="header-title"/>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="content-scroll">
+            <FlowPane fx:id="contentPane" styleClass="content-grid"/>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <HBox styleClass="footer-box">
+            <Button text="Retour" onAction="#handleBack" styleClass="nav-button"/>
+            <Button text="Générer Contenu IA" onAction="#handleGenerateContent" styleClass="nav-button"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

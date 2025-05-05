@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.encyclopedie.GestionContenuMultiMediaController"
+            prefHeight="800.0" prefWidth="1000.0"
+            stylesheets="@styles.css"
+            style="-fx-background-color: -fx-secondary; -fx-padding: 20;">
+    <HBox spacing="20" AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20">
+        <!-- Liste des contenus -->
+        <VBox spacing="10" prefWidth="300">
+            <Label text="Liste des contenus multimédias" style="-fx-font-weight: bold; -fx-font-size: 14;"/>
+            <ListView fx:id="listView" prefHeight="500"/>
+        </VBox>
+
+        <!-- Formulaire d'édition -->
+        <VBox spacing="15" prefWidth="400">
+            <Label text="Gestion des contenus" style="-fx-font-weight: bold; -fx-font-size: 16;"/>
+
+            <GridPane hgap="10" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="100" halignment="RIGHT"/>
+                    <ColumnConstraints prefWidth="300" halignment="LEFT"/>
+                </columnConstraints>
+
+                <!-- Titre -->
+                <Label text="Titre:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <VBox GridPane.rowIndex="0" GridPane.columnIndex="1">
+                    <TextField fx:id="txtTitre"/>
+                    <Label fx:id="titreError" style="-fx-text-fill: red;"/>
+                </VBox>
+
+                <!-- Description -->
+                <Label text="Description:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <VBox GridPane.rowIndex="1" GridPane.columnIndex="1">
+                    <TextArea fx:id="txtDescription" wrapText="true" prefRowCount="4"/>
+                    <Label fx:id="descriptionError" style="-fx-text-fill: red;"/>
+                </VBox>
+
+                <!-- Catégorie -->
+                <Label text="Catégorie:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <VBox GridPane.rowIndex="2" GridPane.columnIndex="1">
+                    <ComboBox fx:id="comboCategorie" promptText="Choisir une catégorie" prefWidth="300"/>
+                    <Label fx:id="categorieError" style="-fx-text-fill: red;"/>
+                </VBox>
+
+                <!-- Image -->
+                <Label text="Image:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <VBox GridPane.rowIndex="3" GridPane.columnIndex="1" spacing="5">
+                    <ImageView fx:id="imageView" fitWidth="200" fitHeight="200" preserveRatio="true"
+                               style="-fx-border-color: #ccc; -fx-border-radius: 5;"/>
+                    <Button fx:id="btnUpload" text="Choisir une image" onAction="#handleUpload"
+                            style="-fx-base: #2196F3; -fx-text-fill: white;"/>
+                    <Label fx:id="imageError" style="-fx-text-fill: red;"/>
+                </VBox>
+            </GridPane>
+
+            <HBox spacing="10" style="-fx-padding: 10 0 0 0;">
+                <Button text="Ajouter" onAction="#handleAdd"
+                        style="-fx-base: #4CAF50; -fx-text-fill: white; -fx-min-width: 80;"/>
+                <Button text="Modifier" onAction="#handleUpdate"
+                        style="-fx-base: #FFC107; -fx-text-fill: black; -fx-min-width: 80;"/>
+                <Button text="Supprimer" onAction="#handleDelete"
+                        style="-fx-base: #F44336; -fx-text-fill: white; -fx-min-width: 80;"/>
+                <Button text="Vider" onAction="#handleClear"
+                        style="-fx-base: #9E9E9E; -fx-text-fill: white; -fx-min-width: 80;"/>
+                <Button text="Statistiques" onAction="#handleShowStats"
+                        style="-fx-base: #9b59b6; -fx-text-fill: white; -fx-min-width: 100;"/>
+                <Button text="Exporter Liste PDF" onAction="#handleExportPDF"
+                        style="-fx-base: #9b59b6; -fx-text-fill: white; -fx-min-width: 120;"/>
+                <Button text="Exporter PDF" onAction="#handleExportSinglePDF"
+                        style="-fx-base: #2ecc71; -fx-text-fill: white; -fx-min-width: 100;"/>
+
+            </HBox>
+        </VBox>
+    </HBox>
+
+    <style>
+        .button {
+        -fx-font-weight: bold;
+        -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);
+        }
+        .button:hover {
+        -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 0, 2);
+        }
+        .error-field {
+        -fx-border-color: #ff0000;
+        -fx-border-width: 1px;
+        }
+    </style>
+</AnchorPane>

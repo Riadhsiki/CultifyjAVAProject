@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.encyclopedie.MainController"
+            stylesheets="@styles.css"
+            style="-fx-background-color: -fx-secondary; -fx-padding: 20;">
+
+    <top>
+        <HBox spacing="20" styleClass="header-container">
+        <!-- Logo à gauche -->
+            <ImageView fitWidth="500" fitHeight="165" preserveRatio="true">
+                <image>
+                    <Image url="@/images/logo_small.png"/>
+                </image>
+            </ImageView>
+            <MenuBar styleClass="main-menu">
+
+            <Menu text="connecter tant que ">
+                <MenuItem text="Client" onAction="#loadFrontView" styleClass="menu-item"/>
+                <MenuItem text="Administrateur" onAction="#loadBackOfficeView" styleClass="menu-item"/>
+            </Menu>
+        </MenuBar>
+        </HBox>
+    </top>
+
+    <center>
+        <StackPane fx:id="contentPane" styleClass="main-content"/>
+    </center>
+</BorderPane>

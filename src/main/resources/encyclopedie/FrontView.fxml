@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.encyclopedie.FrontController"
+      stylesheets="@/styles.css"
+      alignment="CENTER"
+      spacing="20"
+      style="-fx-padding: 30;">
+
+    <Label text="Exploration Culturelle"
+           styleClass="title-label"/>
+
+    <Button text="Encyclopédie"
+            onAction="#openEncyclopediaListView"
+            styleClass="btn-primary"/>
+
+    <Button text="Quiz Culturel"
+            onAction="#openQuiz"
+            styleClass="btn-primary"/>
+</VBox>

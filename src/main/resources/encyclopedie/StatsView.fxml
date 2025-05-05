@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.encyclopedie.StatsController"
+      spacing="20"
+      style="-fx-padding: 20;">
+
+    <Label text="Statistiques des contenus multimédias"
+           style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+    <PieChart fx:id="pieChart" title="Répartition par catégorie" legendVisible="true"/>
+
+    <LineChart fx:id="lineChart" title="Évolution des créations">
+        <xAxis>
+            <NumberAxis fx:id="xAxis" label="Date de création"/>
+        </xAxis>
+        <yAxis>
+            <NumberAxis label="Nombre de contenus"/>
+        </yAxis>
+    </LineChart>
+</VBox>
