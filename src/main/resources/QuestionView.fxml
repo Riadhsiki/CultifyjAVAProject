@@ -8,9 +8,9 @@
 <AnchorPane xmlns="http://javafx.com/javafx/8.0.171"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="Controllers.QuestionController"
-            prefHeight="650.0" prefWidth="900.0"
-            style="-fx-padding: 20;">
-
+            prefHeight="80000000.0" prefWidth="1000.0"
+            stylesheets="@styles.css"
+            style="-fx-background-color: -fx-secondary; -fx-padding: 20;">
     <HBox spacing="20" AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20">
         <!-- Liste des questions -->
         <VBox spacing="10" prefWidth="300">

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.QuizFrontController"
+            stylesheets="@/styles.css"
+            styleClass="reader-container">
+
+    <top>
+        <HBox styleClass="header-box">
+            <Label text="Quiz Culturel" styleClass="header-title"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="20" style="-fx-padding: 20;">
+            <HBox spacing="10" alignment="CENTER">
+                <Label text="Sélectionner un Quiz:" style="-fx-font-weight: bold;"/>
+                <ComboBox fx:id="quizComboBox" prefWidth="300"/>
+            </HBox>
+
+            <HBox spacing="20">
+                <VBox spacing="10" prefWidth="400">
+                    <Label text="Ordre des Questions (double-cliquez ou utilisez les boutons)" style="-fx-font-weight: bold;"/>
+                    <ListView fx:id="questionOrderList" prefHeight="400"/>
+                    <HBox spacing="10">
+                        <Button fx:id="moveUpButton" text="Monter" onAction="#moveUp" styleClass="btn-primary"/>
+                        <Button fx:id="moveDownButton" text="Descendre" onAction="#moveDown" styleClass="btn-primary"/>
+                        <Button fx:id="startQuizButton" text="Démarrer le Quiz" styleClass="btn-primary" disable="true"/>
+                    </HBox>
+                </VBox>
+
+                <VBox fx:id="quizPlayArea" spacing="15" prefWidth="400">
+                    <Label fx:id="scoreLabel" text="Score: 0" style="-fx-font-weight: bold;"/>
+                    <Label fx:id="questionLabel" wrapText="true" style="-fx-font-size: 16;"/>
+                    <RadioButton fx:id="option1" toggleGroup="$answerGroup"/>
+                    <RadioButton fx:id="option2" toggleGroup="$answerGroup"/>
+                    <RadioButton fx:id="option3" toggleGroup="$answerGroup"/>
+                    <Button fx:id="submitAnswerButton" text="Valider" styleClass="btn-primary"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </center>
+
+</BorderPane>

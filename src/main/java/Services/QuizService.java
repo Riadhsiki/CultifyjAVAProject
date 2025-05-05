@@ -5,6 +5,8 @@ import Utils.MyConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.concurrent.Task;
+import javafx.fxml.FXML;
 
 public class QuizService implements IService<Quiz> {
     private Connection conn = MyConnection.getMyConnection().getConnection();

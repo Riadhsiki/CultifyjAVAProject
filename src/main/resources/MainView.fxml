@@ -1,36 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
 
-<VBox xmlns="http://javafx.com/javafx/17"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="Controllers.MainController"
-      spacing="20"
-      alignment="CENTER"
-      style="-fx-padding: 30; -fx-background-color: #f4f4f4;">
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.MainController"
+            stylesheets="@styles.css"
+            style="-fx-background-color: -fx-secondary; -fx-padding: 20;">
 
-    <Label text="Application Cultify"
-           style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2e86c1;"/>
+    <top>
+        <HBox spacing="20" styleClass="header-container">
+        <!-- Logo à gauche -->
+            <ImageView fitWidth="500" fitHeight="165" preserveRatio="true">
+                <image>
+                    <Image url="@/images/logo_small.png"/>
+                </image>
+            </ImageView>
+            <MenuBar styleClass="main-menu">
 
-    <VBox spacing="10" alignment="CENTER">
-        <Button text="Contenus Multimédia"
-                onAction="#openContenuView"
-                style="-fx-min-width: 200px; -fx-font-size: 14px;"/>
+            <Menu text="connecter tant que ">
+                <MenuItem text="Client" onAction="#loadFrontView" styleClass="menu-item"/>
+                <MenuItem text="Administrateur" onAction="#loadBackOfficeView" styleClass="menu-item"/>
+            </Menu>
+        </MenuBar>
+        </HBox>
+    </top>
 
-        <Button text="Gestion des Quiz"
-                onAction="#openQuizView"
-                style="-fx-min-width: 200px; -fx-font-size: 14px;"/>
-
-        <Button text="Gestion des Questions"
-                onAction="#openQuestionView"
-                style="-fx-min-width: 200px; -fx-font-size: 14px;"/>
-        <Button text="Encyclopédie (Liste)"
-                onAction="#openEncyclopediaListView"
-                style="-fx-min-width: 200px; -fx-font-size: 14px; -fx-base: #9b59b6;"/>
-
-        <Button text="Encyclopédie (Lecture)"
-                onAction="#openEncyclopediaReaderView"
-                style="-fx-min-width: 200px; -fx-font-size: 14px; -fx-base: #9b59b6;"/>
-    </VBox>
-</VBox>
+    <center>
+        <StackPane fx:id="contentPane" styleClass="main-content"/>
+    </center>
+</BorderPane>

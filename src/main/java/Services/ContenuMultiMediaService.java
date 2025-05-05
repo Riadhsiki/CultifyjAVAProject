@@ -3,8 +3,8 @@ package Services;
 import Models.ContenuMultiMedia;
 import Utils.MyConnection;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Date;
+import java.util.*;
 
 public class ContenuMultiMediaService implements IService<ContenuMultiMedia> {
     private Connection conn = MyConnection.getMyConnection().getConnection();
@@ -68,5 +68,32 @@ public class ContenuMultiMediaService implements IService<ContenuMultiMedia> {
             }
         }
         return contenus;
+    }
+    public Map<String, Integer> getStatsByCategory() throws SQLException {
+        Map<String, Integer> stats = new HashMap<>();
+        String query = "SELECT categorie_media, COUNT(*) as count FROM contenu_multi_media GROUP BY categorie_media";
+
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                stats.put(rs.getString("categorie_media"), rs.getInt("count"));
+            }
+        }
+        return stats;
+    }
+
+    public Map<java.util.Date, Integer> getCreationTrend() throws SQLException {
+        Map<java.util.Date, Integer> trends = new LinkedHashMap<>();
+        String query = "SELECT DATE(date_media) as creation_date, COUNT(*) as count "
+                + "FROM contenu_multi_media GROUP BY DATE(date_media) ORDER BY creation_date";
+
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                java.sql.Date sqlDate = rs.getDate("creation_date");
+                trends.put(new java.util.Date(sqlDate.getTime()), rs.getInt("count"));
+            }
+        }
+        return trends;
     }
 }

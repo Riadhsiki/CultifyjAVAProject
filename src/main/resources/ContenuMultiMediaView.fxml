@@ -8,9 +8,9 @@
 <AnchorPane xmlns="http://javafx.com/javafx/8.0.171"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="Controllers.GestionContenuMultiMediaController"
-            prefHeight="600.0" prefWidth="800.0"
-            style="-fx-padding: 20;">
-
+            prefHeight="800.0" prefWidth="1000.0"
+            stylesheets="@styles.css"
+            style="-fx-background-color: -fx-secondary; -fx-padding: 20;">
     <HBox spacing="20" AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20">
         <!-- Liste des contenus -->
         <VBox spacing="10" prefWidth="300">
@@ -45,7 +45,7 @@
                 <!-- Catégorie -->
                 <Label text="Catégorie:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
                 <VBox GridPane.rowIndex="2" GridPane.columnIndex="1">
-                    <TextField fx:id="txtCategorie"/>
+                    <ComboBox fx:id="comboCategorie" promptText="Choisir une catégorie" prefWidth="300"/>
                     <Label fx:id="categorieError" style="-fx-text-fill: red;"/>
                 </VBox>
 
@@ -69,6 +69,13 @@
                         style="-fx-base: #F44336; -fx-text-fill: white; -fx-min-width: 80;"/>
                 <Button text="Vider" onAction="#handleClear"
                         style="-fx-base: #9E9E9E; -fx-text-fill: white; -fx-min-width: 80;"/>
+                <Button text="Statistiques" onAction="#handleShowStats"
+                        style="-fx-base: #9b59b6; -fx-text-fill: white; -fx-min-width: 100;"/>
+                <Button text="Exporter Liste PDF" onAction="#handleExportPDF"
+                        style="-fx-base: #9b59b6; -fx-text-fill: white; -fx-min-width: 120;"/>
+                <Button text="Exporter PDF" onAction="#handleExportSinglePDF"
+                        style="-fx-base: #2ecc71; -fx-text-fill: white; -fx-min-width: 100;"/>
+
             </HBox>
         </VBox>
     </HBox>

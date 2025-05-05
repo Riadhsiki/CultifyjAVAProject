@@ -8,19 +8,22 @@
     <artifactId>CultifyJava</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <javafx.version>20.0.2</javafx.version>
+        <itext.version>8.0.3</itext.version>
     </properties>
+
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <!-- MySQL Connector -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.33</version>
         </dependency>
+        <!-- JavaFX -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
@@ -28,10 +31,65 @@
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
+            <artifactId>javafx-swing</artifactId>
             <version>20.0.2</version>
         </dependency>
+        <!-- iText pour PDF -->
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>kernel</artifactId>
+            <version>${itext.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>layout</artifactId>
+            <version>${itext.version}</version>
+        </dependency>
+        <!-- JavaMail -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Dépendance pour les appels HTTP à l'API Google AI Studio -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.14</version>
+        </dependency>
+        <!-- Dépendance pour JSON -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version>
+        </dependency>
+        <!-- QR Code -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.5.2</version>
+        </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>custom-repo</id>
+            <url>https://custom.repository.url/maven2/</url>
+        </repository>
+    </repositories>
+
     <build>
         <plugins>
             <plugin>
@@ -39,9 +97,61 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>Controllers.Home</mainClass>
+                    <mainClass>org.example.MainFx</mainClass>
+                    <options>
+                        <option>--width=1280</option>
+                        <option>--height=720</option>
+                        <option>--add-opens=javafx.graphics/com.sun.javafx.css=ALL-UNNAMED</option>
+                        <option>--add-exports=javafx.base/com.sun.javafx.runtime=ALL-UNNAMED</option>
+                        <option>--add-exports=javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED</option>
+                    </options>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.example.MainFx</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.fxml</include>
+                    <include>**/*.css</include>
+                    <include>**/*.png</include>
+                    <include>**/*.jpg</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
     </build>
 </project>

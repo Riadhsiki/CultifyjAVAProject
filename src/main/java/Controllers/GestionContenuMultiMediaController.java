@@ -2,15 +2,22 @@ package Controllers;
 
 import Models.ContenuMultiMedia;
 import Services.ContenuMultiMediaService;
+import Utils.PDFGenerator;
+import Utils.EmailUtil;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
-
+import javafx.stage.Stage;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.Date;
@@ -21,7 +28,9 @@ public class GestionContenuMultiMediaController implements Initializable {
     @FXML
     private ListView<ContenuMultiMedia> listView;
     @FXML
-    private TextField txtTitre, txtCategorie;
+    private TextField txtTitre;
+    @FXML
+    private ComboBox<String> comboCategorie;
     @FXML
     private TextArea txtDescription;
     @FXML
@@ -37,6 +46,9 @@ public class GestionContenuMultiMediaController implements Initializable {
         setupListView();
         loadData();
         setupValidation();
+        comboCategorie.getItems().addAll(
+                "Film", "Documentaire", "Série", "Animation", "sport", "experience sociale", "experiance culturelle"
+        );
     }
 
     private void setupValidation() {
@@ -56,9 +68,9 @@ public class GestionContenuMultiMediaController implements Initializable {
             }
         });
 
-        txtCategorie.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal.matches("^[a-zA-Z ]+$")) {
-                categorieError.setText("Lettres uniquement");
+        comboCategorie.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal == null || newVal.trim().isEmpty()) {
+                categorieError.setText("Veuillez choisir une catégorie");
             } else {
                 categorieError.setText("");
             }
@@ -90,7 +102,7 @@ public class GestionContenuMultiMediaController implements Initializable {
     private void populateFields(ContenuMultiMedia contenu) {
         txtTitre.setText(contenu.getTitre_media());
         txtDescription.setText(contenu.getText_media());
-        txtCategorie.setText(contenu.getCategorie_media());
+        comboCategorie.setValue(contenu.getCategorie_media());
         if (contenu.getPhoto_media() != null) {
             imageView.setImage(new Image(contenu.getPhoto_media()));
         }
@@ -127,20 +139,32 @@ public class GestionContenuMultiMediaController implements Initializable {
 
         if (!isValid) return;
 
-
         try {
             ContenuMultiMedia nouveau = new ContenuMultiMedia(
                     txtTitre.getText(),
                     txtDescription.getText(),
                     imageView.getImage() != null ? imageView.getImage().getUrl() : "",
-                    txtCategorie.getText(),
+                    comboCategorie.getValue(),
                     new Date()
             );
             service.add(nouveau);
             loadData();
             clearFields();
+
+            // Envoyer une notification par email
+            String emailSubject = "Nouveau contenu ajouté : " + nouveau.getTitre_media();
+            String emailContent = "Un nouveau contenu multimédia a été ajouté dans l'Encyclopédie Cultify.\n" +
+                    "Titre : " + nouveau.getTitre_media() + "\n" +
+                    "Catégorie : " + nouveau.getCategorie_media() + "\n" +
+                    "Description : " + nouveau.getText_media().substring(0, Math.min(nouveau.getText_media().length(), 100)) + "...\n" +
+                    "Date : " + nouveau.getDate_media();
+            EmailUtil.sendEmail(emailSubject, emailContent);
+            showAlert("Succès", "Contenu ajouté et notification envoyée !");
+
         } catch (SQLException e) {
-            showAlert("Erreur", e.getMessage());
+            showAlert("Erreur", "Erreur lors de l'ajout du contenu : " + e.getMessage());
+        } catch (Exception e) {
+            showAlert("Erreur", "Erreur lors de l'envoi de la notification : " + e.getMessage());
         }
     }
 
@@ -169,7 +193,7 @@ public class GestionContenuMultiMediaController implements Initializable {
             try {
                 selected.setTitre_media(txtTitre.getText());
                 selected.setText_media(txtDescription.getText());
-                selected.setCategorie_media(txtCategorie.getText());
+                selected.setCategorie_media(comboCategorie.getValue());
                 if (imageView.getImage() != null) {
                     selected.setPhoto_media(imageView.getImage().getUrl());
                 }
@@ -203,7 +227,7 @@ public class GestionContenuMultiMediaController implements Initializable {
     private void clearFields() {
         txtTitre.clear();
         txtDescription.clear();
-        txtCategorie.clear();
+        comboCategorie.getSelectionModel().clearSelection();
         imageView.setImage(null);
         titreError.setText("");
         descriptionError.setText("");
@@ -211,7 +235,64 @@ public class GestionContenuMultiMediaController implements Initializable {
         imageError.setText("");
     }
 
+    @FXML
+    private void handleExportPDF() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Exporter en PDF");
+        fileChooser.getExtensionFilters().add(new ExtensionFilter("Fichiers PDF", "*.pdf"));
+        File file = fileChooser.showSaveDialog(btnUpload.getScene().getWindow());
+
+        if (file != null) {
+            try {
+                PDFGenerator.generateContentsListPDF(listView.getItems(), file.getAbsolutePath());
+                showAlert("Succès", "PDF généré avec succès !");
+            } catch (IOException e) {
+                showAlert("Erreur", "Échec de génération du PDF : " + e.getMessage());
+            }
+        }
+    }
+
+    @FXML
+    private void handleExportSinglePDF() {
+        ContenuMultiMedia selected = listView.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showAlert("Erreur", "Veuillez sélectionner un contenu");
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Exporter en PDF");
+        fileChooser.getExtensionFilters().add(new ExtensionFilter("Fichiers PDF", "*.pdf"));
+        File file = fileChooser.showSaveDialog(btnUpload.getScene().getWindow());
+
+        if (file != null) {
+            try {
+                PDFGenerator.generateContentPDF(selected, file.getAbsolutePath());
+                showAlert("Succès", "PDF généré avec succès !");
+            } catch (IOException e) {
+                showAlert("Erreur", "Échec de génération du PDF : " + e.getMessage());
+            }
+        }
+    }
+
     private void showAlert(String title, String message) {
-        new Alert(Alert.AlertType.ERROR, message).showAndWait();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void handleShowStats() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/StatsView.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("Statistiques des contenus");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

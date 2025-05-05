@@ -1,43 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.geometry.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+<BorderPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="Controllers.EncyclopediaListController"
-            style="-fx-padding: 20;">
+            prefHeight="800.0" prefWidth="1000.0"
+            stylesheets="@/styles.css"
+            styleClass="encyclopedia-container">
 
     <top>
-        <HBox style="-fx-padding: 10; -fx-background-color: #2e86c1;">
-            <Label text="Encyclopédie Cultify" style="-fx-text-fill: white; -fx-font-size: 20; -fx-font-weight: bold;"/>
-        </HBox>
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <HBox styleClass="header-box">
+                <Label text="Encyclopédie Cultify" styleClass="header-title"/>
+            </HBox>
+            <!-- Advanced Search Section -->
+            <VBox spacing="8" styleClass="search-box">
+                <Label text="Recherche Avancée" style="-fx-font-weight: bold; -fx-font-size: 14;"/>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Titre:" style="-fx-font-weight: bold;"/>
+                    <TextField fx:id="titleSearchField" promptText="Entrez le titre..." prefWidth="200"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Catégorie:" style="-fx-font-weight: bold;"/>
+                    <ComboBox fx:id="categoryComboBox" promptText="Sélectionner une catégorie..." prefWidth="200"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Contenu:" style="-fx-font-weight: bold;"/>
+                    <TextField fx:id="contentSearchField" promptText="Rechercher dans le contenu..." prefWidth="200"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button fx:id="searchButton" text="Rechercher" onAction="#performSearch" styleClass="nav-button"/>
+                    <Button fx:id="clearSearchButton" text="Réinitialiser" onAction="#clearSearch" styleClass="nav-button"/>
+                </HBox>
+            </VBox>
+        </VBox>
     </top>
 
     <center>
-        <ScrollPane fitToWidth="true">
-            <FlowPane fx:id="contentPane" hgap="20" vgap="20" style="-fx-padding: 20;"/>
+        <ScrollPane fitToWidth="true" styleClass="content-scroll">
+            <FlowPane fx:id="contentPane" styleClass="content-grid"/>
         </ScrollPane>
     </center>
 
     <bottom>
-        <HBox alignment="CENTER" style="-fx-padding: 10; -fx-background-color: #f4f4f4;">
-            <Button text="Retour" onAction="#handleBack" style="-fx-min-width: 100;"/>
+        <HBox styleClass="footer-box">
+            <Button text="Retour" onAction="#handleBack" styleClass="nav-button"/>
+            <Button text="Générer Contenu IA" onAction="#handleGenerateContent" styleClass="nav-button"/>
         </HBox>
     </bottom>
 
-    <style>
-        .content-card {
-        -fx-background-color: white;
-        -fx-background-radius: 5;
-        -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
-        -fx-pref-width: 250;
-        -fx-pref-height: 300;
-        }
-        .content-card:hover {
-        -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 15, 0, 0, 0);
-        }
-    </style>
 </BorderPane>

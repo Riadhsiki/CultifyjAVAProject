@@ -1,0 +1,214 @@
+.header-container {
+    -fx-padding: 15;
+    -fx-background-color: -fx-primary;
+    -fx-alignment: center-left;
+}
+.encyclopedia-container {
+    -fx-background-color: -fx-secondary;
+    -fx-padding: 20px;
+}
+.logo {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 1);
+}
+
+.root {
+    -fx-primary: #89CFF0;  /* Bleu pastel */
+    -fx-secondary: #FFF9C4; /* Jaune pastel */
+    -fx-light: #FFFFFF;
+}
+.main-menu {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 0 20;
+}
+
+.menu-item {
+    -fx-font-size: 15px;
+    -fx-padding: 5 15;
+}
+.main-content {
+    -fx-padding: 50;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 0);
+}
+.title-label {
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-primary;
+}
+
+.btn-primary {
+    -fx-background-color: -fx-primary;
+    -fx-text-fill: -fx-light;
+    -fx-font-weight: bold;
+    -fx-min-width: 300px;
+    -fx-padding: 15px;
+}
+
+.btn-primary:hover {
+    -fx-background-color: derive(-fx-primary, -20%);
+}
+.chart-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.axis-label {
+    -fx-font-size: 12px;
+}
+
+.chart-legend-item {
+    -fx-font-size: 12px;
+}
+.header-box {
+    -fx-padding: 10px;
+    -fx-background-color: -fx-primary;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 2);
+}
+
+.header-title {
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 0 15px;
+}
+.content-scroll {
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+}
+
+.content-grid {
+    -fx-padding: 20px;
+    -fx-hgap: 20px;
+    -fx-vgap: 20px;
+}
+
+/* Cartes de contenu */
+.content-card {
+    -fx-background-color: white;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+    -fx-pref-width: 250px;
+    -fx-pref-height: 300px;
+}
+
+.content-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 15, 0, 0, 0);
+    -fx-cursor: hand;
+}
+
+/* Pied de page */
+.footer-box {
+    -fx-padding: 10px;
+    -fx-background-color: -fx-light;
+    -fx-alignment: center;
+}
+
+.nav-button {
+    -fx-min-width: 100px;
+    -fx-font-weight: bold;
+    -fx-background-color: -fx-primary;
+    -fx-text-fill: white;
+}
+
+.nav-button:hover {
+    -fx-background-color: derive(-fx-primary, -20%);
+}
+/* Container principal */
+.reader-container {
+    -fx-background-color: -fx-secondary;
+    -fx-padding: 20px;
+}
+
+/* En-tête */
+.header-box {
+    -fx-padding: 10px;
+    -fx-background-color: -fx-primary;
+    -fx-spacing: 10px;
+}
+
+.header-title {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 0 20px;
+}
+
+/* Contenu principal */
+.content-scroll {
+    -fx-background: transparent;
+}
+
+.content-container {
+    -fx-padding: 20px;
+    -fx-spacing: 20px;
+}
+
+.content-image {
+    -fx-fit-width: 400px;
+    -fx-fit-height: 300px;
+    -fx-preserve-ratio: true;
+    -fx-border-color: -fx-border-color;
+    -fx-border-radius: 5px;
+}
+
+.category-label {
+    -fx-font-style: italic;
+    -fx-text-fill: -fx-text-secondary;
+}
+
+.content-text {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-font-size: 14px;
+}
+
+/* Pied de page */
+.footer-box {
+    -fx-padding: 10px;
+    -fx-background-color: -fx-light;
+    -fx-alignment: center;
+    -fx-spacing: 10px;
+}
+
+.nav-button {
+    -fx-min-width: 100px;
+    -fx-font-weight: bold;
+    -fx-background-color: -fx-primary;
+    -fx-text-fill: white;
+}
+
+.nav-button:hover {
+    -fx-background-color: derive(-fx-primary, -20%);
+}
+
+.export-button {
+    -fx-min-width: 100px;
+    -fx-background-color: -fx-success;
+    -fx-text-fill: white;
+}
+
+.export-button:hover {
+    -fx-background-color: derive(-fx-success, -20%);
+}
+.root {
+
+    -fx-border-color: #cccccc;
+    -fx-text-secondary: #7f8c8d;
+    -fx-success: #2ecc71;    /* Vert pour le bouton export */
+}
+.qr-section {
+    -fx-alignment: center;
+    -fx-spacing: 15px;
+    -fx-padding: 20px 0;
+}
+
+.qr-button {
+    -fx-background-color: #2196F3;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 15;
+}
+
+.qr-button:hover {
+    -fx-background-color: #1976D2;
+}
