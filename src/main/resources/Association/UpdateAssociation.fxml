@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import java.net.URL?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21.0.2" xmlns:fx="http://javafx.com/fxml/1" styleClass="anchor-pane"  fx:controller="controllers.associationcontrollers.UpdateAssociation">
+    <stylesheets>
+        <URL value="@/Association/styles.css" />
+    </stylesheets>
+    <left>
+        <fx:include source="/SideBar/SideBar.fxml" />
+    </left>
+    <center>
+        <VBox styleClass="form-vbox" spacing="15.0" prefHeight="700.0" prefWidth="550.0" BorderPane.alignment="CENTER">
+            <children>
+                <Label styleClass="form-title" text="Modifier Association">
+                    <font>
+                        <Font name="Verdana" size="24.0" />
+                    </font>
+                </Label>
+
+                <HBox alignment="TOP_CENTER" spacing="20.0" styleClass="form-fields-container">
+                    <VBox spacing="15.0" prefWidth="500.0">
+                        <children>
+                            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                <children>
+                                    <Label styleClass="form-label" text="ID:" />
+                                    <TextField fx:id="idField" styleClass="form-textfield" editable="false" prefWidth="400.0" />
+                                </children>
+                            </HBox>
+
+                            <VBox spacing="5.0">
+                                <children>
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                        <children>
+                                            <Label styleClass="form-label" text="Nom:" />
+                                            <TextField fx:id="nomField" styleClass="form-textfield" prefWidth="400.0" />
+                                        </children>
+                                    </HBox>
+                                    <Label fx:id="nomErrorLabel" styleClass="error-label" textFill="RED" />
+                                </children>
+                            </VBox>
+
+                            <VBox spacing="5.0">
+                                <children>
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                        <children>
+                                            <Label styleClass="form-label" text="Description:" />
+                                            <TextArea fx:id="descriptionField" styleClass="form-textarea" wrapText="true" prefHeight="100.0" prefWidth="400.0" />
+                                        </children>
+                                    </HBox>
+                                    <Label fx:id="descriptionErrorLabel" styleClass="error-label" textFill="RED" />
+                                </children>
+                            </VBox>
+
+                            <VBox spacing="5.0">
+                                <children>
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                        <children>
+                                            <Label styleClass="form-label" text="Contact:" />
+                                            <TextField fx:id="contactField" styleClass="form-textfield" prefWidth="400.0" />
+                                        </children>
+                                    </HBox>
+                                    <Label fx:id="contactErrorLabel" styleClass="error-label" textFill="RED" />
+                                </children>
+                            </VBox>
+
+                            <VBox spacing="5.0">
+                                <children>
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                        <children>
+                                            <Label styleClass="form-label" text="But:" />
+                                            <TextArea fx:id="butField" styleClass="form-textarea" wrapText="true" prefHeight="80.0" prefWidth="400.0" />
+                                        </children>
+                                    </HBox>
+                                    <Label fx:id="butErrorLabel" styleClass="error-label" textFill="RED" />
+                                </children>
+                            </VBox>
+
+                            <VBox spacing="5.0">
+                                <children>
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                        <children>
+                                            <Label styleClass="form-label" text="Montant:" />
+                                            <TextField fx:id="montantField" styleClass="form-textfield" prefWidth="400.0" />
+                                        </children>
+                                    </HBox>
+                                    <Label fx:id="montantErrorLabel" styleClass="error-label" textFill="RED" />
+                                </children>
+                            </VBox>
+
+                            <VBox spacing="5.0">
+                                <children>
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                        <children>
+                                            <Label styleClass="form-label" text="Site Web:" />
+                                            <TextField fx:id="siteWebField" styleClass="form-textfield" prefWidth="400.0" />
+                                        </children>
+                                    </HBox>
+                                    <Label fx:id="siteWebErrorLabel" styleClass="error-label" textFill="RED" />
+                                </children>
+                            </VBox>
+
+                            <VBox spacing="5.0">
+                                <children>
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                        <children>
+                                            <Label styleClass="form-label" text="Image:" />
+                                            <TextField fx:id="imageField" styleClass="form-textfield" editable="false" prefWidth="300.0" />
+                                            <Button styleClass="browse-button" mnemonicParsing="false" onAction="#chooseImage" text="Parcourir..." />
+                                        </children>
+                                    </HBox>
+                                    <Label fx:id="imageErrorLabel" styleClass="error-label" textFill="RED" />
+                                </children>
+                            </VBox>
+                        </children>
+                    </VBox>
+
+                    <VBox styleClass="form-image-container" spacing="10.0" alignment="TOP_CENTER" prefWidth="200.0">
+                        <Label fx:id="currentImageLabel" styleClass="image-info-label" />
+                        <ImageView fx:id="imagePreview" styleClass="image-preview" fitHeight="200.0" fitWidth="200.0" preserveRatio="true" />
+                    </VBox>
+                </HBox>
+
+                <HBox alignment="CENTER" spacing="20.0" styleClass="form-buttons-container">
+                    <Button fx:id="btnUpdate" styleClass="form-submit-button" mnemonicParsing="false" onAction="#updateAssociation" text="Mettre à jour" />
+                    <Button fx:id="btnCancel" styleClass="form-cancel-button" mnemonicParsing="false" onAction="#cancelUpdate" text="Annuler" />
+                </HBox>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

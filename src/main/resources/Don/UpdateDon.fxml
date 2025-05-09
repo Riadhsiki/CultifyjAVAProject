@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import java.net.URL?>
+
+<BorderPane fx:id="mainAnchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.DonControllers.UpdateDon">
+    <stylesheets>
+        <URL value="@/Don/styles.css" />
+        <URL value="@/Association/styles.css" />
+    </stylesheets>
+    <left>
+        <fx:include source="/SideBar/SideBar.fxml" />
+    </left>
+    <center>
+        <VBox styleClass="don-form-vbox" prefWidth="350.0" BorderPane.alignment="CENTER">
+            <children>
+                <Label text="Modifier le Don" styleClass="don-form-title">
+                    <font>
+                        <Font name="Verdana" size="24.0" />
+                    </font>
+                </Label>
+                <GridPane styleClass="don-form-grid" hgap="10" vgap="5">
+                    <columnConstraints>
+                        <ColumnConstraints prefWidth="150.0" halignment="RIGHT" />
+                        <ColumnConstraints prefWidth="300.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints prefHeight="35" />
+                        <RowConstraints prefHeight="40" />
+                        <RowConstraints prefHeight="35" />
+                        <RowConstraints prefHeight="40" />
+                    </rowConstraints>
+                    <children>
+                        <Label text="Association:" styleClass="don-form-label" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                        <ComboBox fx:id="associationCombo" styleClass="don-form-combo" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+                        <Label fx:id="associationErrorLabel" styleClass="error-label" wrapText="true" maxWidth="300" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.halignment="LEFT" />
+                        <Label text="Montant (TND):" styleClass="don-form-label" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+                        <TextField fx:id="montantField" styleClass="don-form-textfield" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+                        <Label fx:id="montantErrorLabel" styleClass="error-label" wrapText="true" maxWidth="300" GridPane.rowIndex="3" GridPane.columnIndex="1" GridPane.halignment="LEFT" />
+                    </children>
+                </GridPane>
+                <HBox styleClass="don-form-buttons" alignment="CENTER" spacing="20.0">
+                    <children>
+                        <Button fx:id="saveButton" text="Enregistrer" styleClass="don-form-submit-button" />
+                        <Button fx:id="cancelButton" text="Annuler" styleClass="don-form-cancel-button" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

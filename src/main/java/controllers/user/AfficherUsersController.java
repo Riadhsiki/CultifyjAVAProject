@@ -35,6 +35,8 @@ public class AfficherUsersController {
 
     private ObservableList<User> userList;
     private FilteredList<User> filteredUserList;
+    private UserService userService = new UserService();
+    private SessionManager sessionManager = SessionManager.getInstance();
     private static final String ADD_USER_FXML = "/userinterfaces/AjouterUser.fxml";
     private static final String PROFILE_FXML = "/Auth/Profile.fxml";
     private static final String LOGIN_FXML = "/Auth/Login.fxml";
@@ -83,9 +85,11 @@ public class AfficherUsersController {
                     VBox card = new VBox(5);
                     card.setStyle(
                             "-fx-padding: 10; " +
-                                    "-fx-border-color: lightgray; " +
+                                    "-fx-border-color: #2c3e50; " +
                                     "-fx-border-width: 1; " +
-                                    "-fx-background-color: #f9f9f9;"
+                                    "-fx-border-radius: 5; " +
+                                    "-fx-background-color: #ffffff; " +
+                                    "-fx-background-radius: 5;"
                     );
                     card.setAlignment(Pos.CENTER_LEFT);
 
@@ -100,40 +104,74 @@ public class AfficherUsersController {
                         if (imgFile.exists()) {
                             profileImageView.setImage(new Image(imgFile.toURI().toString()));
                         } else {
-                            // Load a default image
-                            try {
-                                profileImageView.setImage(new Image("file:src/main/resources/images/default.jpg"));
-                            } catch (Exception e) {
-                                System.err.println("Default image not found: " + e.getMessage());
-                            }
+                            loadDefaultImage(profileImageView);
                         }
+                    } else {
+                        loadDefaultImage(profileImageView);
                     }
 
                     // User info labels
-                    Label nameLabel = new Label("Nom: " + user.getNom() + " " + user.getPrenom());
-                    nameLabel.setStyle("-fx-font-weight: bold;");
+                    Label nameLabel = new Label(user.getPrenom() + " " + user.getNom());
+                    nameLabel.setStyle("-fx-font-family: 'Verdana'; -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
                     Label usernameLabel = new Label("Username: " + user.getUsername());
+                    usernameLabel.setStyle("-fx-font-family: 'Verdana'; -fx-font-size: 12px; -fx-text-fill: #2c3e50;");
                     Label emailLabel = new Label("Email: " + user.getEmail());
-                    Label numTelLabel = new Label("Numéro Téléphone: " + user.getNumTel());
-                    Label rolesLabel = new Label("Rôles: " + user.getRoles());
-                    Label genderLabel = new Label("Genre: " + user.getGender());
+                    emailLabel.setStyle("-fx-font-family: 'Verdana'; -fx-font-size: 12px; -fx-text-fill: #2c3e50;");
+                    Label numTelLabel = new Label("Phone: " + user.getNumTel());
+                    numTelLabel.setStyle("-fx-font-family: 'Verdana'; -fx-font-size: 12px; -fx-text-fill: #2c3e50;");
+                    Label rolesLabel = new Label("Roles: " + user.getRoles());
+                    rolesLabel.setStyle("-fx-font-family: 'Verdana'; -fx-font-size: 12px; -fx-text-fill: #2c3e50;");
+                    Label genderLabel = new Label("Gender: " + user.getGender());
+                    genderLabel.setStyle("-fx-font-family: 'Verdana'; -fx-font-size: 12px; -fx-text-fill: #2c3e50;");
 
                     String dateNaissance = user.getDatedenaissance() != null
                             ? new SimpleDateFormat("yyyy-MM-dd").format(user.getDatedenaissance())
-                            : "Non spécifiée";
-                    Label dateNaissanceLabel = new Label("Date de Naissance: " + dateNaissance);
+                            : "Not specified";
+                    Label dateNaissanceLabel = new Label("Birth Date: " + dateNaissance);
+                    dateNaissanceLabel.setStyle("-fx-font-family: 'Verdana'; -fx-font-size: 12px; -fx-text-fill: #2c3e50;");
 
                     // Buttons for actions
-                    Button selectButton = new Button("Sélectionner");
+                    Button selectButton = new Button("Select");
+                    styleButton(selectButton);
                     selectButton.setOnAction(e -> navigateToDetailsSafe(user));
 
-                    Button modifyButton = new Button("Modifier");
-                    modifyButton.setOnAction(e -> navigateToDetailsSafe(user)); // Same navigation as "Voir Détails"
+                    Button modifyButton = new Button("Edit");
+                    styleButton(modifyButton);
+                    modifyButton.setOnAction(e -> navigateToDetailsSafe(user));
 
-                    Button deleteButton = new Button("Supprimer");
+                    Button deleteButton = new Button("Delete");
+                    deleteButton.setStyle(
+                            "-fx-background-color: #e74c3c; " +
+                                    "-fx-text-fill: #ecf0f1; " +
+                                    "-fx-font-family: 'Verdana'; " +
+                                    "-fx-font-size: 12px; " +
+                                    "-fx-font-weight: bold; " +
+                                    "-fx-background-radius: 5; " +
+                                    "-fx-padding: 5 10;"
+                    );
                     deleteButton.setOnAction(e -> confirmAndDelete(user));
 
-                    HBox buttonBox = new HBox(10, selectButton, modifyButton, deleteButton);
+                    // Admin toggle button
+                    boolean isAdmin = user.getRoles().contains("Admin");
+                    Button adminButton = new Button(isAdmin ? "Revoke Admin" : "Make Admin");
+                    styleButton(adminButton);
+                    adminButton.setStyle(
+                            "-fx-background-color: " + (isAdmin ? "#e67e22" : "#1abc9c") + "; " +
+                                    "-fx-text-fill: #ecf0f1; " +
+                                    "-fx-font-family: 'Verdana'; " +
+                                    "-fx-font-size: 12px; " +
+                                    "-fx-font-weight: bold; " +
+                                    "-fx-background-radius: 5; " +
+                                    "-fx-padding: 5 10;"
+                    );
+                    adminButton.setTooltip(new Tooltip(isAdmin ? "Remove admin privileges" : "Grant admin privileges"));
+                    adminButton.setOnAction(e -> toggleAdminRole(user, adminButton, rolesLabel));
+                    // Disable for non-admins or current user
+                    String currentUsername = sessionManager.getCurrentUsername();
+                    boolean isCurrentUser = currentUsername != null && currentUsername.equals(user.getUsername());
+                    adminButton.setDisable(!isCurrentUserAdmin() || isCurrentUser);
+
+                    HBox buttonBox = new HBox(10, selectButton, modifyButton, deleteButton, adminButton);
                     buttonBox.setStyle("-fx-padding: 10 0 0 0;");
 
                     // Assemble card: image + info
@@ -155,40 +193,112 @@ public class AfficherUsersController {
                 }
             }
         });
+
+        // Restrict actions for non-admins
+        if (!isCurrentUserAdmin()) {
+            addUserButton.setDisable(true);
+            addUserButton.setTooltip(new Tooltip("Admin access required"));
+            viewDetailsButton.setDisable(true);
+            viewDetailsButton.setTooltip(new Tooltip("Admin access required"));
+        }
+    }
+
+    private void styleButton(Button button) {
+        button.setStyle(
+                "-fx-background-color: #1abc9c; " +
+                        "-fx-text-fill: #ecf0f1; " +
+                        "-fx-font-family: 'Verdana'; " +
+                        "-fx-font-size: 12px; " +
+                        "-fx-font-weight: bold; " +
+                        "-fx-background-radius: 5; " +
+                        "-fx-padding: 5 10;"
+        );
+    }
+
+    private void loadDefaultImage(ImageView imageView) {
+        try {
+            Image defaultImage = new Image(getClass().getResourceAsStream("/images/default.jpg"));
+            imageView.setImage(defaultImage);
+        } catch (Exception e) {
+            System.err.println("Failed to load default image: " + e.getMessage());
+        }
+    }
+
+    private boolean isCurrentUserAdmin() {
+        try {
+            String username = sessionManager.getCurrentUsername();
+            if (username == null) return false;
+            String roles = userService.getRoleByUsername(username);
+            return roles != null && roles.contains("Admin");
+        } catch (SQLException e) {
+            System.err.println("Error checking admin status: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private void toggleAdminRole(User user, Button adminButton, Label rolesLabel) {
+        try {
+            boolean isAdmin = user.getRoles().contains("Admin");
+            userService.updateUserRoles(user, !isAdmin);
+            // Update user object
+            user.setRoles(userService.getById(user.getId()).getRoles());
+            // Update UI
+            adminButton.setText(isAdmin ? "Make Admin" : "Revoke Admin");
+            adminButton.setStyle(
+                    "-fx-background-color: " + (isAdmin ? "#1abc9c" : "#e67e22") + "; " +
+                            "-fx-text-fill: #ecf0f1; " +
+                            "-fx-font-family: 'Verdana'; " +
+                            "-fx-font-size: 12px; " +
+                            "-fx-font-weight: bold; " +
+                            "-fx-background-radius: 5; " +
+                            "-fx-padding: 5 10;"
+            );
+            adminButton.setTooltip(new Tooltip(isAdmin ? "Grant admin privileges" : "Remove admin privileges"));
+            rolesLabel.setText("Roles: " + user.getRoles());
+            showInfoAlert("Success", "User " + user.getUsername() + " " + (isAdmin ? "admin privileges revoked." : "granted admin privileges."));
+        } catch (SQLException e) {
+            showErrorAlert("Role Update Error", "Failed to update admin role: " + e.getMessage());
+        }
     }
 
     private void loadUsers() {
-        UserService userServices = new UserService();
         try {
-            userList.setAll(userServices.getAll());
+            userList.setAll(userService.getAll());
         } catch (SQLException e) {
-            showErrorAlert("Erreur de Chargement", "Erreur lors du chargement des utilisateurs: " + e.getMessage());
+            showErrorAlert("Load Error", "Failed to load users: " + e.getMessage());
         }
     }
 
     @FXML
     private void openAddUserPage(ActionEvent event) {
+        if (!isCurrentUserAdmin()) {
+            showErrorAlert("Permission Denied", "Only admins can add users.");
+            return;
+        }
         navigateTo(ADD_USER_FXML, "CultureSketch - Add User", event);
     }
 
     @FXML
     private void navigateToProfile(ActionEvent event) {
-        if (!SessionManager.getInstance().isLoggedIn()) {
-            showErrorAlert("Non connecté", "Vous devez être connecté pour accéder à votre profil. Veuillez vous connecter d'abord.");
+        if (!sessionManager.isLoggedIn()) {
+            showErrorAlert("Not Logged In", "You must be logged in to view your profile. Please login first.");
             navigateTo(LOGIN_FXML, "CultureSketch - Login", event);
             return;
         }
-
         navigateTo(PROFILE_FXML, "CultureSketch - Profile", event);
     }
 
     @FXML
     private void viewSelectedUserDetails(ActionEvent event) {
+        if (!isCurrentUserAdmin()) {
+            showErrorAlert("Permission Denied", "Only admins can view user details.");
+            return;
+        }
         User selectedUser = userListView.getSelectionModel().getSelectedItem();
         if (selectedUser != null) {
             navigateToDetailsSafe(selectedUser);
         } else {
-            showErrorAlert("Aucune sélection", "Veuillez sélectionner un utilisateur pour voir les détails.");
+            showErrorAlert("No Selection", "Please select a user to view details.");
         }
     }
 
@@ -196,28 +306,31 @@ public class AfficherUsersController {
         try {
             navigateToDetails(user);
         } catch (IOException ex) {
-            showErrorAlert("Erreur de Navigation", "Erreur lors du chargement de la vue Détails: " + ex.getMessage());
+            showErrorAlert("Navigation Error", "Failed to load details view: " + ex.getMessage());
         }
     }
 
     private void confirmAndDelete(User user) {
+        if (!isCurrentUserAdmin()) {
+            showErrorAlert("Permission Denied", "Only admins can delete users.");
+            return;
+        }
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                "Voulez-vous vraiment supprimer cet utilisateur ?",
+                "Are you sure you want to delete this user?",
                 ButtonType.YES,
                 ButtonType.NO
         );
-        confirm.setTitle("Confirmer la Suppression");
+        confirm.setTitle("Confirm Deletion");
         confirm.setHeaderText(null);
         confirm.showAndWait();
         if (confirm.getResult() == ButtonType.YES) {
             try {
-                UserService userServices = new UserService();
-                userServices.delete(user);
+                userService.delete(user);
                 userList.remove(user);
                 userListView.getSelectionModel().clearSelection();
-                showInfoAlert("Succès", "Utilisateur supprimé avec succès !");
+                showInfoAlert("Success", "User deleted successfully!");
             } catch (SQLException ex) {
-                showErrorAlert("Erreur de Suppression", "Erreur lors de la suppression de l'utilisateur: " + ex.getMessage());
+                showErrorAlert("Deletion Error", "Failed to delete user: " + ex.getMessage());
             }
         }
     }

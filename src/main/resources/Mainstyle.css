@@ -1,0 +1,10 @@
+/* Styles pour la mise en page principale */
+.main-container {
+    -fx-background-color: transparent;
+    -fx-spacing: 0;
+}
+
+.content-pane {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}

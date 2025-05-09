@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import java.net.URL?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21.0.2"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.dashboard.DashboardController"
+            prefHeight="600.0" prefWidth="1024.0"
+            styleClass="dashboard-main">
+
+    <stylesheets>
+        <URL value="@/styles/Dashboard.css" />
+    </stylesheets>
+    <!-- Sidebar -->
+    <left>
+        <fx:include source="/sidebar/SideBar.fxml" />
+    </left>
+
+    <!-- Center Content -->
+    <center>
+        <VBox alignment="CENTER" spacing="20.0" styleClass="content-container">
+            <children>
+                <Label fx:id="lblWelcome"
+                       styleClass="welcome-label"
+                       text="Welcome to Cultify Dashboard"
+                       wrapText="true" />
+                <Label fx:id="lblUserInfo"
+                       styleClass="info-label"
+                       text="Guest User"
+                       wrapText="true" />
+            </children>
+            <padding>
+                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+            </padding>
+        </VBox>
+    </center>
+</BorderPane>

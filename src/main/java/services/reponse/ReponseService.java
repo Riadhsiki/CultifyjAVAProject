@@ -2,7 +2,7 @@ package services.reponse;
 
 import models.Reclamation;
 import models.Reponse;
-import utils.MyDataBase;
+import utils.DataSource;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,12 +16,11 @@ public class ReponseService implements IServiceReponse<Reponse> {
     private Connection con;
 
     public ReponseService() {
-        this.con = MyDataBase.getInstance().getConn();
+        this.con = DataSource.getInstance().getConnection();
     }
 
     @Override
     public void add(Reponse reponse) throws SQLException {
-        // Vérifier que la réclamation associée existe
         if (reponse.getReclamation() == null || reponse.getReclamation().getId_reclamation() <= 0) {
             throw new SQLException("La réponse doit être associée à une réclamation valide");
         }
@@ -29,7 +28,6 @@ public class ReponseService implements IServiceReponse<Reponse> {
         String query = "INSERT INTO `reponse`(`reponsedate`, `titre`, `contenu`, `offre`, `id_reclamation`) VALUES (?,?,?,?,?)";
         PreparedStatement ps = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 
-        // Si reponsedate est null, utiliser la date actuelle
         if (reponse.getReponsedate() == null) {
             reponse.setReponsedate(new Date());
         }
@@ -41,13 +39,11 @@ public class ReponseService implements IServiceReponse<Reponse> {
         ps.setInt(5, reponse.getReclamation().getId_reclamation());
         ps.executeUpdate();
 
-        // Récupérer l'ID généré
         ResultSet generatedKeys = ps.getGeneratedKeys();
         if (generatedKeys.next()) {
             reponse.setId_reponse(generatedKeys.getInt(1));
         }
 
-        // Mettre à jour le statut de la réclamation à "Traité"
         updateReclamationStatus(reponse.getReclamation().getId_reclamation(), "Traité");
 
         System.out.println("Réponse ajoutée avec succès");
@@ -55,7 +51,6 @@ public class ReponseService implements IServiceReponse<Reponse> {
 
     @Override
     public void update(Reponse reponse) throws SQLException {
-        // Vérifier que la réclamation associée existe
         if (reponse.getReclamation() == null || reponse.getReclamation().getId_reclamation() <= 0) {
             throw new SQLException("La réponse doit être associée à une réclamation valide");
         }
@@ -63,7 +58,6 @@ public class ReponseService implements IServiceReponse<Reponse> {
         String query = "UPDATE `reponse` SET `reponsedate`=?, `titre`=?, `contenu`=?, `offre`=?, `id_reclamation`=? WHERE id_reponse=?";
         PreparedStatement ps = con.prepareStatement(query);
 
-        // Si reponsedate est null, utiliser la date actuelle
         if (reponse.getReponsedate() == null) {
             reponse.setReponsedate(new Date());
         }
@@ -81,18 +75,15 @@ public class ReponseService implements IServiceReponse<Reponse> {
 
     @Override
     public void delete(Reponse reponse) throws SQLException {
-        // Récupérer l'ID de la réclamation avant de supprimer la réponse
         int reclamationId = reponse.getReclamation() != null ?
                 reponse.getReclamation().getId_reclamation() :
                 getReclamationIdForReponse(reponse.getId_reponse());
 
-        // Supprimer la réponse
         String query = "DELETE FROM `reponse` WHERE id_reponse=?";
         PreparedStatement ps = con.prepareStatement(query);
         ps.setInt(1, reponse.getId_reponse());
         ps.executeUpdate();
 
-        // Mettre à jour le statut de la réclamation à "Non traité" si un ID de réclamation a été trouvé
         if (reclamationId > 0) {
             updateReclamationStatus(reclamationId, "Non traité");
         }
@@ -117,7 +108,6 @@ public class ReponseService implements IServiceReponse<Reponse> {
             reponse.setContenu(rs.getString("contenu"));
             reponse.setOffre(rs.getString("offre"));
 
-            // Associer la réclamation si elle existe
             if (rs.getObject("id_reclamation") != null) {
                 Reclamation reclamation = new Reclamation();
                 reclamation.setId_reclamation(rs.getInt("id_reclamation"));
@@ -183,7 +173,6 @@ public class ReponseService implements IServiceReponse<Reponse> {
             reponse.setContenu(rs.getString("contenu"));
             reponse.setOffre(rs.getString("offre"));
 
-            // Créer et associer la réclamation
             Reclamation reclamation = new Reclamation();
             reclamation.setId_reclamation(rs.getInt("id_reclamation"));
             reclamation.setTitre(rs.getString("reclamation_titre"));
@@ -197,7 +186,6 @@ public class ReponseService implements IServiceReponse<Reponse> {
         return null;
     }
 
-    // Méthode pour mettre à jour le statut d'une réclamation
     private void updateReclamationStatus(int reclamationId, String status) throws SQLException {
         String query = "UPDATE `reclamation` SET `statut` = ? WHERE `id_reclamation` = ?";
         PreparedStatement ps = con.prepareStatement(query);
@@ -206,7 +194,6 @@ public class ReponseService implements IServiceReponse<Reponse> {
         ps.executeUpdate();
     }
 
-    // Méthode pour trouver l'ID de la réclamation associée à une réponse
     private int getReclamationIdForReponse(int reponseId) throws SQLException {
         String query = "SELECT `id_reclamation` FROM `reponse` WHERE id_reponse = ?";
         PreparedStatement ps = con.prepareStatement(query);

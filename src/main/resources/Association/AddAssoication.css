@@ -1,0 +1,103 @@
+/* Style pour le formulaire d'ajout d'association */
+
+/* Style général du formulaire */
+.root {
+    -fx-background-color: #f5f5f5;
+    -fx-font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Style des champs de texte */
+.text-field {
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1px;
+    -fx-padding: 5px 10px;
+    -fx-font-size: 13px;
+    -fx-prompt-text-fill: #757575;
+}
+
+.text-field:focused {
+    -fx-border-color: #4a90e2;
+    -fx-effect: dropshadow(gaussian, rgba(74, 144, 226, 0.3), 5, 0, 0, 0);
+}
+
+/* Style des labels */
+.label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #444444;
+}
+
+/* Style des boutons */
+.button {
+    -fx-background-color: #4a90e2;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4px;
+    -fx-padding: 8px 15px;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #3a80d2;
+}
+
+.button:pressed {
+    -fx-background-color: #2a70c2;
+}
+
+/* Style du bouton "Parcourir..." */
+#browseButton {
+    -fx-background-color: #6c757d;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-padding: 5px 10px;
+}
+
+#browseButton:hover {
+    -fx-background-color: #5a6268;
+}
+
+/* Style du champ pour le chemin de l'image */
+#imagePathField {
+    -fx-background-color: #f8f9fa;
+    -fx-text-fill: #495057;
+}
+
+/* Style pour le label de prévisualisation d'image */
+#imagePreviewLabel {
+    -fx-text-fill: #28a745;
+    -fx-font-style: italic;
+}
+
+/* Styles pour le conteneur HBox */
+.hbox {
+    -fx-spacing: 10;
+    -fx-alignment: center-left;
+}
+
+/* Style pour le bouton "Ajouter" */
+Button[text="Ajouter"] {
+    -fx-background-color: #28a745;
+}
+
+Button[text="Ajouter"]:hover {
+    -fx-background-color: #218838;
+}
+
+/* Style pour le bouton "Afficher tout" */
+Button[text="Afficher tout"] {
+    -fx-background-color: #17a2b8;
+}
+
+Button[text="Afficher tout"]:hover {
+    -fx-background-color: #138496;
+}
+
+/* Style pour l'AnchorPane principal */
+AnchorPane {
+    -fx-padding: 20px;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}

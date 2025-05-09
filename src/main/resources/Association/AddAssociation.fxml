@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import java.net.URL?>
+<?import javafx.scene.image.ImageView?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21.0.2" xmlns:fx="http://javafx.com/fxml/1"  styleClass="anchor-pane" fx:controller="controllers.associationcontrollers.AddAssociation">
+   <stylesheets>
+      <URL value="@/Association/styles.css" />
+   </stylesheets>
+   <left>
+      <fx:include source="/SideBar/SideBar.fxml" />
+   </left>
+   <center>
+      <AnchorPane styleClass="anchor-pane">
+         <VBox styleClass="form-vbox" prefHeight="600.0" prefWidth="550.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <children>
+               <Label styleClass="form-title" text="Ajouter une association">
+                  <font>
+                     <Font name="Verdana" size="24.0" />
+                  </font>
+               </Label>
+
+               <HBox alignment="TOP_CENTER" spacing="15.0">
+                  <VBox styleClass="form-fields-container" spacing="15.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                           <children>
+                              <Label styleClass="form-label" text="Nom:" />
+                              <TextField fx:id="nom" styleClass="form-textfield" promptText="Nom de l'association" />
+                              <Label fx:id="nomErrorLabel" styleClass="error-label" />
+                           </children>
+                        </HBox>
+
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                           <children>
+                              <Label styleClass="form-label" text="Montant:" />
+                              <TextField fx:id="montant" styleClass="form-textfield" promptText="Montant désiré" />
+                              <Label fx:id="montantErrorLabel" styleClass="error-label" />
+                           </children>
+                        </HBox>
+
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                           <children>
+                              <Label styleClass="form-label" text="But:" />
+                              <TextArea fx:id="but" styleClass="form-textarea" promptText="But de l'association" />
+                              <Label fx:id="butErrorLabel" styleClass="error-label" />
+                           </children>
+                        </HBox>
+
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                           <children>
+                              <Label styleClass="form-label" text="Description:" />
+                              <TextArea fx:id="description" styleClass="form-textarea" promptText="Description" />
+                              <Button fx:id="generateDescriptionButton" styleClass="gen-description-button" mnemonicParsing="false" onAction="#generateDescription" text="Générer" />
+                              <Label fx:id="descriptionErrorLabel" styleClass="error-label" />
+                           </children>
+                        </HBox>
+
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                           <children>
+                              <Label styleClass="form-label" text="Contact:" />
+                              <TextField fx:id="contact" styleClass="form-textfield" promptText="Contact" />
+                              <Label fx:id="contactErrorLabel" styleClass="error-label" />
+                           </children>
+                        </HBox>
+
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                           <children>
+                              <Label styleClass="form-label" text="Site Web:" />
+                              <TextField fx:id="siteWeb" styleClass="form-textfield" promptText="Site web" />
+                              <Label fx:id="siteWebErrorLabel" styleClass="error-label" />
+                           </children>
+                        </HBox>
+
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                           <children>
+                              <Label styleClass="form-label" text="Image:" />
+                              <TextField fx:id="imagePathField" styleClass="form-textfield" editable="false" promptText="Sélectionner une image..." />
+                              <Button styleClass="browse-button" mnemonicParsing="false" onAction="#chooseImage" text="Parcourir..." />
+                              <Label fx:id="imageErrorLabel" styleClass="error-label" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+
+                  <VBox styleClass="form-image-container" spacing="10.0" alignment="TOP_CENTER" prefWidth="200.0">
+                     <Label fx:id="currentImageLabel" styleClass="image-info-label" />
+                     <ImageView fx:id="imagePreview" styleClass="image-preview" fitHeight="200.0" fitWidth="200.0" preserveRatio="true" />
+                  </VBox>
+               </HBox>
+
+               <HBox alignment="CENTER" spacing="20.0" styleClass="form-buttons-container">
+                  <children>
+                     <Button styleClass="form-submit-button" mnemonicParsing="false" onAction="#save" text="Ajouter" />
+                     <Button styleClass="form-cancel-button" mnemonicParsing="false" onAction="#affiche" text="Afficher tout" />
+                  </children>
+               </HBox>
+            </children>
+         </VBox>
+      </AnchorPane>
+   </center>
+</BorderPane>

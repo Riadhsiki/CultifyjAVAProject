@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import models.User;
 import services.auth.UserRegistrationService;
 import utils.EmailSender;
+import utils.SessionManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,10 +31,10 @@ public class RegisterController {
     @FXML private TextField numTelField;
     @FXML private RadioButton maleRadio;
     @FXML private RadioButton femaleRadio;
-    @FXML private RadioButton otherRadio;
     @FXML private ToggleGroup genderGroup;
     @FXML private DatePicker dateOfBirthPicker;
     @FXML private TextField profilePicField;
+    @FXML private ImageView profilePicView;
     @FXML private Button browseButton;
     @FXML private ComboBox<String> roleComboBox;
     @FXML private PasswordField passwordField;
@@ -46,16 +47,20 @@ public class RegisterController {
 
     private final UserRegistrationService registrationService = new UserRegistrationService();
     private final EmailSender emailSender = new EmailSender();
+    private final SessionManager sessionManager = SessionManager.getInstance();
     private boolean isPasswordVisible = false;
 
     @FXML
     private void initialize() {
-        // Populate roleComboBox
+        // Populate roleComboBox (no Admin)
         roleComboBox.getItems().addAll("User", "Artist", "Organizer");
         roleComboBox.setValue("User");
 
         // Initialize toggle button with eye icon
         updateToggleButtonIcon();
+
+        // Initialize profile picture view
+        profilePicView.setImage(null);
     }
 
     @FXML
@@ -68,6 +73,19 @@ public class RegisterController {
         File file = fileChooser.showOpenDialog(browseButton.getScene().getWindow());
         if (file != null) {
             profilePicField.setText(file.getAbsolutePath());
+            try {
+                Image image = new Image(file.toURI().toString(), 100, 100, true, true);
+                if (image.isError()) {
+                    throw new IOException("Invalid image file");
+                }
+                profilePicView.setImage(image);
+            } catch (Exception e) {
+                System.err.println("Error loading image preview: " + e.getMessage());
+                errorMessage.setText("Error loading image preview: Invalid image file.");
+                errorMessage.setVisible(true);
+                profilePicView.setImage(null);
+                profilePicField.setText("");
+            }
         }
     }
 
@@ -91,7 +109,7 @@ public class RegisterController {
         String confirmPassword = isPasswordVisible ? confirmPasswordTextField.getText() : confirmPasswordField.getText();
 
         // Validate inputs
-        if (!validateInputs(prenom, nom, username, email, numTel, gender, dateOfBirth, role, password, confirmPassword)) {
+        if (!validateInputs(prenom, nom, username, email, numTel, gender, dateOfBirth, profilePic, role, password, confirmPassword)) {
             return;
         }
 
@@ -112,8 +130,8 @@ public class RegisterController {
             if (registrationService.registerUser(user)) {
                 // Send welcome email with attachment
                 String subject = "Welcome to CultureSketch!";
-                String body = "Dear {prenom},\n\n" +
-                        "Welcome to Cultify, {username}! We're thrilled to have you join our community of creators and art enthusiasts.\n\n" +
+                String body = "Dear " + prenom + ",\n\n" +
+                        "Welcome to Cultify, " + username + "! We're thrilled to have you join our community of creators and art enthusiasts.\n\n" +
                         "With CultureSketch, you can:\n" +
                         "- Create and share your unique sketches\n" +
                         "- Explore a vibrant gallery of artwork\n" +
@@ -125,6 +143,7 @@ public class RegisterController {
                 try {
                     emailSender.sendEmailWithAttachment(email, subject, body, prenom, username);
                 } catch (RuntimeException e) {
+                    System.err.println("Failed to send welcome email: " + e.getMessage());
                     errorMessage.setText("Registration successful, but failed to send welcome email: " + e.getMessage());
                     errorMessage.setVisible(true);
                     return;
@@ -135,19 +154,14 @@ public class RegisterController {
                 successMessage.setVisible(true);
 
                 // Navigate to login
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/auth/login.fxml"));
-                Parent root = loader.load();
-                Scene scene = new Scene(root);
-                Stage stage = (Stage) usernameField.getScene().getWindow();
-                stage.setScene(scene);
-                stage.setTitle("CultureSketch - Login");
-                stage.show();
+                navigateToLogin();
             } else {
                 errorMessage.setText("Username or email already exists.");
                 errorMessage.setVisible(true);
                 successMessage.setVisible(false);
             }
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
+            System.err.println("Registration error: " + e.getMessage());
             errorMessage.setText("Registration error: " + e.getMessage());
             errorMessage.setVisible(true);
             successMessage.setVisible(false);
@@ -157,7 +171,10 @@ public class RegisterController {
     @FXML
     private void navigateToLogin() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/auth/login.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/auth/Login.fxml"));
+            if (loader.getLocation() == null) {
+                throw new IOException("FXML resource not found: /auth/Login.fxml");
+            }
             Parent root = loader.load();
             Scene scene = new Scene(root);
             Stage stage = (Stage) usernameField.getScene().getWindow();
@@ -165,6 +182,7 @@ public class RegisterController {
             stage.setTitle("CultureSketch - Login");
             stage.show();
         } catch (IOException e) {
+            System.err.println("Navigation error: " + e.getMessage());
             errorMessage.setText("Navigation error: " + e.getMessage());
             errorMessage.setVisible(true);
             e.printStackTrace();
@@ -205,7 +223,8 @@ public class RegisterController {
             imageView.setFitHeight(20);
             togglePasswordButton.setGraphic(imageView);
         } catch (NullPointerException e) {
-            errorMessage.setText("Error loading toggle icon: Image not found at /images/");
+            System.err.println("Error loading toggle icon: Image not found at /images/");
+            errorMessage.setText("Error loading toggle icon: Image not found.");
             errorMessage.setVisible(true);
             e.printStackTrace();
         }
@@ -214,12 +233,11 @@ public class RegisterController {
     private String getSelectedGender() {
         if (maleRadio.isSelected()) return "Male";
         if (femaleRadio.isSelected()) return "Female";
-        if (otherRadio.isSelected()) return "Other";
         return null;
     }
 
     private boolean validateInputs(String prenom, String nom, String username, String email, String numTel,
-                                   String gender, LocalDate dateOfBirth, String role, String password, String confirmPassword) {
+                                   String gender, LocalDate dateOfBirth, String profilePic, String role, String password, String confirmPassword) {
         // Check for empty fields
         if (prenom.isEmpty() || nom.isEmpty() || username.isEmpty() || email.isEmpty() || numTel.isEmpty() ||
                 gender == null || dateOfBirth == null || role == null || password.isEmpty() || confirmPassword.isEmpty()) {
@@ -254,6 +272,16 @@ public class RegisterController {
             errorMessage.setText("You must be at least 12 years old.");
             errorMessage.setVisible(true);
             return false;
+        }
+
+        // Validate profile picture file (if provided)
+        if (!profilePic.isEmpty()) {
+            File file = new File(profilePic);
+            if (!file.exists() || !file.isFile()) {
+                errorMessage.setText("Selected profile picture file does not exist.");
+                errorMessage.setVisible(true);
+                return false;
+            }
         }
 
         // Validate password (at least 8 characters)

@@ -1,0 +1,371 @@
+/* Styles spécifiques pour les dons */
+.don-vbox {
+    -fx-background-color: rgba(244, 239, 228, 0.65);
+    -fx-background-radius: 20;
+    -fx-padding: 20;
+    -fx-spacing: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 5);
+}
+
+.don-header {
+    -fx-padding: 15 20;
+    -fx-background-color: rgba(243, 237, 226, 0.7);
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.don-title {
+    -fx-text-fill: -text-color;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 1, 0, 1, 1);
+}
+
+.don-search-field {
+    -fx-background-color: white;
+    -fx-background-radius: 30;
+    -fx-border-radius: 30;
+    -fx-border-color: -border-color;
+    -fx-padding: 8 15;
+    -fx-prompt-text-fill: -light-text;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);
+}
+
+.don-search-field:focused {
+    -fx-border-color: -primary-color;
+    -fx-effect: dropshadow(gaussian, rgba(239, 208, 147, 0.3), 5, 0, 0, 0);
+}
+
+.don-column-headers {
+    -fx-background-color: rgba(173, 187, 183, 0.7);
+    -fx-padding: 12 15;
+    -fx-background-radius: 10 10 0 0;
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.1), 1, 0, 0, 1);
+}
+
+.don-header-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-padding: 0 0 0 10;
+    -fx-alignment: center-left;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 1, 0, 0, 1);
+}
+
+.don-list-view {
+    -fx-background-color: rgba(255, 255, 255, 0.4);
+    -fx-background-radius: 0 0 10 10;
+    -fx-border-radius: 0 0 10 10;
+    -fx-border-color: rgba(220, 218, 207, 0.5);
+    -fx-border-width: 1;
+    -fx-padding: 5;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.don-list-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 5 0;
+}
+
+.don-list-view .list-cell:filled {
+    -fx-background-color: rgba(255, 255, 255, 0.3);
+    -fx-border-color: rgba(220, 218, 207, 0.5);
+    -fx-border-width: 0 0 1 0;
+}
+
+.don-list-view .list-cell:filled:even {
+    -fx-background-color: rgba(243, 237, 226, 0.3);
+}
+
+.don-list-view .list-cell:filled:hover {
+    -fx-background-color: rgba(186, 198, 192, 0.5);
+}
+
+.don-pagination-container {
+    -fx-padding: 15;
+    -fx-background-color: rgba(243, 237, 226, 0.5);
+    -fx-background-radius: 10;
+}
+
+.don-page-info {
+    -fx-text-fill: -text-color;
+    -fx-background-color: rgba(255, 255, 255, 0.8);
+    -fx-background-radius: 5;
+    -fx-padding: 5 10;
+}
+
+.don-elements-label {
+    -fx-text-fill: -text-color;
+    -fx-background-color: rgba(255, 255, 255, 0.8);
+    -fx-background-radius: 5;
+    -fx-padding: 5 10;
+}
+
+.don-items-combo {
+    -fx-background-image: url("/images/background.png");
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-color: -border-color;
+}
+
+.don-items-combo:focused {
+    -fx-border-color: -primary-color;
+}
+
+.don-pagination {
+    -fx-page-information-visible: false;
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-background-radius: 10;
+    -fx-padding: 5;
+}
+
+.don-pagination .button {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-color: -border-color;
+}
+
+.don-pagination .button:hover {
+    -fx-background-color: derive(-secondary-color, 80%);
+}
+
+.don-pagination .button:selected {
+    -fx-background-color: -primary-color;
+    -fx-text-fill: white;
+}
+
+/* Styles pour le formulaire de don */
+.don-form-vbox {
+    -fx-background-color: rgba(244, 239, 228, 0.65);
+    -fx-background-radius: 20;
+    -fx-padding: 20;
+    -fx-spacing: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 5);
+}
+
+.don-form-title {
+    -fx-text-fill: -text-color;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 1, 0, 1, 1);
+    -fx-padding: 0 0 15 0;
+}
+
+.don-form-fields {
+    -fx-padding: 15;
+    -fx-background-color: rgba(255, 255, 255, 0.4);
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.don-form-label {
+    -fx-text-fill: -text-color;
+    -fx-font-weight: bold;
+}
+
+.don-form-textfield {
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: -border-color;
+    -fx-padding: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);
+}
+
+.don-form-textfield:focused {
+    -fx-border-color: -primary-color;
+    -fx-effect: dropshadow(gaussian, rgba(239, 208, 147, 0.3), 5, 0, 0, 0);
+}
+
+.don-form-submit-button {
+    -fx-background-color: -primary-color;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 10 25;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.don-form-submit-button:hover {
+    -fx-background-color: -hover-color;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+}
+
+/* Styles pour les boutons dans les cellules */
+.edit-button {
+    -fx-background-color: -secondary-color;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-padding: 5 15;
+    -fx-cursor: hand;
+    -fx-font-size: 11px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);
+}
+
+.edit-button:hover {
+    -fx-background-color: derive(-secondary-color, -10%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.delete-button {
+    -fx-background-color: -delete-color;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-padding: 5 15;
+    -fx-cursor: hand;
+    -fx-font-size: 11px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);
+}
+
+.delete-button:hover {
+    -fx-background-color: derive(-delete-color, -10%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.confirm-button {
+    -fx-background-color: #2ecc71;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-padding: 5 15;
+    -fx-cursor: hand;
+    -fx-font-size: 11px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);
+}
+
+.confirm-button:hover {
+    -fx-background-color: derive(#2ecc71, -10%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+/* Styles spécifiques pour le formulaire de modification de don */
+.don-form-grid {
+    -fx-padding: 20;
+    -fx-background-color: rgba(255, 255, 255, 0.4);
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.don-form-combo {
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: -border-color;
+    -fx-padding: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);
+}
+
+.don-form-combo:focused {
+    -fx-border-color: -primary-color;
+    -fx-effect: dropshadow(gaussian, rgba(239, 208, 147, 0.3), 5, 0, 0, 0);
+}
+
+.don-form-buttons {
+    -fx-padding: 15 0 0 0;
+}
+
+.don-form-cancel-button {
+    -fx-background-color: -secondary-color;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 10 25;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.don-form-cancel-button:hover {
+    -fx-background-color: derive(-secondary-color, -10%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+}
+.error-label {
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 12px;
+    -fx-wrap-text: true;
+    -fx-max-width: 250px;
+    -fx-pref-width: 250px;
+    -fx-alignment: center-left;
+    -fx-padding: 2 0 0 0;
+    -fx-label-padding: 0 0 0 0;
+    -fx-content-display: left;
+    -fx-font-style: italic;
+}
+
+/* Ajustement des hauteurs de ligne dans le GridPane */
+.don-form-grid .row-constraints {
+    -fx-pref-height: 40px;
+}
+
+/* Style pour les champs invalides */
+.invalid-field {
+    -fx-border-color: #e74c3c !important;
+    -fx-effect: dropshadow(gaussian, rgba(231, 76, 60, 0.3), 5, 0, 0, 0) !important;
+}
+
+/* Style spécifique pour le GridPane */
+.don-form-grid {
+    -fx-padding: 20;
+    -fx-background-color: rgba(255, 255, 255, 0.4);
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+    -fx-alignment: center-left;
+}
+.invalid-field {
+    -fx-border-color: #e74c3c !important;
+    -fx-effect: dropshadow(gaussian, rgba(231, 76, 60, 0.3), 5, 0, 0, 0) !important;
+}
+
+/* Styles pour la fenêtre de paiement */
+.payment-anchor-pane {
+    -fx-background-color: rgba(244, 239, 228, 0.65);
+}
+
+.payment-title {
+    -fx-text-fill: -text-color;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 1, 0, 1, 1);
+}
+
+.payment-label {
+    -fx-text-fill: -text-color;
+    -fx-font-weight: bold;
+}
+
+.payment-value {
+    -fx-text-fill: -text-color;
+}
+
+.payment-section-title {
+    -fx-text-fill: -text-color;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 1, 0, 1, 1);
+}
+
+.payment-test-mode {
+    -fx-text-fill: #e67e22;
+    -fx-font-style: italic;
+    -fx-alignment: center;
+}
+
+.payment-cancel-button {
+    -fx-background-color: -secondary-color;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 10 25;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.payment-cancel-button:hover {
+    -fx-background-color: derive(-secondary-color, -10%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+}
+
+.payment-pay-button {
+    -fx-background-color: -primary-color;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 30;
+    -fx-padding: 10 20 10 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}

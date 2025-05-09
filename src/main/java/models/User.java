@@ -1,6 +1,11 @@
 package models;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
+
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 public class User {
 
@@ -20,6 +25,8 @@ public class User {
     private String lastName;
     private String profileImage;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Don> dons = new ArrayList<>();
     public User(String nom, String prenom, String username, String numTel, String email, String gender, Date datedenaissance, String profilePicture, String password, String roles, Float montantAPayer) {
         this.nom = nom;
         this.prenom = prenom;
@@ -49,6 +56,20 @@ public class User {
         this.roles = roles;
         this.montantAPayer = montantAPayer;
     }
+
+    public void setDons(List<Don> dons) {
+        this.dons = dons;
+    }
+    public void addDon(Don don) {
+        dons.add(don);
+        don.setUser(this);
+    }
+
+    public void removeDon(Don don) {
+        dons.remove(don);
+        don.setUser(null);
+    }
+
 
     public Integer getId() {
         return id;
@@ -93,6 +114,11 @@ public class User {
     public String getRoles() {
         return roles;
     }
+
+    public List<Don> getDons() {
+        return dons;
+    }
+
 
     public Float getMontantAPayer() {
         return montantAPayer;

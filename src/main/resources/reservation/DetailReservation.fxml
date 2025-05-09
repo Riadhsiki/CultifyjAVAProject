@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import java.net.URL?>
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controllers.reservation.DetailReservation"
+            prefWidth="1000" prefHeight="700" styleClass="main-container">
+
+    <VBox styleClass="content-container" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+        <children>
+            <!-- Header with Buttons -->
+            <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="header-container">
+                <Button text="Ajouter une réservation" onAction="#redirectToAddForm" styleClass="btn-primary"/>
+                <Button text="Liste des Événements" onAction="#redirectToEventList" styleClass="btn-primary"/>
+                <Button text="Exporter tout en PDF" onAction="#exportToPDF" styleClass="btn-primary"/>
+            </HBox>
+
+            <!-- TableView -->
+            <TableView fx:id="tableView" styleClass="art-table"
+                       VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="etatCol" text="État" prefWidth="100"/>
+                    <TableColumn fx:id="dateCol" text="Date" prefWidth="120"/>
+                    <TableColumn fx:id="themeCol" text="Thème" prefWidth="150"/>
+                    <TableColumn fx:id="urlCol" text="URL" prefWidth="150"/>
+                    <TableColumn fx:id="nbTicketsCol" text="Nb Tickets" prefWidth="80"/>
+                    <TableColumn fx:id="eventCol" text="Événement" prefWidth="150"/>
+                    <TableColumn fx:id="actionCol" text="Actions" prefWidth="200"/>
+                </columns>
+            </TableView>
+        </children>
+    </VBox>
+
+    <!-- Reference the CSS file -->
+    <stylesheets>
+        <URL value="@/styles/style.css"/>
+    </stylesheets>
+</AnchorPane>

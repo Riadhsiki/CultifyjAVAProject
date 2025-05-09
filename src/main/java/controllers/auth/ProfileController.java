@@ -195,7 +195,9 @@ public class ProfileController {
                     Image image = new Image(imageFile.toURI().toString());
                     profilePicView.setImage(image);
                     imagePathField.setText(imageFile.getName());
-                    imagePreviewLabel.setText("Image loaded");
+                    if (imagePreviewLabel != null) {
+                        imagePreviewLabel.setText("Image loaded");
+                    }
                 } else {
                     loadDefaultProfilePicture();
                 }
@@ -210,14 +212,21 @@ public class ProfileController {
 
     private void loadDefaultProfilePicture() {
         try {
-            Image defaultImage = new Image("file:src/main/resources/images/default.jpg");
+            Image defaultImage = new Image(getClass().getResourceAsStream("/images/default.jpg"));
             profilePicView.setImage(defaultImage);
             imagePathField.setText("");
-            imagePreviewLabel.setText("No image selected");
+            if (imagePreviewLabel != null) {
+                imagePreviewLabel.setText("No image selected");
+            }
         } catch (Exception e) {
             System.err.println("Failed to load default profile picture: " + e.getMessage());
             profilePicView.setImage(null);
-            imagePreviewLabel.setText("Default image not found");
+            if (imageErrorLabel != null) {
+                imageErrorLabel.setText("Default image not found");
+            }
+            if (imagePreviewLabel != null) {
+                imagePreviewLabel.setText("");
+            }
         }
     }
 
@@ -249,11 +258,17 @@ public class ProfileController {
                 Image image = new Image(selectedImageFile.toURI().toString());
                 profilePicView.setImage(image);
                 imagePathField.setText(selectedImageFile.getName());
-                imagePreviewLabel.setText("Image selected");
-                imageErrorLabel.setText("");
+                if (imagePreviewLabel != null) {
+                    imagePreviewLabel.setText("Image selected");
+                }
+                if (imageErrorLabel != null) {
+                    imageErrorLabel.setText("");
+                }
                 checkForChanges();
             } catch (Exception e) {
-                imageErrorLabel.setText("Invalid image file.");
+                if (imageErrorLabel != null) {
+                    imageErrorLabel.setText("Invalid image file.");
+                }
                 selectedImageFile = null;
             }
         }
@@ -262,14 +277,18 @@ public class ProfileController {
     private boolean validateImage(File imageFile) {
         // Check file size
         if (imageFile.length() > MAX_IMAGE_SIZE) {
-            imageErrorLabel.setText("Image size exceeds 5MB.");
+            if (imageErrorLabel != null) {
+                imageErrorLabel.setText("Image size exceeds 5MB.");
+            }
             return false;
         }
 
         // Check file extension
         String extension = imageFile.getName().substring(imageFile.getName().lastIndexOf(".")).toLowerCase();
         if (!extension.matches("\\.(png|jpg|jpeg|gif)")) {
-            imageErrorLabel.setText("Only PNG, JPG, JPEG, and GIF files are allowed.");
+            if (imageErrorLabel != null) {
+                imageErrorLabel.setText("Only PNG, JPG, JPEG, and GIF files are allowed.");
+            }
             return false;
         }
 
@@ -393,14 +412,16 @@ public class ProfileController {
     private void clearFields() {
         selectedImageFile = null;
         imagePathField.clear();
-        imagePreviewLabel.setText("");
+        if (imagePreviewLabel != null) {
+            imagePreviewLabel.setText("");
+        }
         loadProfilePicture();
         clearErrorLabels();
     }
 
     @FXML
     private void handleChangePassword(ActionEvent event) {
-        navigateTo("/Auth/changePassword.fxml", "CultureSketch - Change Password");
+        navigateTo("/userinterfaces/changePassword.fxml", "CultureSketch - Change Password");
     }
 
     @FXML
@@ -433,16 +454,16 @@ public class ProfileController {
     }
 
     private void clearErrorLabels() {
-        imageErrorLabel.setText("");
-        usernameErrorLabel.setText("");
-        firstNameErrorLabel.setText("");
-        lastNameErrorLabel.setText("");
-        emailErrorLabel.setText("");
-        phoneNumberErrorLabel.setText("");
-        genderErrorLabel.setText("");
-        ageErrorLabel.setText("");
-        roleErrorLabel.setText("");
-        montantAPayerErrorLabel.setText("");
+        if (imageErrorLabel != null) imageErrorLabel.setText("");
+        if (usernameErrorLabel != null) usernameErrorLabel.setText("");
+        if (firstNameErrorLabel != null) firstNameErrorLabel.setText("");
+        if (lastNameErrorLabel != null) lastNameErrorLabel.setText("");
+        if (emailErrorLabel != null) emailErrorLabel.setText("");
+        if (phoneNumberErrorLabel != null) phoneNumberErrorLabel.setText("");
+        if (genderErrorLabel != null) genderErrorLabel.setText("");
+        if (ageErrorLabel != null) ageErrorLabel.setText("");
+        if (roleErrorLabel != null) roleErrorLabel.setText("");
+        if (montantAPayerErrorLabel != null) montantAPayerErrorLabel.setText("");
     }
 
     private void showAlert(String message, Alert.AlertType type) {

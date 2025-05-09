@@ -1,6 +1,8 @@
 package services.user;
 
-
+import services.eventreservation.EventService;
+import models.Don;
+import models.Event;
 import models.User;
 import utils.DataSource;
 import utils.PasswordHasher;
@@ -11,9 +13,11 @@ import java.util.List;
 
 public class UserService implements Service<User> {
     private Connection con;
+    private EventService eventService;
 
     public UserService() {
         con = DataSource.getInstance().getConnection();
+        eventService = new EventService();
     }
 
     @Override
@@ -148,6 +152,41 @@ public class UserService implements Service<User> {
         return null;
     }
 
+    public void changePassword(String username, String newPassword) throws SQLException {
+        User user = getByUsername(username);
+        if (user == null) {
+            throw new SQLException("User not found.");
+        }
+        user.setPassword(PasswordHasher.hash(newPassword));
+        update(user);
+    }
+
+    public void updateUserRoles(User user, boolean grantAdmin) throws SQLException {
+        String currentRoles = user.getRoles();
+        String newRoles;
+        if (grantAdmin) {
+            // Add admin role if not already present
+            if (currentRoles == null || currentRoles.isEmpty()) {
+                newRoles = "Admin";
+            } else if (!currentRoles.contains("Admin")) {
+                newRoles = currentRoles + ",Admin";
+            } else {
+                return; // Already admin, no update needed
+            }
+        } else {
+            // Remove admin role
+            if (currentRoles == null || !currentRoles.contains("Admin")) {
+                return; // Not admin, no update needed
+            }
+            newRoles = currentRoles.replace(",Admin", "").replace("Admin,", "").replace("Admin", "");
+            if (newRoles.isEmpty()) {
+                newRoles = "User"; // Default to User if no roles remain
+            }
+        }
+        user.setRoles(newRoles);
+        update(user);
+    }
+
     private User mapResultSetToUser(ResultSet rs) throws SQLException {
         Float montantAPayer = rs.getFloat("montantAPayer");
         if (rs.wasNull()) {
@@ -238,5 +277,40 @@ public class UserService implements Service<User> {
         }
     }
 
+    public void calculateMontantAPayer(User user) throws SQLException {
+        // Step 1: Fetch events where organisation matches the user's username
+        List<Event> events = eventService.getEventsByOrganisation(user.getUsername());
 
+        // Step 2: Calculate total event cost (prix * nbplaces)
+        double totalEventCost = 0.0;
+        for (Event event : events) {
+            totalEventCost += event.getPrix() * event.getNbplaces();
+        }
+
+        // Step 3: Calculate total confirmed contributions from dons
+        double totalContributions = 0.0;
+        for (Don don : user.getDons()) {
+            totalContributions += don.calculateTotalContributions();
+        }
+
+        // Step 4: Compute montantAPayer
+        double montantAPayer = totalEventCost - totalContributions;
+        user.setMontantAPayer(montantAPayer > 0 ? (float) montantAPayer : 0.0f);
+
+        // Step 5: Update the user in the database
+        update(user);
+    }
+
+    public String getRoleByUsername(String username) throws SQLException {
+        String query = "SELECT roles FROM user WHERE username = ?";
+        try (PreparedStatement pst = con.prepareStatement(query)) {
+            pst.setString(1, username);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("roles");
+                }
+            }
+        }
+        return null;
+    }
 }
